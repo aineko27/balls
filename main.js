@@ -1,4 +1,4 @@
-// -global ------------------------------------------------------------------------------------------------------------------------
+ï»¿// -global ------------------------------------------------------------------------------------------------------------------------
 
 var screenCanvas;
 var run = true;
@@ -17,75 +17,75 @@ var ck;
 // -const -------------------------------------------------------------------------------------------------------------------------
 
 var BALL_MAX_COUNT = 1024;
-var PLAYER_COLOR  @@= "rgba(  0, 255,   0, 0.85)";//—Î
-var BALL_COLOR_01 @@= "rgba(  0,   0, 255, 0.60)";//Â
-var BALL_COLOR_02@@ = "rgba(255,   0,   0, 0.60)";//Ô
-var WALL_COLOR    @@= "rgba( 85,  85,  85, 0.75)";//ƒOƒŒ[
-var DOTTED_LINE_COLOR = "rgba(255, 140,   0, 0.80)";//ƒIƒŒƒ“ƒW
+var PLAYER_COLOR  ã€€ã€€= "rgba(  0, 255,   0, 0.85)";//ç·‘
+var BALL_COLOR_01 ã€€ã€€= "rgba(  0,   0, 255, 0.60)";//é’
+var BALL_COLOR_02ã€€ã€€ = "rgba(255,   0,   0, 0.60)";//èµ¤
+var WALL_COLOR    ã€€ã€€= "rgba( 85,  85,  85, 0.75)";//ã‚°ãƒ¬ãƒ¼
+var DOTTED_LINE_COLOR = "rgba(255, 140,   0, 0.80)";//ã‚ªãƒ¬ãƒ³ã‚¸
 
 
 
 
 // -main --------------------------------------------------------------------------------------------------------------------------
 
-//ƒy[ƒW“Ç‚İ‚İ‚É‹N“®‚·‚éfunciton
+//ãƒšãƒ¼ã‚¸èª­ã¿è¾¼ã¿æ™‚ã«èµ·å‹•ã™ã‚‹funciton
 window.onload = function(){
 
-	//ƒ[ƒJƒ‹•Ï”‚Ì’è‹`
+	//ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã®å®šç¾©
 	var i, j;
 	var p = new Point();
 	var v = new Point();
 
 
-	//ƒXƒNƒŠ[ƒ“‚Ì‰Šú‰»
+	//ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®åˆæœŸåŒ–
 	screenCanvas = document.getElementById("screen");
 	screenCanvas.width = 256;
 	screenCanvas.height = 256;
 
 
-	//2dƒRƒ“ƒeƒLƒXƒg
+	//2dã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
 	ctx = screenCanvas.getContext("2d");
 
 
-	//ƒCƒxƒ“ƒg‚Ì“o˜^
+	//ã‚¤ãƒ™ãƒ³ãƒˆã®ç™»éŒ²
 	screenCanvas.addEventListener("mousemove", mouseMove, true);
 	screenCanvas.addEventListener("mousedown", mouseDown, true);
 	window.addEventListener("mouseup", mouseUp, true);
 	window.addEventListener("keydown", keyDown, true);
 
 
-	//‹…‰Šú‰»
+	//çƒåˆæœŸåŒ–
 	var ball= new Array(BALL_MAX_COUNT);
 	for(i = 0; i < BALL_MAX_COUNT; i++){
 		ball[i] = new Character;
 	}
 
 
-	//©‹@‰Šú‰»
+	//è‡ªæ©ŸåˆæœŸåŒ–
 	p.x = screenCanvas.width / 2;
 	p.y = screenCanvas.height / 2 -15;
 	v.x = 0;
 	v.y = 0;
 	ball[0].set(p, 10, v);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOˆ—‚ğŒÄ‚Ño‚·-----------------------------------------------------------------------------------------------
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°å‡¦ç†ã‚’å‘¼ã³å‡ºã™-----------------------------------------------------------------------------------------------
 
 	(function(){
-		//ƒJcƒEƒ“ƒ^[‚Ì’l‚ğ‘‚â‚·
+		//ã‚«cã‚¦ãƒ³ã‚¿ãƒ¼ã®å€¤ã‚’å¢—ã‚„ã™
 		counter ++;
 
 
 
 
 
-		//“ü—Í‚É‚æ‚é•ÏX---------------------------------------------------------------------------------------------------
+		//å…¥åŠ›ã«ã‚ˆã‚‹å¤‰æ›´---------------------------------------------------------------------------------------------------
 
 		if(ck){
-			console.log("“ü—Í‚³‚ê‚½ƒL[ƒR[ƒh‚Í " + ck)
+			console.log("å…¥åŠ›ã•ã‚ŒãŸã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ã¯ " + ck)
 
 			if(ck === 67) creatF = true;
 
-		//ƒL[ƒR[ƒh‰Šú‰»
+		//ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰åˆæœŸåŒ–
 		ck = null;
 		}
 
@@ -93,9 +93,9 @@ window.onload = function(){
 
 
 
-		//ƒtƒ‰ƒOŠÇ—-------------------------------------------------------------------------------------------------------
+		//ãƒ•ãƒ©ã‚°ç®¡ç†-------------------------------------------------------------------------------------------------------
 
-		//‘¼‹@¶¬
+		//ä»–æ©Ÿç”Ÿæˆ
 		if(creatF){
 			for(i = 0; i < BALL_MAX_COUNT; i++){
 				if(!ball[i].alive){
@@ -114,7 +114,7 @@ window.onload = function(){
 
 
 
-		//‹…”­Ë
+		//çƒç™ºå°„
 		if(fireF){
 			prepF = false;
 			fireF = false;
@@ -122,27 +122,27 @@ window.onload = function(){
 
 
 
-		//•¨‘Ì‚Ì“®‚«‚ğ§Œä-------------------------------------------------------------------------------------------------
+		//ç‰©ä½“ã®å‹•ãã‚’åˆ¶å¾¡-------------------------------------------------------------------------------------------------
 
-		//©—R—‰º
+		//è‡ªç”±è½ä¸‹
 		for(i = 0; i < BALL_MAX_COUNT; i++){
 			if(ball[i].alive && !ball[i].absorption){
 				ball[i].fall();
 			}
 		}
 
-		//‘¬“x‚ğˆÊ’uî•ñ‚É•ÏŠ·
+		//é€Ÿåº¦ã‚’ä½ç½®æƒ…å ±ã«å¤‰æ›
 		for(i = 0; i < BALL_MAX_COUNT; i++){
 			if(ball[i].alive && !ball[i].absorption){
 				ball[i].move();
 			}
 		}
 
-		//’n–Ê‚Æ‚ÌÕ“Ë
+		//åœ°é¢ã¨ã®è¡çª
 		for(i = 0; i < BALL_MAX_COUNT; i++){
 			if(ball[i].alive && !ball[i].absorption){
 				if(ball[i].position.y >= 243 - ball[i].size){
-					//”½”­ŒW”‚Ìİ’è‚Æ‚ß‚è‚ñ‚¾’l‚ğŒvZ
+					//åç™ºä¿‚æ•°ã®è¨­å®šã¨ã‚ã‚Šè¾¼ã‚“ã å€¤ã‚’è¨ˆç®—
 					var e = 0.6;
 					var excess = ball[i].position.y - (243 - ball[i].size);
 
@@ -153,7 +153,7 @@ window.onload = function(){
 			}
 		}
 
-		//•Ç‚Æ‚ÌÕ“Ë
+		//å£ã¨ã®è¡çª
 		for(i = 0; i < BALL_MAX_COUNT; i++){
 			if(ball[i].alive && !ball[i].absorption){
 				if(ball[i].position.x <= ball[i].size){
@@ -167,22 +167,22 @@ window.onload = function(){
 			}
 		}
 
-		//ƒ{[ƒ‹“¯m‚ÌÕ“Ë
+		//ãƒœãƒ¼ãƒ«åŒå£«ã®è¡çª
 		for(i = 0; i < BALL_MAX_COUNT; i++){
 			for(j = i + 1; j < BALL_MAX_COUNT; j++){
 				if(ball[i].alive && !ball[i].absorption && ball[j].alive && !ball[j].absorption){
 					p = ball[j].position.distance(ball[i].position);
 					if( (p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color === 3 || !i && ball[0].size < ball[j].size + 1) ){
-						//ƒ{[ƒ‹‚Ì‚ß‚è‚ñ‚¾ˆÊ’uŠÖŒW‚ğŒ³‚É–ß‚·
+						//ãƒœãƒ¼ãƒ«ã®ã‚ã‚Šè¾¼ã‚“ã ä½ç½®é–¢ä¿‚ã‚’å…ƒã«æˆ»ã™
 						ball[j].positionCorrect(ball[i]);
-						//‘¬“xƒxƒNƒgƒ‹‚ğdS•ûŒü‚Æ‚’¼‚È•ûŒü‚É•ª—£‚µAÕ“ËŒã‚Ì‘¬“x‚ğ‹‚ß‚é
+						//é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«ã‚’é‡å¿ƒæ–¹å‘ã¨å‚ç›´ãªæ–¹å‘ã«åˆ†é›¢ã—ã€è¡çªå¾Œã®é€Ÿåº¦ã‚’æ±‚ã‚ã‚‹
 						ball[j].collisionCalculate(ball[i]);
 					}
 					else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color !== 3){
 						if(!i && ball[0].size < ball[j].size + 1){
 							break;
 						}
-						//ƒ{[ƒ‹“¯m‚ğŒ‹‡‚·‚é
+						//ãƒœãƒ¼ãƒ«åŒå£«ã‚’çµåˆã™ã‚‹
 						ball[j].absorptionCalculate(ball[i]);
 						
 					}
@@ -194,31 +194,31 @@ window.onload = function(){
 
 
 
-		//‰æ–Ê‚Ì•`‰æ‚ğs‚¤-------------------------------------------------------------------------------------------------
+		//ç”»é¢ã®æç”»ã‚’è¡Œã†-------------------------------------------------------------------------------------------------
 
 
-		//ƒXƒNƒŠ[ƒ“ƒNƒŠƒA
+		//ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚¯ãƒªã‚¢
 		ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
 
-		//”wŒi‚Ì•`‰æ-------------------------------------------------
+		//èƒŒæ™¯ã®æç”»-------------------------------------------------
 
-		//’n–Ê‚Ì•`‰æ
+		//åœ°é¢ã®æç”»
 		ctx.beginPath();
 		ctx.fillStyle = WALL_COLOR;
 		ctx.fillRect(0, 243, screenCanvas.width, 10);
 
-		//“®‘Ì‚Ì•`‰æ-------------------------------------------------
+		//å‹•ä½“ã®æç”»-------------------------------------------------
 
-		//©‹@‚Ì•`‰æ
+		//è‡ªæ©Ÿã®æç”»
 		ctx.beginPath();
 		ctx.arc(ball[0].position.x, ball[0].position.y, ball[0].size, 0, Math.PI * 2, true);
 		ctx.closePath();
 		ctx.fillStyle = PLAYER_COLOR;
 		ctx.fill();
 
-		//‘¼‹@‚Ì•`‰æ
+		//ä»–æ©Ÿã®æç”»
 
-		//ÂŠÛ‚Ì•`‰æ
+		//é’ä¸¸ã®æç”»
 		ctx.beginPath();
 		for(i = 1; i < BALL_MAX_COUNT; i++){
 			if(ball[i].alive && !ball[i].absorption && ball[i].color ===1){
@@ -229,7 +229,7 @@ window.onload = function(){
 		ctx.fillStyle = BALL_COLOR_01;
 		ctx.fill();
 
-		//ÔŠÛ‚Ì•`‰æ
+		//èµ¤ä¸¸ã®æç”»
 		ctx.beginPath();
 		for(i = 1; i < BALL_MAX_COUNT; i++){
 			if(ball[i].alive && !ball[i].absorption && ball[i].color === 2){
@@ -240,7 +240,7 @@ window.onload = function(){
 		ctx.fillStyle = BALL_COLOR_02;
 		ctx.fill();
 
-		//“_ü‚Ì•`‰æ
+		//ç‚¹ç·šã®æç”»
 		if(prepF){
 			ball[0].strokeDottedLine(mouse)
 			
@@ -249,7 +249,7 @@ window.onload = function(){
 
 
 
-		//ƒtƒ‰ƒO‚É‚æ‚èÄ‹NŒÄ‚Ño‚µ-----------------------------------------------------------------------------------------
+		//ãƒ•ãƒ©ã‚°ã«ã‚ˆã‚Šå†èµ·å‘¼ã³å‡ºã—-----------------------------------------------------------------------------------------
 		if(run){setTimeout(arguments.callee, fps);}
 	})();
 };
@@ -260,16 +260,16 @@ window.onload = function(){
 // -event--------------------------------------------------------------------------------------------------------------------------
 
 var mouseMove = function(event){
-	//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ÌÀ•W‚ÌXV
+	//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®åº§æ¨™ã®æ›´æ–°
 	mouse.x = event.clientX - screenCanvas.offsetLeft;
 	mouse.y = event.clientY - screenCanvas.offsetTop;
 }
 
 var keyDown = function(event){
-	//ƒL[ƒR[ƒh‚ğæ“¾
+	//ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ã‚’å–å¾—
 	ck = event.keyCode;
 
-	//EscƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚½‚çƒtƒ‰ƒO‚ğ~‚ë‚·
+	//Escã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãŸã‚‰ãƒ•ãƒ©ã‚°ã‚’é™ã‚ã™
 	if(ck === 27)run = false;
 }
 

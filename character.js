@@ -1,8 +1,8 @@
-//•¨‘Ì‚ğ’è‹`‚·‚éŠÖ”---------------------------------------------------------------------------------------------------------------
+ï»¿//ç‰©ä½“ã‚’å®šç¾©ã™ã‚‹é–¢æ•°---------------------------------------------------------------------------------------------------------------
 
 
 var Character = function(){
-	//”X‚Ìİ’è
+	//è«¸ã€…ã®è¨­å®š
 	this.position = new Point();
 	this.velocity = new Point();
 	this.alive = false;
@@ -13,7 +13,7 @@ var Character = function(){
 }
 
 Character.prototype.set = function(p, s, v, c){
-	//À•WA‘¬“xAƒTƒCƒY‚ğƒZƒbƒg
+	//åº§æ¨™ã€é€Ÿåº¦ã€ã‚µã‚¤ã‚ºã‚’ã‚»ãƒƒãƒˆ
 	this.position.x = p.x;
 	this.position.y = p.y;
 
@@ -23,78 +23,84 @@ Character.prototype.set = function(p, s, v, c){
 	this.color = c;
 	this.size = s;
 	this.weight = s * s * s;
-	//¶‘¶ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	//ç”Ÿå­˜ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	this.alive = true;
 };
 
 
 
-//ƒNƒŠƒbƒN‚É“®ì‚·‚éŠÖ”
+//ã‚¯ãƒªãƒƒã‚¯æ™‚ã«å‹•ä½œã™ã‚‹é–¢æ•°
 Character.prototype.strokeDottedLine = function(p){
 	var d = this.position.distance(p).length();
-	var rad = Math.atan2( (p.y - this.position.y), (p.x - this.position.x) )
+	var rad = Math.atan2( (this.position.y - p.y), (this.position.x - p.x) )
 	var space = 10;
-	var dotted = Math.round( (d - this.size) / space / 2 );
+	var dotted = Math.floor( (d - this.size + 8) / space );
 	
 	var p1x, p1y, p2x, p2y;
 
 	ctx.beginPath();
-console.log(dotted)
-	for(var i = 0; i < dotted - 0 ; i++){
 
-		p1x = this.position.x + (this.size + space * 2 * i) * Math.cos(rad);
-		p1y = this.position.y + (this.size + space * 2 * i) * Math.sin(rad);
-		p2x = this.position.x + (this.size + space * (2 * i + 1)) * Math.cos(rad);
-		p2y = this.position.y + (this.size + space * (2 * i + 1)) * Math.sin(rad);
+	ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2, true)
+	for(var i = 1; i < dotted / 2; i++){
+
+		p1x = p.x + (space * 2 * i - 8) * Math.cos(rad);
+		p1y = p.y + (space * 2 * i - 8) * Math.sin(rad);
+		p2x = p.x + (space * (2 * i + 1) - 8) * Math.cos(rad);
+		p2y = p.y + (space * (2 * i + 1) - 8) * Math.sin(rad);
 
 		ctx.moveTo(p1x, p1y);
 		ctx.lineTo(p2x, p2y);
 		ctx.closePath();
 	}
 
+	if(dotted % 2 == 0){
+		ctx.moveTo(p.x + (space * dotted - 8) * Math.cos(rad),  p.y + (space * dotted - 8) * Math.sin(rad))
+		ctx.lineTo(this.x + this.size * Math.cos(rad), this.y + this.size * Math.sin(rad));
+		ctx.closePath();
+	}
 
-	ctx.lineWidth = 3;
-	ctx.lineCap = "round";
 	ctx.strokeStyle = DOTTED_LINE_COLOR;
+	ctx.lineCap = "round";
+	ctx.lineWidth = 4;
 	ctx.stroke();
 };
 
 
-//•¨‘Ì‚Ì“®‚«‚ğ§Œä‚·‚éŠÖ”---------------------------------------------------------------------------------------------------------
+//ç‰©ä½“ã®å‹•ãã‚’åˆ¶å¾¡ã™ã‚‹é–¢æ•°---------------------------------------------------------------------------------------------------------
 
 
-//©—R—‰º
+//è‡ªç”±è½ä¸‹
 Character.prototype.fall = function(){
 	this.velocity.y -= 0.3;
 };
 
 
-//‘¬“x‚ğˆÊ’uî•ñ‚É•ÏŠ·
+//é€Ÿåº¦ã‚’ä½ç½®æƒ…å ±ã«å¤‰æ›
 Character.prototype.move = function(){
-	//‘¬“x‚ÌãŒÀ‚ğİ’è
+	//é€Ÿåº¦ã®ä¸Šé™ã‚’è¨­å®š
 	if(this.velocity.x >=  10) this.velocity.x =  10
 	if(this.velocity.x <= -10) this.velocity.x = -10
 
-	//‘¬“x‚ğˆÊ’uî•ñ‚É•ÏŠ·
+	//é€Ÿåº¦ã‚’ä½ç½®æƒ…å ±ã«å¤‰æ›
 	this.position.x += this.velocity.x;
 	this.position.y -= this.velocity.y;
 
-	//ˆÊ’uî•ñ‚ÌãŒÀ‚ğİ’è
+	//ä½ç½®æƒ…å ±ã®ä¸Šé™ã‚’è¨­å®š
 	if(this.position.y >= 243 - this.size) this.position.y = 243 - this.size;
 	if(this.position.x <= this.size ) this.position.x = this.size;
 	if(this.position.x >= 256 - this.size) this.position.x = 256 - this.size;
 };
 
 
-//•¨‘ÌŠÔ‚ÌÕ“Ë‚É‚¨‚¢‚Ä‚ß‚è‚ñ‚¾•ª‚Ì•â³‚ğs‚¤
+//ç‰©ä½“é–“ã®è¡çªã«ãŠã„ã¦ã‚ã‚Šè¾¼ã‚“ã åˆ†ã®è£œæ­£ã‚’è¡Œã†
 Character.prototype.positionCorrect = function(p){
-	//•¨‘Ì“ñ“_ŠÔ‚Ì·‚ğ•\‚·ƒxƒNƒgƒ‹A‹——£A‚ß‚è‚ñ‚¾’·‚³‚ğ‚ğ‹‚ß‚é
+	//ç‰©ä½“äºŒç‚¹é–“ã®å·®ã‚’è¡¨ã™ãƒ™ã‚¯ãƒˆãƒ«ã€è·é›¢ã€ã‚ã‚Šè¾¼ã‚“ã é•·ã•ã‚’ã‚’æ±‚ã‚ã‚‹
 	var vx = p.position.x - this.position.x;
 	var vy = p.position.y - this.position.y;
 	var len = Math.sqrt(vx * vx + vy * vy);
 	var excess = (this.size + p.size) - len;
 
-	//ƒxƒNƒgƒ‹‚Ì³‹K‰»‚ğs‚¤A’·‚³‚ª0ˆÈ‰º‚Ìê‡‚ÍƒGƒ‰[‚ğ‘Å‚¿o‚µ‚ÄƒQ[ƒ€‚ğ~‚ß‚é
+	//ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–ã‚’è¡Œã†ã€é•·ã•ãŒ0ä»¥ä¸‹ã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼ã‚’æ‰“ã¡å‡ºã—ã¦ã‚²ãƒ¼ãƒ ã‚’æ­¢ã‚ã‚‹
 	if(len > 0){
 		len = 1 / len;
 		vx *= len;
@@ -102,7 +108,7 @@ Character.prototype.positionCorrect = function(p){
 	}
 	else console.log("Character.positionCorrection ERROR");
 
-	//‚ß‚è‚ñ‚¾•ª‚ğ‰Ÿ‚µo‚·‚æ‚¤‚É•â³‚·‚é
+	//ã‚ã‚Šè¾¼ã‚“ã åˆ†ã‚’æŠ¼ã—å‡ºã™ã‚ˆã†ã«è£œæ­£ã™ã‚‹
 	excess /= this.size + p.size;
 	p.position.x += vx * excess * this.size;
 	p.position.y += vy * excess * this.size;
@@ -111,9 +117,9 @@ Character.prototype.positionCorrect = function(p){
 };
 
 
-//•¨‘ÌŠÔ‚ÌÕ“ËŒã‚Ì‘¬“x‚ğ‚»‚ê‚¼‚ê‹‚ß‚é
+//ç‰©ä½“é–“ã®è¡çªå¾Œã®é€Ÿåº¦ã‚’ãã‚Œãã‚Œæ±‚ã‚ã‚‹
 Character.prototype.collisionCalculate = function(p){
-	//‚»‚ê‚¼‚ê‚Ì‘¬“x‚ğdS•ûŒü(mx,my)‚ÆÚí•ûŒü(rx,ry)‚É•ª‰ğ‚·‚é
+	//ãã‚Œãã‚Œã®é€Ÿåº¦ã‚’é‡å¿ƒæ–¹å‘(mx,my)ã¨æ¥æˆ¦æ–¹å‘(rx,ry)ã«åˆ†è§£ã™ã‚‹
 	var t;
 	var vx =  (p.position.x - this.position.x);
 	var vy = -(p.position.y - this.position.y);
@@ -134,33 +140,33 @@ Character.prototype.collisionCalculate = function(p){
 	var bmx = p.velocity.x - vy * t;
 	var bmy = p.velocity.y + vx * t;
 
-	//”½”­ŒW”‚Ìİ’è‚Æd‚³‚ÌŒˆ’èAÕ“ËŒã‚ÌdS•ûŒü‚Ì’l‚ğ‹‚ß‚é
+	//åç™ºä¿‚æ•°ã®è¨­å®šã¨é‡ã•ã®æ±ºå®šã€è¡çªå¾Œã®é‡å¿ƒæ–¹å‘ã®å€¤ã‚’æ±‚ã‚ã‚‹
 	var e = 0.9;
 	var adx = (this.weight * amx + p.weight * bmx + bmx * e * p.weight - amx * e * p.weight) / (this.weight + p.weight);
 	var bdx = -e * (bmx - amx) + adx;
 	var ady = (this.weight * amx + p.weight * bmy + bmy * e * p.weight - amy * e * p.weight) / (this.weight + p.weight);
 	var bdy = -e * (bmy - amy) + ady;
 
-	//Úí•ûŒü‘¬“x‚ÆdS•ûŒü‘¬“x‚ğ‘«‚µ‚ÄÕ“ËŒã‚Ì‘¬“x‚ğ‹‚ß‚é
+	//æ¥æˆ¦æ–¹å‘é€Ÿåº¦ã¨é‡å¿ƒæ–¹å‘é€Ÿåº¦ã‚’è¶³ã—ã¦è¡çªå¾Œã®é€Ÿåº¦ã‚’æ±‚ã‚ã‚‹
 	this.velocity.x = adx + arx;
 	this.velocity.y = ady + ary;
 	p.velocity.x = bdx + brx;
 	p.velocity.y = bdy + bry;
 };
 
-//“ñ‘Ì‚Ì•¨‘Ì‚ğŒ‹‡‚·‚é
+//äºŒä½“ã®ç‰©ä½“ã‚’çµåˆã™ã‚‹
 Character.prototype.absorptionCalculate = function(p){
-	//“ñ‘ÌŠÔ‚ÌdS‚ğ‹‚ß‚é
+	//äºŒä½“é–“ã®é‡å¿ƒã‚’æ±‚ã‚ã‚‹
 	var cp = new Point();
 	cp.x = (this.weight * this.position.x + p.weight * p.position.x) / (this.weight + p.weight);
 	cp.y = (this.weight * this.position.y + p.weight * p.position.y) / (this.weight + p.weight);
 
-	//‹zûŒã‚Ì‘¬“x‚ğ‹‚ß‚é
+	//å¸åå¾Œã®é€Ÿåº¦ã‚’æ±‚ã‚ã‚‹
 	var cv = new Point();
 	cv.x = (this.weight * this.velocity.x + p.weight * p.velocity.x) / (this.weight + p.weight);
 	cv.y = (this.weight * this.velocity.y + p.weight * p.velocity.y) / (this.weight + p.weight);
 
-	//ŒÃ‚¢‚Ù‚¤‚Ìƒ{[ƒ‹‚Ìabsorptionƒtƒ‰ƒO‚ğ^‚É‚µAˆÊ’uî•ñ‚Æ‘¬“xAƒTƒCƒYA¿—Ê‚ğXV‚·‚é
+	//å¤ã„ã»ã†ã®ãƒœãƒ¼ãƒ«ã®absorptionãƒ•ãƒ©ã‚°ã‚’çœŸã«ã—ã€ä½ç½®æƒ…å ±ã¨é€Ÿåº¦ã€ã‚µã‚¤ã‚ºã€è³ªé‡ã‚’æ›´æ–°ã™ã‚‹
 	this.absorption = true;
 	p.position.x = cp.x;
 	p.position.y = cp.y;
