@@ -3,6 +3,8 @@
 	this.y = 0;
 };
 
+console.log("debug");
+
 Point.prototype.distance = function(p){
 	var q = new Point();
 	q.x = p.x - this.x;
