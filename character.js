@@ -31,6 +31,7 @@ Character.prototype.set = function(p, s, v, c){
 
 //クリック時に動作する関数
 Character.prototype.strokeDottedLine = function(p){
+	var space = 10;
 	var dotted = Math.floor( (length - this.size + 8) / space );
 	
 	var p1x, p1y, p2x, p2y;
