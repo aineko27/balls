@@ -22,7 +22,7 @@ Character.prototype.set = function(p, s, v, c){
 
 	this.color = c;
 	this.size = s;
-	this.weight = s * s * s;
+	this.weight = s * s;
 	//生存フラグを立てる
 	this.alive = true;
 };
@@ -173,6 +173,6 @@ Character.prototype.absorptionCalculate = function(p){
 	p.velocity.x = cv.x;
 	p.velocity.y = cv.y;
 	p.weight = p.weight + this.weight;
-	p.size = Math.cbrt(p.weight);
+	p.size = Math.sqrt(p.weight);
 
 }

@@ -250,7 +250,8 @@ window.onload = function(){
 		}
 
 		//HTMLを更新
-		info.innerHTML = "PLAYER SIZE: " + Math.floor(ball[0].weight) + "      小数点表示で " + ball[0].size;
+		info.innerHTML = "PLAYER WEIGHT: " + ball[0].weight + 
+		"<br>PLAYER SIZE&emsp;&nbsp;&nbsp;: " + Math.floor(ball[0].size) + "   小数点表示で " + ball[0].size;
 
 
 
