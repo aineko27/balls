@@ -55,7 +55,7 @@ Character.prototype.strokeDottedLine = function(p){
 
 	if(dotted % 2 == 0){
 		ctx.moveTo(p.x + (space * dotted - 8) * Math.cos(rad),  p.y + (space * dotted - 8) * Math.sin(rad))
-		ctx.lineTo(this.x + this.size * Math.cos(rad), this.y + this.size * Math.sin(rad));
+		ctx.lineTo(this.position.x - this.size * Math.cos(rad), this.position.y - this.size * Math.sin(rad));
 		ctx.closePath();
 	}
 
@@ -172,7 +172,7 @@ Character.prototype.absorptionCalculate = function(p){
 	p.position.y = cp.y;
 	p.velocity.x = cv.x;
 	p.velocity.y = cv.y;
-	p.size = Math.cbrt(p.weight + this.weight);
-	p.weight = p.size * p.size * p.size;
+	p.weight = p.weight + this.weight;
+	p.size = Math.cbrt(p.weight);
 
 }

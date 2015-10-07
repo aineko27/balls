@@ -48,10 +48,13 @@ window.onload = function(){
 
 
 	//イベントの登録
-	screenCanvas.addEventListener("mousemove", mouseMove, true);
-	screenCanvas.addEventListener("mousedown", mouseDown, true);
-	window.addEventListener("mouseup", mouseUp, true);
-	window.addEventListener("keydown", keyDown, true);
+	screenCanvas.addEventListener("mousemove", mouseMove, false);
+	screenCanvas.addEventListener("mousedown", mouseDown, false);
+	window.addEventListener("mouseup", mouseUp, false);
+	window.addEventListener("keydown", keyDown, false);
+
+	//エレメント登録
+	info = document.getElementById("info");
 
 
 	//球初期化
@@ -116,6 +119,7 @@ window.onload = function(){
 
 		//球発射
 		if(fireF){
+			console.log(1);
 			prepF = false;
 			fireF = false;
 		}
@@ -242,10 +246,11 @@ window.onload = function(){
 
 		//点線の描画
 		if(prepF){
-			ball[0].strokeDottedLine(mouse)
-			
+			ball[0].strokeDottedLine(mouse);
 		}
 
+		//HTMLを更新
+		info.innerHTML = "PLAYER SIZE: " + Math.floor(ball[0].weight) + "      小数点表示で " + ball[0].size;
 
 
 
@@ -275,6 +280,7 @@ var keyDown = function(event){
 
 var mouseDown = function(event){
 	prepF = true;
+console.log(fireF)
 }
 
 var mouseUp = function(event){
