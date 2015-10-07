@@ -5,12 +5,14 @@ var run = true;
 var fps = 1000 / 30;
 var mouse = new Point();
 var ctx;
-var counter,firedCounter;
+var counter;
 var creatF = false;
 var prepF = false;
 var fireF = false;
 var ck;
-
+var vector;
+var length;
+var rad;
 
 
 
@@ -117,82 +119,86 @@ window.onload = function(){
 
 		//球発射
 		if(fireF){
-		    console.log(1);
-		    for (i = 1; i < BALL_MAX_COUNT; i++) {
-		        if (ball[i].alive && ball[i].absorption) {
-		            ball[i].absorption = false;
-
-		            fireCount++;
-		            console.log(fireCounter);
-		            break;
-		        }
-
-		    }
-
+			console.log(1);
 			prepF = false;
 			fireF = false;
 		}
 
-		//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(angle)
+		//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(rad)をそれぞれ計算する
+		vector = new Point();
+		vector.x = mouse.x - this.position.x;
+		vector.y = mouse.y - this.position.y;
+		length = 
+
 
 
 		//物体の動きを制御-------------------------------------------------------------------------------------------------
 
-		
-		for (i = 0; i < BALL_MAX_COUNT; i++) {
-		    if (ball[i].alive && !ball[i].absorption) {
-		        //自由落下
-		        ball[i].fall();
-
-		        //速度を位置情報に変換
-		        ball[i].move();
-
-		        //地面との衝突
-		        if (ball[i].position.y >= 243 - ball[i].size) {
-		            //反発係数の設定とめり込んだ値を計算
-		            var e = 0.6;
-		            var excess = ball[i].position.y - (243 - ball[i].size);
-
-		            ball[i].velocity.y += Math.sqrt(2 * 0.3 * e * excess) + 0.52;
-		            ball[i].position.y = 243 - ball[i].size;
-		            ball[i].velocity.y *= -e;
-		        }
-
-		        //壁との衝突				
-		        if (ball[i].position.x <= ball[i].size) {
-		            ball[i].position.x = ball[i].size;
-		            ball[i].velocity.x *= -0.9;
-		        }
-		        else if (ball[i].position.x >= 256 - ball[i].size) {
-		            ball[i].position.x = 256 - ball[i].size;
-		            ball[i].velocity.x *= -0.9;
-		        }
-
-		    }
-
-		    //ボール同士の衝突
-		    for (j = i + 1; j < BALL_MAX_COUNT; j++) {
-		        if (ball[i].alive && !ball[i].absorption && ball[j].alive && !ball[j].absorption) {
-		            p = ball[j].position.distance(ball[i].position);
-		            if ((p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color === 3 || !i && ball[0].size < ball[j].size + 1)) {
-		                //ボールのめり込んだ位置関係を元に戻す
-		                ball[j].positionCorrect(ball[i]);
-		                //速度ベクトルを重心方向と垂直な方向に分離し、衝突後の速度を求める
-		                ball[j].collisionCalculate(ball[i]);
-		            }
-		            else if (p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color !== 3) {
-		                if (!i && ball[0].size < ball[j].size + 1) {
-		                    break;
-		                }
-		                //ボール同士を結合する
-		                ball[j].absorptionCalculate(ball[i]);
-
-		            }
-		        }
-		    }
+		//自由落下
+		for(i = 0; i < BALL_MAX_COUNT; i++){
+			if(ball[i].alive && !ball[i].absorption){
+				ball[i].fall();
+			}
 		}
 
+		//速度を位置情報に変換
+		for(i = 0; i < BALL_MAX_COUNT; i++){
+			if(ball[i].alive && !ball[i].absorption){
+				ball[i].move();
+			}
+		}
 
+		//地面との衝突
+		for(i = 0; i < BALL_MAX_COUNT; i++){
+			if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].position.y >= 243 - ball[i].size){
+					//反発係数の設定とめり込んだ値を計算
+					var e = 0.6;
+					var excess = ball[i].position.y - (243 - ball[i].size);
+
+					ball[i].velocity.y += Math.sqrt(2 * 0.3 * e * excess) + 0.52 ;
+					ball[i].position.y = 243 - ball[i].size;
+					ball[i].velocity.y *= -e;
+				}
+			}
+		}
+
+		//壁との衝突
+		for(i = 0; i < BALL_MAX_COUNT; i++){
+			if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].position.x <= ball[i].size){
+					ball[i].position.x = ball[i].size;
+					ball[i].velocity.x *= -0.9;
+				}
+				else if(ball[i].position.x >= 256 - ball[i].size){
+					ball[i].position.x = 256 - ball[i].size;
+					ball[i].velocity.x *= -0.9;
+				}
+			}
+		}
+
+		//ボール同士の衝突
+		for(i = 0; i < BALL_MAX_COUNT; i++){
+			for(j = i + 1; j < BALL_MAX_COUNT; j++){
+				if(ball[i].alive && !ball[i].absorption && ball[j].alive && !ball[j].absorption){
+					p = ball[j].position.distance(ball[i].position);
+					if( (p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color === 3 || !i && ball[0].size < ball[j].size + 1) ){
+						//ボールのめり込んだ位置関係を元に戻す
+						ball[j].positionCorrect(ball[i]);
+						//速度ベクトルを重心方向と垂直な方向に分離し、衝突後の速度を求める
+						ball[j].collisionCalculate(ball[i]);
+					}
+					else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color !== 3){
+						if(!i && ball[0].size < ball[j].size + 1){
+							break;
+						}
+						//ボール同士を結合する
+						ball[j].absorptionCalculate(ball[i]);
+						
+					}
+				}
+			}
+		}
 
 
 
