@@ -126,9 +126,10 @@ window.onload = function(){
 
 		//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(rad)をそれぞれ計算する
 		vector = new Point();
-		vector.x = mouse.x - this.position.x;
-		vector.y = mouse.y - this.position.y;
-		length = 
+		vector.x = mouse.x - ball[0].position.x;
+		vector.y = mouse.y - ball[0].position.y;
+		length = ball[0].position.distance(mouse).length();
+		rad = Math.atan2(vector.x, vector.y);
 
 
 
