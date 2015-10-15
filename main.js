@@ -155,7 +155,7 @@ window.onload = function(){
 						p.y = mouse.y;
 						v.x = 0;
 						v.y = 0;
-						var s = Math.floor(Math.random() * 4) + 6;
+						var s = 10//Math.floor(Math.random() * 4) + 6;
 						var c = Math.floor(Math.random() * 2) + 1;
 						ball[i].set(p, s, v, c);
 						creatF = false;
@@ -386,12 +386,12 @@ object[2].set(300, 450,  200, 20, 0, 1);
 		//ctx.arc(m.x, m.y, 
  
 		//点線の描画
-		if(lineLF){
+		if(lineLF && (ball[0].size + 19 < length)){
  		DOTTED_LINE_COLOR = BALL_COLOR_01;
 			ball[0].strokeDottedLine();
 		}
 
-		if(lineRF){
+		if(lineRF && (ball[0].size + 19 < length)){
  		DOTTED_LINE_COLOR = BALL_COLOR_02;
 			ball[0].strokeDottedLine();
 		}
