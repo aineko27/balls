@@ -2,7 +2,7 @@
 
 var screenCanvas;
 var run = true;
-var fps = 1000 / 30;
+var fps = 1000 / 10;
 var mouse = new Point();
 var ctx;
 var counter;
@@ -124,12 +124,7 @@ window.onload = function(){
 			fireF = false;
 		}
 
-		//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(rad)をそれぞれ計算する
-		vector = new Point();
-		vector.x = mouse.x - ball[0].position.x;
-		vector.y = mouse.y - ball[0].position.y;
-		length = ball[0].position.distance(mouse).length();
-		rad = Math.atan2(vector.x, vector.y);
+
 
 
 
@@ -201,7 +196,12 @@ window.onload = function(){
 			}
 		}
 
-
+		//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(rad)をそれぞれ計算する
+		vector = new Point();
+		vector.x = mouse.x - ball[0].position.x;
+		vector.y = mouse.y - ball[0].position.y;
+		length = ball[0].position.distance(mouse).length();
+		rad = Math.atan2(-vector.y, -vector.x);
 
 
 
