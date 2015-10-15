@@ -1,4 +1,4 @@
-﻿//物体を定義する関数---------------------------------------------------------------------------------------------------------------
+﻿//動体を定義する関数---------------------------------------------------------------------------------------------------------------
 
 
 var Character = function(){
@@ -30,21 +30,21 @@ Character.prototype.set = function(p, s, v, c){
 
 
 //クリック時に動作する関数
-Character.prototype.strokeDottedLine = function(p){
+//マウスを押した時に動作する関数
+Character.prototype.strokeDottedLine = function(){
 	var space = 10;
-	var dotted = Math.floor( (length - this.size + 8) / space );
+	var dotted = Math.floor( (length - this.size + 11) / space );
 	
 	var p1x, p1y, p2x, p2y;
 
 	ctx.beginPath();
 
-	ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2, true)
-	for(var i = 1; i < dotted / 2; i++){
+	for(var i = 1; i < dotted / 2 - 1; i++){
 
-		p1x = p.x + (space * 2 * i - 8) * Math.cos(rad);
-		p1y = p.y + (space * 2 * i - 8) * Math.sin(rad);
-		p2x = p.x + (space * (2 * i + 1) - 8) * Math.cos(rad);
-		p2y = p.y + (space * (2 * i + 1) - 8) * Math.sin(rad);
+		p1x = this.position.x + (length - 8 - space * 2 * i) * Math.cos(radian);
+		p1y = this.position.y + (length - 8 - space * 2 * i) * -Math.sin(radian);
+		p2x = this.position.x + (length - 8 - space * (2 * i + 1)) * Math.cos(radian);
+		p2y = this.position.y + (length - 8 - space * (2 * i + 1)) * -Math.sin(radian);
 
 		ctx.moveTo(p1x, p1y);
 		ctx.lineTo(p2x, p2y);
@@ -52,8 +52,8 @@ Character.prototype.strokeDottedLine = function(p){
 	}
 
 	if(dotted % 2 == 0){
-		ctx.moveTo(p.x + (space * dotted - 8) * Math.cos(rad),  p.y + (space * dotted - 8) * Math.sin(rad))
-		ctx.lineTo(this.position.x - this.size * Math.cos(rad), this.position.y - this.size * Math.sin(rad));
+		ctx.moveTo(this.position.x + (length - 8 - space * (2 * i)) * Math.cos(radian), this.position.y + (length - 8 - space * (2 * i)) * -Math.sin(radian))
+		ctx.lineTo(this.position.x + this.size * Math.cos(radian), this.position.y + this.size * -Math.sin(radian));
 		ctx.closePath();
 	}
 
@@ -63,6 +63,18 @@ Character.prototype.strokeDottedLine = function(p){
 	ctx.stroke();
 };
 
+//マウスを放した時に動作する関数
+Character.prototype.shoot = function(p){
+	this.position.x = p.position.x + (p.size + this.size) * Math.cos(radian);
+	this.position.y = p.position.y - (p.size + this.size) * Math.sin(radian);
+	this.velocity.x = length / 12 * Math.cos(radian);
+	this.velocity.y = length / 12 * Math.sin(radian);
+	this.absorption = false;
+	p.weight -= this.weight;
+console.log(this.velocity.x, this.velocity.y)
+	p.size = Math.sqrt(p.weight);
+}
+			
 
 //物体の動きを制御する関数---------------------------------------------------------------------------------------------------------
 
@@ -76,17 +88,19 @@ Character.prototype.fall = function(){
 //速度を位置情報に変換
 Character.prototype.move = function(){
 	//速度の上限を設定
-	if(this.velocity.x >=  10) this.velocity.x =  10
-	if(this.velocity.x <= -10) this.velocity.x = -10
+	if(this.velocity.x >=  15) this.velocity.x =  15;
+	if(this.velocity.x <= -15) this.velocity.x = -15;
+	if(this.velocity.y >=  15) this.velocity.y =  15;
+	if(this.velocity.y <= -15) this.velocity.y = -15;
 
 	//速度を位置情報に変換
 	this.position.x += this.velocity.x;
 	this.position.y -= this.velocity.y;
 
 	//位置情報の上限を設定
-	if(this.position.y >= 243 - this.size) this.position.y = 243 - this.size;
+	if(this.position.y >= screenCanvas.height - 15 - this.size) this.position.y = screenCanvas.height - 15 - this.size;
 	if(this.position.x <= this.size ) this.position.x = this.size;
-	if(this.position.x >= 256 - this.size) this.position.x = 256 - this.size;
+	if(this.position.x >= screenCanvas.width - this.size) this.position.x = screenCanvas.width - this.size;
 };
 
 
@@ -173,4 +187,4 @@ Character.prototype.absorptionCalculate = function(p){
 	p.weight = p.weight + this.weight;
 	p.size = Math.sqrt(p.weight);
 
-}
+};

@@ -23,3 +23,14 @@ Point.prototype.normalize = function(){
 	}
 	else console.log("Point.normalize ERROR")
 };
+
+function Area(){
+	this.tlx = 0;
+	this.tly = 0;
+	this.trx = 0;
+	this.try = 0;
+	this.blx = 0;
+	this.bly = 0;
+	this.brx = 0;
+	this.bry = 0;
+};
