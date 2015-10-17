@@ -9,7 +9,6 @@ var Character = function(){
 	this.color = 0;
 	this.size = 0;
 	this.weight = 0;
-	this.absorption = false;
 }
 
 Character.prototype.set = function(p, s, v, c){
@@ -33,7 +32,7 @@ Character.prototype.set = function(p, s, v, c){
 //マウスを押した時に動作する関数
 Character.prototype.strokeDottedLine = function(){
 	var space = 10;
-	var dotted = Math.floor( (length - this.size + 11) / space );
+	var dotted = Math.floor( (length + 0 + 11) / space );
 	
 	var p1x, p1y, p2x, p2y;
 
@@ -41,10 +40,10 @@ Character.prototype.strokeDottedLine = function(){
 
 	for(var i = 1; i < dotted / 2 - 1; i++){
 
-		p1x = this.position.x + (length - 8 - space * 2 * i) * Math.cos(radian);
-		p1y = this.position.y + (length - 8 - space * 2 * i) * -Math.sin(radian);
-		p2x = this.position.x + (length - 8 - space * (2 * i + 1)) * Math.cos(radian);
-		p2y = this.position.y + (length - 8 - space * (2 * i + 1)) * -Math.sin(radian);
+		p1x = this.position.x + (length - 8 - space * 2 * i + this.size) * Math.cos(radian);
+		p1y = this.position.y + (length - 8 - space * 2 * i + this.size) * -Math.sin(radian);
+		p2x = this.position.x + (length - 8 - space * (2 * i + 1) + this.size) * Math.cos(radian);
+		p2y = this.position.y + (length - 8 - space * (2 * i + 1) + this.size ) * -Math.sin(radian);
 
 		ctx.moveTo(p1x, p1y);
 		ctx.lineTo(p2x, p2y);
@@ -52,7 +51,7 @@ Character.prototype.strokeDottedLine = function(){
 	}
 
 	if(dotted % 2 == 0){
-		ctx.moveTo(this.position.x + (length - 8 - space * (2 * i)) * Math.cos(radian), this.position.y + (length - 8 - space * (2 * i)) * -Math.sin(radian))
+		ctx.moveTo(this.position.x + (length - 8 - space * (2 * i) + this.size) * Math.cos(radian), this.position.y + (length - 8 - space * (2 * i) + this.size) * -Math.sin(radian))
 		ctx.lineTo(this.position.x + this.size * Math.cos(radian), this.position.y + this.size * -Math.sin(radian));
 		ctx.closePath();
 	}
@@ -65,16 +64,17 @@ Character.prototype.strokeDottedLine = function(){
 
 //マウスを放した時に動作する関数
 Character.prototype.shoot = function(p){
-	this.position.x = p.position.x + (p.size + this.size) * Math.cos(radian);
-	this.position.y = p.position.y - (p.size + this.size) * Math.sin(radian);
-	this.velocity.x = length / 12 * Math.cos(radian);
-	this.velocity.y = length / 12 * Math.sin(radian);
-	this.absorption = false;
+	this.size = 10;
+	this.weight = 100;
+	this.velocity.x = length / 15 * Math.cos(radian);
+	this.velocity.y = length / 15 * Math.sin(radian);
+	this.position.x = p.position.x + (p.size + this.size) * Math.cos(radian) - this.velocity.x;
+	this.position.y = p.position.y - (p.size + this.size) * Math.sin(radian) + this.velocity.y;
+	this.alive = true;
 	p.weight -= this.weight;
-console.log(this.velocity.x, this.velocity.y)
 	p.size = Math.sqrt(p.weight);
 }
-			
+;
 
 //物体の動きを制御する関数---------------------------------------------------------------------------------------------------------
 
@@ -88,10 +88,11 @@ Character.prototype.fall = function(){
 //速度を位置情報に変換
 Character.prototype.move = function(){
 	//速度の上限を設定
-	if(this.velocity.x >=  15) this.velocity.x =  15;
-	if(this.velocity.x <= -15) this.velocity.x = -15;
-	if(this.velocity.y >=  15) this.velocity.y =  15;
-	if(this.velocity.y <= -15) this.velocity.y = -15;
+	var maxvel = 30;
+	if(this.velocity.x >=  maxvel) this.velocity.x =  maxvel;
+	if(this.velocity.x <= -maxvel) this.velocity.x = -maxvel;
+	if(this.velocity.y >=  maxvel) this.velocity.y =  maxvel;
+	if(this.velocity.y <= -maxvel) this.velocity.y = -maxvel;
 
 	//速度を位置情報に変換
 	this.position.x += this.velocity.x;
@@ -178,8 +179,8 @@ Character.prototype.absorptionCalculate = function(p){
 	cv.x = (this.weight * this.velocity.x + p.weight * p.velocity.x) / (this.weight + p.weight);
 	cv.y = (this.weight * this.velocity.y + p.weight * p.velocity.y) / (this.weight + p.weight);
 
-	//古いほうのボールのabsorptionフラグを真にし、位置情報と速度、サイズ、質量を更新する
-	this.absorption = true;
+	//古いほうのボールのaliveフラグを偽にし、位置情報と速度、サイズ、質量を更新する
+	this.alive = false;
 	p.position.x = cp.x;
 	p.position.y = cp.y;
 	p.velocity.x = cv.x;

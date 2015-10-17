@@ -16,6 +16,7 @@ var lineRF = false;
 var kc;
 var vector;
 var length;
+var lenAlt;
 var radian;
 var keyCode = new Array();
 var e = 0.6;
@@ -93,7 +94,7 @@ window.onload = function(){
 	p.y = screenCanvas.height / 2 -15;
 	v.x = 0;
 	v.y = 0;
-	ball[0].set(p, 15, v);
+	ball[0].set(p, 15, v, 0);
 
 	//レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 
@@ -165,9 +166,10 @@ window.onload = function(){
 			}
 
 //test
-object[0].set( 60, 458, 100, 10, Math.PI / 15, 1);
-object[1].set(100, 228,  80, 80, Math.PI / 8, 1);
-object[2].set(300, 450,  200, 20, 0, 1);
+object[0].set( 60, 458, 100,  10, Math.PI / 15, 0);
+object[1].set(100, 228,  80,  80, Math.PI / 8, 1);
+object[2].set(300, 450, 190,  20, 0, 2);
+object[3].set(360,  40,  30, 300, 0.1, 3);
 
 
 			//点線フラグ
@@ -177,7 +179,8 @@ object[2].set(300, 450,  200, 20, 0, 1);
 			//青球発射
 			if(fireLF){
 				for(i = 1; i < BALL_MAX_COUNT; i++){
-					if(ball[i].alive && ball[i].absorption && ball[i].color === 1 && ball[0].size > 10){
+					if(!ball[i].alive && ball[0].weight > 225){
+						ball[i].color = 1;
 						ball[i].shoot(ball[0]);
 						break;
 					}
@@ -190,7 +193,8 @@ object[2].set(300, 450,  200, 20, 0, 1);
 			//赤球発射
 			if(fireRF){
 				for(i = 1; i < BALL_MAX_COUNT; i++){
-					if(ball[i].alive && ball[i].absorption && ball[i].color === 2 && ball[0].size > 10){
+					if(!ball[i].alive && ball[0].weight > 225){
+						ball[i].color = 2;
 						ball[i].shoot(ball[0]);
 						break;
 					}
@@ -205,21 +209,21 @@ object[2].set(300, 450,  200, 20, 0, 1);
 
 			//自由落下
 			for(i = 0; i < BALL_MAX_COUNT; i++){
-				if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].alive){
 					ball[i].fall();
 				}
 			}
 
 			//速度を位置情報に変換
 			for(i = 0; i < BALL_MAX_COUNT; i++){
-				if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].alive){
 					ball[i].move();
 				}
 			}
 
 			//地面との衝突
 			for(i = 0; i < BALL_MAX_COUNT; i++){
-				if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].alive){
 					if(ball[i].position.y >= screenCanvas.height - 15 - ball[i].size){
 						//反発係数の設定とめり込んだ値を計算
 						var excess = ball[i].position.y - (screenCanvas.height - 15 - ball[i].size);
@@ -233,7 +237,7 @@ object[2].set(300, 450,  200, 20, 0, 1);
 
 			//壁との衝突
 			for(i = 0; i < BALL_MAX_COUNT; i++){
-				if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].alive){
 					if(ball[i].position.x <= ball[i].size){
 						ball[i].position.x = ball[i].size;
 						ball[i].velocity.x *= -0.9;
@@ -247,9 +251,11 @@ object[2].set(300, 450,  200, 20, 0, 1);
 
 			//壁との衝突
 			for(i = 0; i < BALL_MAX_COUNT; i++){
-				if(ball[i].alive && !ball[i].absorption){
+				if(ball[i].alive){
 					for(j = 0; j < OBJECT_MAX_COUNT; j++){
-						object[j].collision(ball[i])
+						if(ball[i].color != object[j].color){
+							object[j].collision(ball[i]);
+						}
 					}
 				}
 			};
@@ -257,15 +263,15 @@ object[2].set(300, 450,  200, 20, 0, 1);
 			//ボール同士の衝突
 			for(i = 0; i < BALL_MAX_COUNT; i++){
 				for(j = i + 1; j < BALL_MAX_COUNT; j++){
-					if(ball[i].alive && !ball[i].absorption && ball[j].alive && !ball[j].absorption){
+					if(ball[i].alive && ball[j].alive){
 						p = ball[j].position.distance(ball[i].position);
-						if( (p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color === 3 || !i && ball[0].size < ball[j].size + 1) ){
+						if( (p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color == 3|| !i && ball[0].size < ball[j].size + 1) ){
 							//ボールのめり込んだ位置関係を元に戻す
 							ball[j].positionCorrect(ball[i]);
 							//速度ベクトルを重心方向と垂直な方向に分離し、衝突後の速度を求める
 							ball[j].collisionCalculate(ball[i]);
 						}
-						else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color !== 3){
+						else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color != 3){
 							if(!i && ball[0].size < ball[j].size + 1){
 								break;
 							}
@@ -279,7 +285,7 @@ object[2].set(300, 450,  200, 20, 0, 1);
 			//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(radian)をそれぞれ計算する
 			vector.x =   mouse.x - ball[0].position.x;
 			vector.y = -(mouse.y - ball[0].position.y);
-			length = ball[0].position.distance(mouse).length();
+			length = ball[0].position.distance(mouse).length() - ball[0].size;
 			radian = Math.atan2(vector.y, vector.x);
 
 			if(keyCode[16]){
@@ -327,8 +333,28 @@ object[2].set(300, 450,  200, 20, 0, 1);
 		//壁の描画
 		for(i = 0;i <= OBJECT_MAX_COUNT; i++){
 			if(object[i].alive){
-				object[i].draw();
-				ctx.fill();
+				switch (object[i].color){
+				case 0:
+					object[i].draw();
+					ctx.fillStyle = PLAYER_COLOR;
+					ctx.fill();
+					break;
+				case 1:
+					object[i].draw();
+					ctx.fillStyle = BALL_COLOR_01;
+					ctx.fill();
+					break;
+				case 2:
+					object[i].draw();
+					ctx.fillStyle = BALL_COLOR_02;
+					ctx.fill();
+					break;
+				default:
+					object[i].draw();
+					ctx.fillStyle = WALL_COLOR;
+					ctx.fill();
+					break;
+				}
 			}
 		};
 
@@ -346,7 +372,7 @@ object[2].set(300, 450,  200, 20, 0, 1);
 		//青丸の描画
 		ctx.beginPath();
 		for(i = 1; i < BALL_MAX_COUNT; i++){
-			if(ball[i].alive && !ball[i].absorption && ball[i].color ===1){
+			if(ball[i].alive && ball[i].color ===1){
 				ctx.arc(ball[i].position.x, ball[i].position.y, ball[i].size, 0, Math.PI * 2, true);
 				ctx.closePath();
 			}
@@ -357,7 +383,7 @@ object[2].set(300, 450,  200, 20, 0, 1);
 		//赤丸の描画
 		ctx.beginPath();
 		for(i = 1; i < BALL_MAX_COUNT; i++){
-			if(ball[i].alive && !ball[i].absorption && ball[i].color === 2){
+			if(ball[i].alive && ball[i].color === 2){
 				ctx.arc(ball[i].position.x, ball[i].position.y, ball[i].size, 0, Math.PI * 2, true);
 				ctx.closePath();
 			}
@@ -381,9 +407,6 @@ object[2].set(300, 450,  200, 20, 0, 1);
 		ctx.closePath();
 		ctx.fillStyle = PLAYER_COLOR;
 		ctx.fill();
-		
-		//ctx.beginPath();
-		//ctx.arc(m.x, m.y, 
  
 		//点線の描画
 		if(lineLF && (ball[0].size + 19 < length)){
@@ -411,7 +434,7 @@ object[2].set(300, 450,  200, 20, 0, 1);
 
 		//その他の設定----------------------------------------------------------------------------------------------------
 		//キーコード初期化
-		//cccckc = null;
+		//kc = null;
 
 		//HTMLを更新
 		info.innerHTML = "PLAYER WEIGHT: " + ball[0].weight +

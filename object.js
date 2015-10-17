@@ -1,6 +1,6 @@
-//•Ç‚ğ’è‹`‚·‚éŠÖ”---------------------------------------------------------------------------------------------------------------
+ï»¿//å£ã‚’å®šç¾©ã™ã‚‹é–¢æ•°---------------------------------------------------------------------------------------------------------------
 var Object = function(){
-	//”X‚Ìİ’è
+	//è«¸ã€…ã®è¨­å®š
 	this.area  = new Area();
 	this.alive = false;
 	this.color = 0;
@@ -13,13 +13,13 @@ var Object = function(){
 }
 
 Object.prototype.set = function(tlx, tly, wid, hei, rad, c){
-	//…•½•ûŒü‚Ì•ƒxƒNƒgƒ‹(vech)‚Ì’l‚ÆA‚’¼•ûŒü‚Ì•ƒxƒNƒgƒ‹(vecv)‚Ì’l‚ÌŒvZ
+	//æ°´å¹³æ–¹å‘ã®å¹…ãƒ™ã‚¯ãƒˆãƒ«(vech)ã®å€¤ã¨ã€å‚ç›´æ–¹å‘ã®å¹…ãƒ™ã‚¯ãƒˆãƒ«(vecv)ã®å€¤ã®è¨ˆç®—
 	this.vechx =  wid * Math.cos(rad);
 	this.vechy = -wid * Math.sin(rad);
 	this.vecvx =  hei * Math.sin(rad);
 	this.vecvy =  hei * Math.cos(rad);
 
-	//l‹÷‚ÌÀ•W‚Ìæ“¾
+	//å››éš…ã®åº§æ¨™ã®å–å¾—
 	this.tlx = tlx;
 	this.tly = tly;
 	this.trx = tlx + this.vechx;
@@ -36,7 +36,7 @@ Object.prototype.set = function(tlx, tly, wid, hei, rad, c){
 	this.alive = true;
 };
 
-//•Ç‚Ì•`Ê
+//å£ã®æå†™
 Object.prototype.draw = function(){
 	ctx.beginPath();
 	ctx.moveTo(this.tlx, this.tly);
@@ -46,9 +46,9 @@ Object.prototype.draw = function(){
 	ctx.closePath();
 };
 
-//•Ç‚Æƒ{[ƒ‹‚ÌÕ“Ë”»’è
+//å£ã¨ãƒœãƒ¼ãƒ«ã®è¡çªåˆ¤å®š
 Object.prototype.collision = function(b){
-	//ğŒ®‚P@“àÏ‚Ç‚¤‚µ‚ÌÏ‚ªƒ}ƒCƒiƒX‚Å‚ ‚é‚±‚Æ
+	//æ¡ä»¶å¼ï¼‘ã€€å†…ç©ã©ã†ã—ã®ç©ãŒãƒã‚¤ãƒŠã‚¹ã§ã‚ã‚‹ã“ã¨
 	var con = new Point();
 	for(i = 0; i <= 3; i++){
 		switch(i){
@@ -98,27 +98,27 @@ Object.prototype.collision = function(b){
 			var vecby = b.position.y - this.tly;
 			var vecox = -this.vecvx;
 			var vecoy = -this.vecvy;
-			var rad   = Math.PI / 2 - this.rad;
+			var rad   = this.rad + Math.PI / 2;
 			var len   = this.hei;
 			    con.x = this.blx;
 			    con.y = this.bly;
 			break;
 		}
 
-		//ğŒ®‚PAƒ{[ƒ‹‚©‚ç‚ğ~‚ë‚µ‚½‚ü‚ª”¼Œa‚æ‚è¬‚³‚¢
+		//æ¡ä»¶å¼ï¼‘ã€ãƒœãƒ¼ãƒ«ã‹ã‚‰ã‚’é™ã‚ã—ãŸå‚ç·šãŒåŠå¾„ã‚ˆã‚Šå°ã•ã„
 		var c1 = Math.abs(vecox * vecay - vecoy * vecax) / len;
 
-		//ğŒ®‚QA“àÏ‚Ç‚¤‚µ‚ÌÏ‚ª0‚æ‚è¬‚³‚¢
+		//æ¡ä»¶å¼ï¼’ã€å†…ç©ã©ã†ã—ã®ç©ãŒ0ã‚ˆã‚Šå°ã•ã„
 		var c2 = (vecax * vecox + vecay * vecoy) * (vecbx * vecox + vecby * vecoy);
 
-		//ü•ª‚Æ‹…‚Ì“–‚è”»’è
+		//ç·šåˆ†ã¨çƒã®å½“ã‚Šåˆ¤å®š
 		if(c1 <= b.size && c2 <= 0) {
-			//•Ç‚É‘Î‚µ‚Ä‚’¼A•½s•ûŒü‚É‘¬“xƒxƒNƒgƒ‹‚ğ•ª‰ğ
+			//å£ã«å¯¾ã—ã¦å‚ç›´ã€å¹³è¡Œæ–¹å‘ã«é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«ã‚’åˆ†è§£
 			var velhx = (b.velocity.x * Math.cos(rad) + b.velocity.y * Math.sin(rad)) * Math.cos(rad);
 			var velhy = (b.velocity.x * Math.cos(rad) + b.velocity.y * Math.sin(rad)) * Math.sin(rad);
 			var velvx = b.velocity.x - velhx;
 			var velvy = b.velocity.y - velhy;
-			//”½”­Œã‚ÌŒvZ
+			//åç™ºå¾Œã®è¨ˆç®—
 			var excess = b.size - c1;
 			b.velocity.x += Math.sqrt(2 * 0.3 * e * excess) + 0.52;
 			b.velocity.y += Math.sqrt(2 * 0.3 * e * excess) + 0.52;
@@ -130,10 +130,10 @@ Object.prototype.collision = function(b){
 			b.velocity.y = velhy + velvy;
 		}
 		
-		//Šp‚Æ‹…‚Ì“–‚è”»’è
+		//è§’ã¨çƒã®å½“ã‚Šåˆ¤å®š
 		var l = b.position.distance(con).length();
 		if(l <= b.size){
-			//Šp‚É‘Î‚µ‚Ä‚’¼A•½s•ûŒü‚É‘¬“xƒxƒNƒgƒ‹‚ğ•ª‰ğ
+			//è§’ã«å¯¾ã—ã¦å‚ç›´ã€å¹³è¡Œæ–¹å‘ã«é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«ã‚’åˆ†è§£
 			rad = Math.PI + Math.atan2(vecax,vecay);
 			var velhx = (b.velocity.x * Math.cos(rad) + b.velocity.y * Math.sin(rad)) * Math.cos(rad);
 			var velhy = (b.velocity.x * Math.cos(rad) + b.velocity.y * Math.sin(rad)) * Math.sin(rad);
@@ -141,7 +141,7 @@ Object.prototype.collision = function(b){
 			var velvy = b.velocity.y - velhy;
 			var velvy = b.velocity.y - velhy;
 
-			//”½”­Œã‚ÌŒvZ
+			//åç™ºå¾Œã®è¨ˆç®—
 			var excess = b.size - l;   
 			b.velocity.x += Math.sqrt(2 * 0.3 * e * excess) + 0.52;
 			b.velocity.y += Math.sqrt(2 * 0.3 * e * excess) + 0.52;
