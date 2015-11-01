@@ -9,6 +9,15 @@ var Character = function(){
 	this.color = 0;
 	this.size = 0;
 	this.weight = 0;
+	this.distortionF = false;
+	this.collisionC = 0;
+	this.contact = new Array(7);
+	for(i=0; i <= 7; i++){
+		this.contact[i] = new Point();
+		this.contact[i].x = 0;
+		this.contact[i].y = 0;
+		this.contact[i].rad = 0;
+	}
 }
 
 Character.prototype.set = function(p, s, v, c){
@@ -73,6 +82,7 @@ Character.prototype.shoot = function(p){
 	this.alive = true;
 	p.weight -= this.weight;
 	p.size = Math.sqrt(p.weight);
+	console.log(this.velocity.y)
 }
 ;
 
@@ -81,14 +91,14 @@ Character.prototype.shoot = function(p){
 
 //自由落下
 Character.prototype.fall = function(){
-	this.velocity.y -= 0.3;
+	this.velocity.y -= 0.2;
 };
 
 
 //速度を位置情報に変換
 Character.prototype.move = function(){
 	//速度の上限を設定
-	var maxvel = 30;
+	var maxvel = 20;
 	if(this.velocity.x >=  maxvel) this.velocity.x =  maxvel;
 	if(this.velocity.x <= -maxvel) this.velocity.x = -maxvel;
 	if(this.velocity.y >=  maxvel) this.velocity.y =  maxvel;
@@ -99,9 +109,9 @@ Character.prototype.move = function(){
 	this.position.y -= this.velocity.y;
 
 	//位置情報の上限を設定
-	if(this.position.y >= screenCanvas.height - 15 - this.size) this.position.y = screenCanvas.height - 15 - this.size;
-	if(this.position.x <= this.size ) this.position.x = this.size;
-	if(this.position.x >= screenCanvas.width - this.size) this.position.x = screenCanvas.width - this.size;
+	//if(this.position.y >= screenCanvas.height - 15 - this.size) this.position.y = screenCanvas.height - 15 - this.size;
+	//if(this.position.x <= this.size ) this.position.x = this.size;
+	//if(this.position.x >= screenCanvas.width - this.size) this.position.x = screenCanvas.width - this.size;
 };
 
 
@@ -181,10 +191,10 @@ Character.prototype.absorptionCalculate = function(p){
 
 	//古いほうのボールのaliveフラグを偽にし、位置情報と速度、サイズ、質量を更新する
 	this.alive = false;
-	p.position.x = cp.x;
-	p.position.y = cp.y;
-	p.velocity.x = cv.x;
-	p.velocity.y = cv.y;
+	//p.position.x = cp.x;
+	//p.position.y = cp.y;
+	//p.velocity.x = cv.x;
+	//p.velocity.y = cv.y;
 	p.weight = p.weight + this.weight;
 	p.size = Math.sqrt(p.weight);
 
