@@ -12,6 +12,7 @@ var Character = function(){
 	this.distortionF = false;
 	this.collisionC = 0;
 	this.contact = new Array(7);
+	this.touchF = false;
 	for(i=0; i <= 7; i++){
 		this.contact[i] = new Point();
 		this.contact[i].x = 0;
@@ -33,6 +34,7 @@ Character.prototype.set = function(p, s, v, c){
 	this.weight = s * s;
 	//生存フラグを立てる
 	this.alive = true;
+	this.touchF = true;
 };
 
 

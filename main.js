@@ -154,7 +154,7 @@ window.onload = function(){
 				}
 			}
 			
-			ball[i].collisionC = 0;
+			ball[0].collisionC = 0;
 
 //test
 object[0].set(   0, 497, 512, 316, 0, 0, 3);
@@ -219,7 +219,7 @@ object[6].set( 360,  40,  30, 300, 0.1,          0, 3);
 			//ボール同士の衝突、結合
 			for(i = 0; i < BALL_MAX_COUNT; i++){
 				for(j = i + 1; j < BALL_MAX_COUNT; j++){
-					if(ball[i].alive && ball[j].alive){
+					if(ball[i].alive && ball[i].touchF && ball[j].alive && ball[j].touchF){
 						p = ball[j].position.distance(ball[i].position);
 						if( (p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color == 3|| !i && ball[0].size < ball[j].size + 1) ){
 							//ボールのめり込んだ位置関係を元に戻す
@@ -242,7 +242,7 @@ object[6].set( 360,  40,  30, 300, 0.1,          0, 3);
 
 			//壁との衝突
 			for(i = 0; i < BALL_MAX_COUNT; i++){
-				if(ball[i].alive){
+				if(ball[i].alive && ball[i].touchF){
 					for(j = 0; j < OBJECT_MAX_COUNT; j++){
 						if(ball[i].color != object[j].color){
 							object[j].collision(ball[i]);
@@ -363,12 +363,13 @@ console.log(ball[0].collisionC)
 			}
 			else{
 				ball[0].alive = false;
-				var amount = Math.floor((Math.random()*3) + 4);
+				var amount = Math.floor((Math.random()*3) + 7);
 				for(i=BALL_MAX_COUNT; i >= BALL_MAX_COUNT - amount; i--){
 					ball[i].size = Math.random()*3+Math.sqrt(ball[0].weight/amount)-2
-					ball[i].velocity.x = Math.random()*3 + 2;
-					ball[i].velocity.y = Math.random()*3 + 2;
+					ball[i].velocity.x = Math.random()*11 - 6;
+					ball[i].velocity.y = Math.random()*11;
 					ball[i].set(ball[0].position, ball[i].size, ball[i].velocity, Math.ceil(Math.random()*2));
+					ball[i].touchF = false
 				}
 			}
 		}
