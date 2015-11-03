@@ -44,7 +44,7 @@ var DARK_RED    = "rgba(200,   0, 100, 0.80)";//暗赤
 window.onload = function(){
 
 	//ローカル変数の定義
-	var i, j;
+	var i, j, k;
 	var p = new Point();
 	var v = new Point();
 	vector = new Point();
@@ -146,7 +146,7 @@ window.onload = function(){
 						v.x = 0;
 						v.y = 0;
 						var s = 10//Math.floor(Math.random() * 4) + 6;
-						var c = Math.floor(Math.random() * 2) + 1;
+						var c = 1//Math.floor(Math.random() * 2) + 1;
 						ball[i].set(p, s, v, c);
 						creatF = false;
 						break;
@@ -319,57 +319,59 @@ console.log(ball[0].collisionC)
 		//動体の描画-------------------------------------------------
 		
 		//ボールのひずみを計算する
-		if(ball[0].collisionC == 3){
-			var contact = new Array(3);
-			x1=ball[0].contact[0].x;
-			y1=ball[0].contact[0].y;
-			x2=ball[0].contact[1].x;
-			y2=ball[0].contact[1].y;
-			x3=ball[0].contact[2].x;
-			y3=ball[0].contact[2].y;
+		for(i=0; i<=BALL_MAX_COUNT; i++){
+			if(ball[i].alive && ball[i].collisionC == 3){
+				var contact = new Array(3);
+				x1=ball[i].contact[0].x;
+				y1=ball[i].contact[0].y;
+				x2=ball[i].contact[1].x;
+				y2=ball[i].contact[1].y;
+				x3=ball[i].contact[2].x;
+				y3=ball[i].contact[2].y;
 
-			var circumx=((y1-y3)*(y1*y1-y2*y2+x1*x1-x2*x2)-(y1-y2)*(y1*y1-y3*y3+x1*x1-x3*x3))/(2*(y1-y3)*(x1-x2)-2*(y1-y2)*(x1-x3));
-			var circumy=((x1-x3)*(x1*x1-x2*x2+y1*y1-y2*y2)-(x1-x2)*(x1*x1-x3*x3+y1*y1-y3*y3))/(2*(x1-x3)*(y1-y2)-2*(x1-x2)*(y1-y3));
-			ball[0].contact[0].rad = Math.atan2(y1-circumy, x1-circumx);
-			ball[0].contact[1].rad = Math.atan2(y2-circumy, x2-circumx);
-			ball[0].contact[2].rad = Math.atan2(y3-circumy, x3-circumx);
-			for(i=0; i<=2; i++){
-				for(j=2; j>i; j--){
-					if(ball[0].contact[j-1].rad > ball[0].contact[j].rad){
-						ball[0].contact[7]= ball[0].contact[j];
-						ball[0].contact[j] = ball[0].contact[j-1];
-						ball[0].contact[j-1] = ball[0].contact[7];
+				var circumx=((y1-y3)*(y1*y1-y2*y2+x1*x1-x2*x2)-(y1-y2)*(y1*y1-y3*y3+x1*x1-x3*x3))/(2*(y1-y3)*(x1-x2)-2*(y1-y2)*(x1-x3));
+				var circumy=((x1-x3)*(x1*x1-x2*x2+y1*y1-y2*y2)-(x1-x2)*(x1*x1-x3*x3+y1*y1-y3*y3))/(2*(x1-x3)*(y1-y2)-2*(x1-x2)*(y1-y3));
+				ball[i].contact[0].rad = Math.atan2(y1-circumy, x1-circumx);
+				ball[i].contact[1].rad = Math.atan2(y2-circumy, x2-circumx);
+				ball[i].contact[2].rad = Math.atan2(y3-circumy, x3-circumx);
+				for(j=0; j<=2; j++){
+					for(k=2; k>j; k--){
+						if(ball[i].contact[k-1].rad > ball[i].contact[k].rad){
+							ball[i].contact[7]= ball[i].contact[k];
+							ball[i].contact[k] = ball[i].contact[k-1];
+							ball[i].contact[k-1] = ball[i].contact[7];
+							}
 						}
 					}
+				var rad1_2 = (ball[i].contact[1].rad-ball[i].contact[0].rad+2*Math.PI) % (2*Math.PI);
+				var rad2_3 = (ball[i].contact[2].rad-ball[i].contact[1].rad+2*Math.PI) % (2*Math.PI);
+				var rad3_1 = (ball[i].contact[0].rad-ball[i].contact[2].rad+2*Math.PI) % (2*Math.PI);
+				var r = Math.sqrt((x1-circumx)*(x1-circumx)+(y1-circumy)*(y1-circumy));
+				var arc1 = 4*Math.tan(rad1_2/4)/3*ball[i].size*ball[i].size/r;
+				var arc2 = 4*Math.tan(rad2_3/4)/3*ball[i].size*ball[i].size/r;
+				var arc3 = 4*Math.tan(rad3_1/4)/3*ball[i].size*ball[i].size/r;
+				if(r/ball[i].size > 0.85){
+					ctx.beginPath()
+					ctx.moveTo(ball[i].contact[0].x, ball[i].contact[0].y);
+					ctx.bezierCurveTo(ball[i].contact[0].x-arc1*Math.sin(ball[i].contact[0].rad), ball[i].contact[0].y+arc1*Math.cos(ball[i].contact[0].rad), ball[i].contact[1].x+arc1*Math.sin(ball[i].contact[1].rad), ball[i].contact[1].y-arc1*Math.cos(ball[i].contact[1].rad), ball[i].contact[1].x, ball[i].contact[1].y);
+					ctx.bezierCurveTo(ball[i].contact[1].x-arc2*Math.sin(ball[i].contact[1].rad), ball[i].contact[1].y+arc2*Math.cos(ball[i].contact[1].rad), ball[i].contact[2].x+arc2*Math.sin(ball[i].contact[2].rad), ball[i].contact[2].y-arc2*Math.cos(ball[i].contact[2].rad), ball[i].contact[2].x, ball[i].contact[2].y);
+					ctx.bezierCurveTo(ball[i].contact[2].x-arc3*Math.sin(ball[i].contact[2].rad), ball[i].contact[2].y+arc3*Math.cos(ball[i].contact[2].rad), ball[i].contact[0].x+arc3*Math.sin(ball[i].contact[0].rad), ball[i].contact[0].y-arc3*Math.cos(ball[i].contact[0].rad), ball[i].contact[0].x, ball[i].contact[0].y);
+					ctx.fillStyle = GREEN;
+					ctx.fill();
+					ball[i].distortionF = true;
+					ball[i].position.x = circumx;
+					ball[i].position.y = circumy;
 				}
-			var rad1_2 = (ball[0].contact[1].rad-ball[0].contact[0].rad+2*Math.PI) % (2*Math.PI);
-			var rad2_3 = (ball[0].contact[2].rad-ball[0].contact[1].rad+2*Math.PI) % (2*Math.PI);
-			var rad3_1 = (ball[0].contact[0].rad-ball[0].contact[2].rad+2*Math.PI) % (2*Math.PI);
-			var r = Math.sqrt((x1-circumx)*(x1-circumx)+(y1-circumy)*(y1-circumy));
-			var arc1 = 4*Math.tan(rad1_2/4)/3*ball[0].size*ball[0].size/r;
-			var arc2 = 4*Math.tan(rad2_3/4)/3*ball[0].size*ball[0].size/r;
-			var arc3 = 4*Math.tan(rad3_1/4)/3*ball[0].size*ball[0].size/r;
-			if(r/ball[0].size > 0.85){
-				ctx.beginPath()
-				ctx.moveTo(ball[0].contact[0].x, ball[0].contact[0].y);
-				ctx.bezierCurveTo(ball[0].contact[0].x-arc1*Math.sin(ball[0].contact[0].rad), ball[0].contact[0].y+arc1*Math.cos(ball[0].contact[0].rad), ball[0].contact[1].x+arc1*Math.sin(ball[0].contact[1].rad), ball[0].contact[1].y-arc1*Math.cos(ball[0].contact[1].rad), ball[0].contact[1].x, ball[0].contact[1].y);
-				ctx.bezierCurveTo(ball[0].contact[1].x-arc2*Math.sin(ball[0].contact[1].rad), ball[0].contact[1].y+arc2*Math.cos(ball[0].contact[1].rad), ball[0].contact[2].x+arc2*Math.sin(ball[0].contact[2].rad), ball[0].contact[2].y-arc2*Math.cos(ball[0].contact[2].rad), ball[0].contact[2].x, ball[0].contact[2].y);
-				ctx.bezierCurveTo(ball[0].contact[2].x-arc3*Math.sin(ball[0].contact[2].rad), ball[0].contact[2].y+arc3*Math.cos(ball[0].contact[2].rad), ball[0].contact[0].x+arc3*Math.sin(ball[0].contact[0].rad), ball[0].contact[0].y-arc3*Math.cos(ball[0].contact[0].rad), ball[0].contact[0].x, ball[0].contact[0].y);
-				ctx.fillStyle = GREEN;
-				ctx.fill();
-				ball[0].distortionF = true;
-				ball[0].position.x = circumx;
-				ball[0].position.y = circumy;
-			}
-			else{
-				ball[0].alive = false;
-				var amount = Math.floor((Math.random()*3) + 7);
-				for(i=BALL_MAX_COUNT; i >= BALL_MAX_COUNT - amount; i--){
-					ball[i].size = Math.random()*3+Math.sqrt(ball[0].weight/amount)-2
-					ball[i].velocity.x = Math.random()*11 - 6;
-					ball[i].velocity.y = Math.random()*11;
-					ball[i].set(ball[0].position, ball[i].size, ball[i].velocity, Math.ceil(Math.random()*2));
-					ball[i].touchF = false
+				else{
+					ball[i].alive = false;
+					var amount = Math.floor((Math.random()*3) + 7);
+					for(j=BALL_MAX_COUNT; j >= BALL_MAX_COUNT - amount; j--){
+						ball[j].size = Math.random()*3+Math.sqrt(ball[i].weight/amount)-2
+						ball[j].velocity.x = Math.random()*12 - 6;
+						ball[j].velocity.y = Math.random()*11;
+						ball[j].set(ball[i].position, ball[j].size, ball[j].velocity, Math.ceil(Math.random()*2));
+						ball[j].touchF = false
+					}
 				}
 			}
 		}

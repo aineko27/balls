@@ -77,14 +77,14 @@ Character.prototype.strokeDottedLine = function(){
 Character.prototype.shoot = function(p){
 	this.size = 10;
 	this.weight = 100;
-	this.velocity.x = length / 15 * Math.cos(radian);
-	this.velocity.y = length / 15 * Math.sin(radian);
+	this.velocity.x = length / 22.5 * Math.cos(radian);
+	this.velocity.y = length / 22.5 * Math.sin(radian);
 	this.position.x = p.position.x + (p.size + this.size) * Math.cos(radian) - this.velocity.x;
 	this.position.y = p.position.y - (p.size + this.size) * Math.sin(radian) + this.velocity.y;
 	this.alive = true;
+	this.touchF = true;
 	p.weight -= this.weight;
 	p.size = Math.sqrt(p.weight);
-	console.log(this.velocity.y)
 }
 ;
 
@@ -193,10 +193,10 @@ Character.prototype.absorptionCalculate = function(p){
 
 	//古いほうのボールのaliveフラグを偽にし、位置情報と速度、サイズ、質量を更新する
 	this.alive = false;
-	//p.position.x = cp.x;
-	//p.position.y = cp.y;
-	//p.velocity.x = cv.x;
-	//p.velocity.y = cv.y;
+	p.position.x = cp.x;
+	p.position.y = cp.y;
+	p.velocity.x = cv.x;
+	p.velocity.y = cv.y;
 	p.weight = p.weight + this.weight;
 	p.size = Math.sqrt(p.weight);
 
