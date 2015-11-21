@@ -119,6 +119,7 @@ Object.prototype.collision = function(b){
 				if(!b.contact[i].x){
 					b.contact[i].x = b.position.x + c1*Math.sin(rad);
 					b.contact[i].y = b.position.y + c1*Math.cos(rad);
+					b.contact[i].tangent = -rad + Math.PI;
 					break;
 				}
 			}
@@ -131,7 +132,7 @@ Object.prototype.collision = function(b){
 			velvy *= -e;
 			b.velocity.x = velhx + velvx;
 			b.velocity.y = velhy + velvy;
-			break;
+			return;
 		}
 	}
 
@@ -142,8 +143,6 @@ Object.prototype.collision = function(b){
 			case 0:	
 			var vecax = b.position.x - this.tlx;
 			var vecay = b.position.y - this.tly;
-			var rad1  = this.rad1 + Math.PI/2;
-			var rad2  = this.rad2 + Math.PI/2;
 			   con.x = this.tlx;
 			   con.y = this.tly;
 			break;
@@ -151,8 +150,6 @@ Object.prototype.collision = function(b){
 			case 1:	
 			var vecax = b.position.x - this.trx;
 			var vecay = b.position.y - this.try;
-			var rad1  = this.rad2 + Math.PI/2;
-			var rad2  = this.rad1;
 			    con.x = this.trx;
 			    con.y = this.try;
 			break;
@@ -160,7 +157,6 @@ Object.prototype.collision = function(b){
 			case 2:	
 			var vecax = b.position.x - this.brx;
 			var vecay = b.position.y - this.bry;
-			
 			    con.x = this.brx;
 			    con.y = this.bry;
 			break;
@@ -177,7 +173,7 @@ Object.prototype.collision = function(b){
 		if(l <= b.size){
 			//角に対して垂直、平行方向に速度ベクトルを分解
 			rad = Math.atan2(vecay + b.velocity.y, -vecax - b.velocity.x);
-			var velhx = (b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.sin(rad);
+			var velhx = 　(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.sin(rad);
 			var velhy = -(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.cos(rad);
 			var velvx = b.velocity.x - velhx;
 			var velvy = b.velocity.y - velhy;
@@ -195,6 +191,7 @@ Object.prototype.collision = function(b){
 				if(!b.contact[i].x){
 					b.contact[i].x = con.x;
 					b.contact[i].y = con.y;
+					b.contact[i].tangent = "NaN"
 					break;
 				}
 			}
