@@ -31,6 +31,7 @@ var Character = function(){
 	this.lastPosition.x = 0;
 	this.lastPosition.y = 0;
 	this.rad_gap = new Array(8);
+	this.gap_number = new Array(8);
 }
 
 Character.prototype.set = function(p, s, v, c){
