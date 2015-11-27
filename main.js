@@ -162,7 +162,7 @@ object[1].set(-300,-300, 300, 797, 0, 0, 3);
 object[2].set( 512,-300, 300, 797, 0, 0, 3);
 object[3].set(  60, 458, 100,  10, Math.PI / 15, 0, 0);
 object[4].set( 100, 228,  80,  80, Math.PI / 8,  0, 1);
-object[5].set( 280, 330, 170,  75, 0.0,            0, 2);
+object[5].set( 280, 330, 170,  75, 0.0,     -1.4, 2);
 object[6].set( 360,  40,  30, 250, 0.1,          0, 3);
 /*object[3].set(   0, 130,  74,  75, 0,  0,  2);
 object[5].set( 272, 130, 170,  75, 0.0,            0, 3);
@@ -243,7 +243,6 @@ object[6].set( 442, 130,  30,  367,  0,  0,  3);*/
 							ball[j].positionCorrect(ball[i]);
 							//ボールの衝突後の速度を求める
 							ball[j].collisionCalculate(ball[i]);
-							collisionF = true;
 						}
 						else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color != 3){
 							if(!i && ball[0].size < ball[j].size + 1){
@@ -251,7 +250,6 @@ object[6].set( 442, 130,  30,  367,  0,  0,  3);*/
 							}
 							//ボール同士を結合する
 							ball[j].absorptionCalculate(ball[i]);
-							collisionF = true;
 						}
 					}
 				}
@@ -261,9 +259,8 @@ object[6].set( 442, 130,  30,  367,  0,  0,  3);*/
 			for(i = 0; i < BALL_MAX_COUNT; i++){
 				if(ball[i].alive && ball[i].touchF){
 					for(j = 0; j < OBJECT_MAX_COUNT; j++){
-						if(ball[i].color != object[j].color){
-							object[j].collision(ball[i]);
-							collisionF = true;
+						if(object[j].alive && ball[i].color != object[j].color){
+							object[j].collision01(ball[i]);
 						}
 					}
 				}
@@ -625,7 +622,7 @@ object[6].set( 442, 130,  30,  367,  0,  0,  3);*/
 
 
 
-console.log(ball[0])
+//sconsole.log(ball[0])
 
 
 
