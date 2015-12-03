@@ -11,6 +11,7 @@ var Character = function(){
 	this.weight = 0;
 	this.distortionF = false;
 	this.collisionC = 0;
+	this.collisionCC = 0;
 	this.touchF = false;
 	this.contact = new Array(8);
 	for(i=0; i < this.contact.length; i++){
@@ -24,14 +25,13 @@ var Character = function(){
 	this.dot = new Array(24)
 	for(i=0; i< this.dot.length; i++){
 		this.dot[i] = new Point();
-		this.dot.x = 0;
-		this.dot.y = 0;
 	}
 	this.lastPosition = new Point();
 	this.lastPosition.x = 0;
 	this.lastPosition.y = 0;
 	this.rad_gap = new Array(8);
 	this.gap_number = new Array(8);
+	this.nextTouch = new Array(OBJECT_MAX_COUNT);
 }
 
 Character.prototype.set = function(p, s, v, c){
@@ -51,7 +51,7 @@ Character.prototype.set = function(p, s, v, c){
 };
 
 //球の描写をする関数
-Character.prototype.draw = function(){
+/*Character.prototype.draw = function(){
 	ctx.beginPath();
 	ctx.moveTo(this.dot[0].x, this.dot[0].y);
 	for(i=1; i<this.dot.length; i++){
@@ -59,7 +59,7 @@ Character.prototype.draw = function(){
 	}
 	ctx.closePath();
 	ctx.fill();
-}
+}*/
 
 
 

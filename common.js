@@ -1,4 +1,4 @@
-﻿function Point(){
+﻿var Point = function(){
 	this.x = 0;
 	this.y = 0;
 };
