@@ -14,20 +14,20 @@ var Object = function(){
 Object.prototype.set = function(tlx, tly, wid, hei, rad1, rad2, c){
 	//水平方向の幅ベクトル(vech)の値と、垂直方向の幅ベクトル(vecv)の値の計算
 	if(!rad2) rad2 = rad1 - Math.PI/2;
-	this.vechx =  wid * Math.cos(rad1);
-	this.vechy = -wid * Math.sin(rad1);
-	this.vecvx =  hei * Math.cos(rad2);
-	this.vecvy = -hei * Math.sin(rad2);
+	this.vechx = wid * Math.cos(rad1);
+	this.vechy = wid * Math.sin(rad1);
+	this.vecvx = hei * Math.cos(rad2);
+	this.vecvy = hei * Math.sin(rad2);
 
 	//四隅の座標の取得
 	this.tlx = tlx;
 	this.tly = tly;
 	this.trx = tlx + this.vechx;
 	this.try = tly + this.vechy;
-	this.blx = tlx + this.vecvx;
-	this.bly = tly + this.vecvy;
-	this.brx = tlx + this.vechx + this.vecvx;
-	this.bry = tly + this.vechy + this.vecvy;
+	this.blx = tlx - this.vecvx;
+	this.bly = tly - this.vecvy;
+	this.brx = tlx + this.vechx - this.vecvx;
+	this.bry = tly + this.vechy - this.vecvy;
 
 	this.wid = wid;
 	this.hei = hei;
@@ -50,6 +50,174 @@ Object.prototype.draw = function(){
 
 //壁と正円の衝突判定
 Object.prototype.collision01 = function(b, j){
+	//円がどの辺あるいはどの角と衝突するかの判定
+	if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
+		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
+			b.touchArea[j].x = this.tlx;
+			b.touchArea[j].y = this.tly;
+			b.touchArea[j].num = 1;
+		}
+		else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
+			b.touchArea[j].x = this.trx;
+			b.touchArea[j].y = this.try;
+			b.touchArea[j].num = 1;
+		}
+		else{
+			b.touchArea[j].x = this.tlx;
+			b.touchArea[j].y = this.tly;
+			b.touchArea[j].rad = this.rad1;
+			b.touchArea[j].num = 2;
+		}
+	}
+	else if(Math.cos(this.rad1+Math.PI)* (b.position.y-this.bry) - Math.sin(this.rad1+Math.PI)* (b.position.x-this.brx) < 0){
+		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
+			b.touchArea[j].x = this.blx;
+			b.touchArea[j].y = this.bly;
+			b.touchArea[j].num = 1;
+		}
+		else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
+			b.touchArea[j].x = this.brx;
+			b.touchArea[j].y = this.bry;
+			b.touchArea[j].num = 1;
+		}
+		else{
+			b.touchArea[j].x = this.brx;
+			b.touchArea[j].y = this.bry;
+			b.touchArea[j].rad = this.rad1 + Math.PI;
+			b.touchArea[j].num = 2;
+		}
+	}
+	else{
+		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
+			b.touchArea[j].x = this.blx;
+			b.touchArea[j].y = this.bly;
+			b.touchArea[j].rad = this.rad2;
+			b.touchArea[j].num = 2;
+		}
+		else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
+			b.touchArea[j].x = this.trx;
+			b.touchArea[j].y = this.try;
+			b.touchArea[j].rad = this.rad2 + Math.PI
+			b.touchArea[j].num = 2;
+		}
+		else{
+			b.touchArea[j].num = 3;
+		}
+	}
+	//得られた判別から当り判定を取っていく
+	if(b.touchArea[j].num < 2){
+		//この場合は角に当たる
+		b.touchArea[j].len = b.position.distance(b.touchArea[j]).length();
+		if(b.touchArea[j].len <= b.size){
+			//角に対して垂直、平行方向に速度ベクトルを分解
+			rad = Math.atan2(b.position.y - b.touchArea[j].y + b.velocity.y, -b.position.x + b.touchArea[j].x - b.velocity.x);
+			var velhx = 　(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.sin(rad);
+			var velhy = -(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.cos(rad);
+			var velvx = b.velocity.x - velhx;
+			var velvy = b.velocity.y - velhy;
+
+			//反発後の計算
+			var excess = b.size - b.touchArea[j].len;   
+			b.position.x += excess * -Math.cos(rad);
+			b.position.y += excess * Math.sin(rad);
+			velvx *= -e;
+			velvy *= -e;
+			b.velocity.x = velhx + velvx;
+			b.velocity.y = velhy + velvy;
+			
+			b.contact[b.collisionC].x = b.touchArea[j].x;
+			b.contact[b.collisionC].y = b.touchArea[j].y;
+			b.contact[b.collisionC].tangent = "NaN";
+			b.collisionC++;
+		}
+		else if(b.touchArea[j].len <= b.size*1.5) return;
+	}
+	else if(b.touchArea[j].num < 3){
+		//この場合は辺に当たる
+		var drop = -Math.cos(b.touchArea[j].rad)* (b.position.y - b.touchArea[j].y) + (b.position.x - b.touchArea[j].x)* Math.sin(b.touchArea[j].rad)
+		if( drop <= b.size){
+			//壁に対して垂直、平行方向に速度ベクトルを分解
+			var velhx = (b.velocity.x * Math.cos(b.touchArea[j].rad) + b.velocity.y * Math.sin(-b.touchArea[j].rad)) * Math.cos(b.touchArea[j].rad);
+			var velhy = (b.velocity.x * Math.cos(b.touchArea[j].rad) + b.velocity.y * Math.sin(-b.touchArea[j].rad)) * Math.sin(-b.touchArea[j].rad);
+			var velvx = b.velocity.x - velhx;
+			var velvy = b.velocity.y - velhy;
+			//反発後の計算
+			b.contact[b.collisionC].x = b.position.x - drop*Math.sin(b.touchArea[j].rad);
+			b.contact[b.collisionC].y = b.position.y + drop*Math.cos(b.touchArea[j].rad);
+			b.contact[b.collisionC].tangent = b.touchArea[j].rad + Math.PI; 
+			b.collisionC++;
+			
+			var excess = b.size - drop;
+			b.velocity.x += Math.sqrt(2 * 0.3 * e * excess);
+			b.velocity.y += Math.sqrt(2 * 0.3 * e * excess);
+			b.position.x += excess *  Math.sin(b.touchArea[j].rad);
+			b.position.y += excess * -Math.cos(b.touchArea[j].rad);
+			velvx *= -e;
+			velvy *= -e;
+			b.velocity.x = velhx + velvx;
+			b.velocity.y = velhy + velvy;
+		}
+		else if(drop <= b.size*1.5) return;
+	}
+	else{
+		console.log("正円が内部に入っている")
+	}
+	b.touchArea[j].num = 0;
+}
+
+Object.prototype.collision02 = function(b, j){
+	//点とぶつかるかの判定
+	if(b.touchArea[j].num < 2){
+		var dot_number = (Math.floor(Math.atan2(b.touchArea[j].y - b.position.y, b.touchArea[j].x - b.position.x)*12/Math.PI) + b.dot.length) % b.dot.length
+		if( (b.dot[(dot_number+1)%b.dot.length].x- b.dot[dot_number].x)* (b.touchArea[j].y- b.dot[dot_number].y)> (b.touchArea[j].x- b.dot[dot_number].x)* (b.dot[(dot_number+1)%b.dot.length].y- b.dot[dot_number].y) ){
+			//接点の計算
+			var rad = Math.atan2(b.touchArea[j].y - b.position.y, b.touchArea[j].x - b.position.x );
+			b.contact[b.collisionC+ b.collisionCC].x = b.touchArea[j].x;
+			b.contact[b.collisionC+ b.collisionCC].y = b.touchArea[j].y;
+			b.contact[b.collisionC+ b.collisionCC].rad = rad;
+			b.contact[b.collisionC+ b.collisionCC].tangent = rad+ Math.PI/2//"NaN"
+			b.contact[b.collisionC+ b.collisionCC].excess = b.touchArea[j].distance(b.dot[dot_number]).length()// - b.touchArea[j].len;
+			//console.log(123, b.touchArea[j].x, b.touchArea[j].y, b.dot[dot_number].x, b.dot[dot_number].y)
+			console.log(b.contact[b.collisionC+ b.collisionCC].excess)
+			b.collisionCC++;
+		}
+		return;
+	}
+	//線とぶつかるかの判定
+	else if(b.touchArea[j].num < 3){
+		var rad = b.touchArea[j].rad
+		var dot_number = (Math.round((rad + Math.PI/2)*12/Math.PI) + b.dot.length) % b.dot.length;
+		//壁に垂直な向きへの長さが一番大きい点を調べる
+		if((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y) *Math.sin(rad+ Math.PI/2)){
+			while((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad+ Math.PI/2)){
+				dot_number++;
+				if(dot_number >= b.dot.length) dot_number = 0;
+			}
+		}
+		else{
+			while((b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad+ Math.PI/2)){
+				dot_number--;
+				if(dot_number <= -1) dot_number = 23
+			}
+		}
+		if(Math.cos(rad)* (b.dot[dot_number].y- b.touchArea[j].y)> Math.sin(rad)* (b.dot[dot_number].x- b.touchArea[j].x)){
+			//接点の計算
+			var div = Math.sin(rad)* (b.dot[dot_number].x- b.position.x)- Math.cos(rad)* (b.dot[dot_number].y- b.position.y)
+			b.contact[b.collisionC+ b.collisionCC].x = ((b.position.y* b.dot[dot_number].x- b.position.x* b.dot[dot_number].y)* Math.cos(rad)- (b.touchArea[j].y* (b.touchArea[j].x+ Math.cos(rad))- b.touchArea[j].x* (b.touchArea[j].y+ Math.sin(rad)))* (b.dot[dot_number].x- b.position.x))/ div;
+			b.contact[b.collisionC+ b.collisionCC].y = ((b.position.y* b.dot[dot_number].x- b.position.x* b.dot[dot_number].y)* Math.sin(rad)- (b.touchArea[j].y* (b.touchArea[j].x+ Math.cos(rad))- b.touchArea[j].x* (b.touchArea[j].y+ Math.sin(rad)))* (b.dot[dot_number].y- b.position.y))/ div;
+			b.contact[b.collisionC+ b.collisionCC].rad = rad + Math.PI/2; 
+			b.contact[b.collisionC+ b.collisionCC].tangent = rad + Math.PI;
+			b.contact[b.collisionC+ b.collisionCC].excess = Math.cos(rad)* (b.dot[dot_number].y- b.contact[b.collisionC].y)- Math.sin(rad)* (b.dot[dot_number].x- b.contact[b.collisionC].x);
+			console.log(b.contact[b.collisionC+ b.collisionCC].excess)
+			b.collisionCC++;
+		}
+		return;
+	}
+	else{
+		console.log("歪円が内部に入っている")
+	}
+}
+/*Object.prototype.collision01 = function(b, j){
 	var len01 = (b.position.x - this.tlx)* (b.position.x - this.tlx) + (b.position.y - this.tly)* (b.position.y - this.tly);
 	var len02 = (b.position.x - this.trx)* (b.position.x - this.trx) + (b.position.y - this.try)* (b.position.y - this.try);
 	var len03 = (b.position.x - this.brx)* (b.position.x - this.brx) + (b.position.y - this.bry)* (b.position.y - this.bry);
@@ -102,7 +270,7 @@ Object.prototype.collision01 = function(b, j){
 
 	//ぶつかるとしたら角(点)にぶつかるのかそれとも辺(線分)にぶつかるかの計算をif文で分ける
 	//角にぶつかるかの判定
-	if((Math.cos(rad01)* (b.position.y- corner.y)< Math.sin(rad01)* (b.position.x- corner.x))&&(Math.cos(rad02)* (b.position.y- corner.y)< Math.sin(rad02)* (b.position.x- corner.x))){
+	if((Math.cos(rad01-Math.PI/2)* (b.position.y- corner.y)< Math.sin(rad01-Math.PI/2)* (b.position.x- corner.x))&&(Math.cos(rad02+Math.PI/2)* (b.position.y- corner.y)< Math.sin(rad02+Math.PI/2)* (b.position.x- corner.x))){
 	len01 = Math.sqrt(len01);
 		if(len01 <= b.size){
 			//角に対して垂直、平行方向に速度ベクトルを分解
@@ -131,7 +299,7 @@ Object.prototype.collision01 = function(b, j){
 	}
 	
 	//ボールが辺１にぶつかるかの判定
-	else if((Math.cos(rad01)* (b.position.y- corner.y)< Math.sin(rad01)* (b.position.x- corner.x))&&(Math.cos(rad02)* (b.position.y- corner.y)>= Math.sin(rad02)* (b.position.x- corner.x))){
+	else if((Math.cos(rad01)* (b.position.y- corner.y)< Math.sin(rad01)* (b.position.x- corner.x))&&(Math.cos(rad01-Math.PI/2)* (b.position.y- corner.y)>= Math.sin(rad01-Math.PI/2)* (b.position.x- corner.x))){
 		//ボールから降ろした垂線が半径より小さいかの判定
 		var drop = -(side01* Math.cos(rad01)* (b.position.y - corner.y) - (b.position.x - corner.x)* side01* Math.sin(rad01))/ side01
 		if( drop <= b.size){
@@ -161,7 +329,7 @@ Object.prototype.collision01 = function(b, j){
 	}
 	
 	//ボールが辺２にぶつかるかの判定
-	else if(Math.cos(rad02)* (b.position.y- corner.y)< Math.sin(rad02)* (b.position.x- corner.x)){
+	else if((Math.cos(rad02)* (b.position.y- corner.y)< Math.sin(rad02)* (b.position.x- corner.x))&&(Math.cos(rad02+Math.PI/2)* (b.position.y- corner.y)>= Math.sin(rad02+Math.PI/2)* (b.position.x- corner.x))){
 		//ボールから降ろした垂線が半径より小さいかの判定
 		var drop = -(side02* Math.cos(rad02)* (b.position.y - corner.y) - (b.position.x - corner.x)* side02* Math.sin(rad02))/ side02
 		if( drop <= b.size){
@@ -193,163 +361,21 @@ Object.prototype.collision01 = function(b, j){
 		
 	//それ以外はボールが内側に入っていることになる、ありえない挙動なのでエラーを返すようにする
 	else console.log("error 正円が内部に入り込んでいる");
-}
+}*/
 
-//古い当り判定の取り方、上の改善版に比べて遅いはず
-/*Object.prototype.collision01 = function(b){
-	//線分と球の当り判定
-	for(i = 0; i <= 3; i++){
-		switch(i){
-			case 0:	
-			var vecax = b.position.x - this.tlx;
-			var vecay = b.position.y - this.tly;
-			var vecbx = b.position.x - this.trx;
-			var vecby = b.position.y - this.try;
-			var vecox = this.vechx;
-			var vecoy = this.vechy;
-			var rad   = this.rad1;
-			var len   = this.wid;
-			break;
 
-			case 1:	
-			var vecax = b.position.x - this.trx;
-			var vecay = b.position.y - this.try;
-			var vecbx = b.position.x - this.brx;
-			var vecby = b.position.y - this.bry;
-			var vecox = this.vecvx;
-			var vecoy = this.vecvy;
-			var rad   = this.rad2;
-			var len   = this.hei;
-			break;
-
-			case 2:	
-			var vecax = b.position.x - this.brx;
-			var vecay = b.position.y - this.bry;
-			var vecbx = b.position.x - this.blx;
-			var vecby = b.position.y - this.bly;
-			var vecox = -this.vechx;
-			var vecoy = -this.vechy;
-			var rad   = this.rad1 + Math.PI;
-			var len   = this.wid;
-			break;
-
-			case 3:	
-			var vecax = b.position.x - this.blx;
-			var vecay = b.position.y - this.bly;
-			var vecbx = b.position.x - this.tlx;
-			var vecby = b.position.y - this.tly;
-			var vecox = -this.vecvx;
-			var vecoy = -this.vecvy;
-			var rad   = this.rad2 + Math.PI;
-			var len   = this.hei;
-			break;
-		}
-
-		//条件式１、ボールからを降ろした垂線が半径より小さい
-		var c1 = Math.abs(vecox * vecay - vecoy * vecax) / len;
-
-		//条件式２、内積どうしの積が0より小さい
-		var c2 = (vecax * vecox + vecay * vecoy) * (vecbx * vecox + vecby * vecoy);
-
-		//条件式３、壁に対して速度ベクトルが近づく方向である
-		var c3 = (b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad))
-
-		if(c1 <= b.size && c2 <= 0 /*&& c3 > 0*//*) {
-			//壁に対して垂直、平行方向に速度ベクトルを分解
-			var velhx = (b.velocity.x * Math.cos(rad) + b.velocity.y * Math.sin(rad)) * Math.cos(rad);
-			var velhy = (b.velocity.x * Math.cos(rad) + b.velocity.y * Math.sin(rad)) * Math.sin(rad);
-			var velvx = b.velocity.x - velhx;
-			var velvy = b.velocity.y - velhy;
-			//反発後の計算
-			b.contact[b.collisionC].x = b.position.x + c1*Math.sin(rad);
-			b.contact[b.collisionC].y = b.position.y + c1*Math.cos(rad);
-			b.contact[b.collisionC].tangent = -rad + Math.PI; 
-			b.collisionC++;
-			
-			var excess = b.size - c1;
-			b.velocity.x += Math.sqrt(2 * 0.3 * e * excess);
-			b.velocity.y += Math.sqrt(2 * 0.3 * e * excess);
-			b.position.x += excess * -Math.sin(rad);
-			b.position.y += excess * -Math.cos(rad);
-			velvx *= -e;
-			velvy *= -e;
-			b.velocity.x = velhx + velvx;
-			b.velocity.y = velhy + velvy;
-			return;
-		}
-	}
-
-	//角と球の当り判定
-	var con = new Point();
-	for(i = 0; i <= 3; i++){
-		switch(i){
-			case 0:	
-			var vecax = b.position.x - this.tlx;
-			var vecay = b.position.y - this.tly;
-			   con.x = this.tlx;
-			   con.y = this.tly;
-			break;
-
-			case 1:	
-			var vecax = b.position.x - this.trx;
-			var vecay = b.position.y - this.try;
-			    con.x = this.trx;
-			    con.y = this.try;
-			break;
-
-			case 2:	
-			var vecax = b.position.x - this.brx;
-			var vecay = b.position.y - this.bry;
-			    con.x = this.brx;
-			    con.y = this.bry;
-			break;
-
-			case 3:	
-			var vecax = b.position.x - this.blx;
-			var vecay = b.position.y - this.bly;
-			    con.x = this.blx;
-			    con.y = this.bly;
-			break;
-		}
-
-		var l = b.position.distance(con).length();
-		if(l <= b.size){
-			//角に対して垂直、平行方向に速度ベクトルを分解
-			rad = Math.atan2(vecay + b.velocity.y, -vecax - b.velocity.x);
-			var velhx = 　(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.sin(rad);
-			var velhy = -(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.cos(rad);
-			var velvx = b.velocity.x - velhx;
-			var velvy = b.velocity.y - velhy;
-
-			//反発後の計算
-			var excess = b.size - l;   
-			b.position.x += excess * -Math.cos(rad);
-			b.position.y += excess * Math.sin(rad);
-			velvx *= -e;
-			velvy *= -e;
-			b.velocity.x = velhx + velvx;
-			b.velocity.y = velhy + velvy;
-			
-			b.contact[b.collisionC].x = con.x;
-			b.contact[b.collisionC].y = con.y;
-			b.contact[b.collisionC].tangent = "NaN";
-			b.collisionC++;
-			break;
-		}
-	}
-};*/
 
 //壁と歪円の衝突判定
-Object.prototype.collision02 = function(b, nt){
+/*Object.prototype.collision02 = function(b, nt){
 	/*var len01 = (b.position.x - this.tlx)* (b.position.x - this.tlx) + (b.position.y - this.tly)* (b.position.y - this.tly);
 	var len02 = (b.position.x - this.trx)* (b.position.x - this.trx) + (b.position.y - this.try)* (b.position.y - this.try);
 	var len03 = (b.position.x - this.brx)* (b.position.x - this.brx) + (b.position.y - this.bry)* (b.position.y - this.bry);
-	var len04 = (b.position.x - this.blx)* (b.position.x - this.blx) + (b.position.y - this.bly)* (b.position.y - this.bly);*/
+	var len04 = (b.position.x - this.blx)* (b.position.x - this.blx) + (b.position.y - this.bly)* (b.position.y - this.bly);*//*
 	var len
 	var corner = new Point();
 	
 	//どの角が一番歪円の中心に近いかを計算
-	if(nt< 3/*len01<=len02 && len01<=len04*/){
+	if(nt< 3){
 		len = (b.position.x - this.tlx)* (b.position.x - this.tlx) + (b.position.y - this.tly)* (b.position.y - this.tly);
 		corner.x = this.tlx;
 		corner.y = this.tly;
@@ -359,7 +385,7 @@ Object.prototype.collision02 = function(b, nt){
 		rad02 = -this.rad2 - Math.PI;
 	}
 	
-	else if(nt< 13/*len01>len02 && len01<= len04*/){
+	else if(nt< 13){
 		len = (b.position.x - this.trx)* (b.position.x - this.trx) + (b.position.y - this.try)* (b.position.y - this.try);
 		corner.x = this.trx;
 		corner.y = this.try;
@@ -369,7 +395,7 @@ Object.prototype.collision02 = function(b, nt){
 		rad02 = -this.rad1;
 	}
 	
-	else if(nt< 23/*len01>len02*/){
+	else if(nt< 23){
 		len = (b.position.x - this.brx)* (b.position.x - this.brx) + (b.position.y - this.bry)* (b.position.y - this.bry);
 		corner.x = this.brx;
 		corner.y = this.bry;
@@ -391,9 +417,9 @@ Object.prototype.collision02 = function(b, nt){
 	
 	//ぶつかるとしたら角(点)にぶつかるのかそれとも辺(線分)にぶつかるかの計算をif文で分ける
 	//角にぶつかるかの判定
-	if(nt%10 == 0/*(Math.cos(rad01)* (b.position.y- corner.y)< Math.sin(rad01)* (b.position.x- corner.x))&&(Math.cos(rad02)* (b.position.y- corner.y)< Math.sin(rad02)* (b.position.x- corner.x))*/){
-		var dot_number = (Math.floor(Math.atan2(corner.y - b.position.y, corner.x - b.position.x)*12/Math.PI) + 24) % 24
-		if( (b.dot[(dot_number+1)%24].x- b.dot[dot_number].x)* (corner.y- b.dot[dot_number].y)> (corner.x- b.dot[dot_number].x)* (b.dot[(dot_number+1)%24].y- b.dot[dot_number].y) ){
+	if(nt%10 == 0){
+		var dot_number = (Math.floor(Math.atan2(corner.y - b.position.y, corner.x - b.position.x)*12/Math.PI) + b.dot.length) % b.dot.length
+		if( (b.dot[(dot_number+1)%b.dot.length].x- b.dot[dot_number].x)* (corner.y- b.dot[dot_number].y)> (corner.x- b.dot[dot_number].x)* (b.dot[(dot_number+1)%b.dot.length].y- b.dot[dot_number].y) ){
 			//接点の計算
 			rad = Math.atan2(b.position.y - corner.y + b.velocity.y, -b.position.x + corner.x - b.velocity.x);
 			b.contact[b.collisionC+ b.collisionCC].x = corner.x;
@@ -407,17 +433,17 @@ Object.prototype.collision02 = function(b, nt){
 	}
 		
 	//ボールが辺１にぶつかるかの判定
-	else if(nt%10 == 1/*(Math.cos(rad01)* (b.position.y- corner.y)< Math.sin(rad01)* (b.position.x- corner.x))&&(Math.cos(rad02)* (b.position.y- corner.y)>= Math.sin(rad02)* (b.position.x- corner.x))*/){
-		var dot_number = (Math.round((rad01 + Math.PI/2)*12/Math.PI) + 24) % 24;
+	else if(nt%10 == 1){
+		var dot_number = (Math.round((rad01 + Math.PI/2)*12/Math.PI) + b.dot.length) % b.dot.length;
 		//壁に垂直な向きへの長さが一番大きい点を調べる
-		if((b.dot[(dot_number+1)%24].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+1)%24].y- b.position.y)* Math.sin(rad01+ Math.PI/2)> (b.dot[(dot_number+23)%24].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+23)%24].y- b.position.y) *Math.sin(rad01+ Math.PI/2)){
-			while((b.dot[(dot_number+1)%24].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+1)%24].y- b.position.y)* Math.sin(rad01+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad01+ Math.PI/2)){
+		if((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad01+ Math.PI/2)> (b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y) *Math.sin(rad01+ Math.PI/2)){
+			while((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad01+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad01+ Math.PI/2)){
 				dot_number++;
-				if(dot_number >= 24) dot_number = 0;
+				if(dot_number >= b.dot.length) dot_number = 0;
 			}
 		}
 		else{
-			while((b.dot[(dot_number+23)%24].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+23)%24].y- b.position.y)* Math.sin(rad01+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad01+ Math.PI/2)){
+			while((b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y)* Math.sin(rad01+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad01+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad01+ Math.PI/2)){
 				dot_number--;
 				if(dot_number <= -1) dot_number = 23
 			}
@@ -436,24 +462,24 @@ Object.prototype.collision02 = function(b, nt){
 	}
 		
 	//ボールが辺２にぶつかるかの判定
-	else if(nt%10 == 2/*Math.cos(rad02)* (b.position.y- corner.y)< Math.sin(rad02)* (b.position.x- corner.x)*/){
-		var dot_number = (Math.round((rad02 + Math.PI/2)*12/Math.PI) + 24) % 24;
+	else if(nt%10 == 2){
+		var dot_number = (Math.round((rad02 + Math.PI/2)*12/Math.PI) + b.dot.length) % b.dot.length;
 		//壁に垂直な向きへの長さが一番大きい点を調べる
-		if((b.dot[(dot_number+1)%24].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+1)%24].y- b.position.y)* Math.sin(rad02+ Math.PI/2)> (b.dot[(dot_number+23)%24].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+23)%24].y- b.position.y) *Math.sin(rad02+ Math.PI/2)){
-			while((b.dot[(dot_number+1)%24].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+1)%24].y- b.position.y)* Math.sin(rad02+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad02+ Math.PI/2)){
+		if((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad02+ Math.PI/2)> (b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y) *Math.sin(rad02+ Math.PI/2)){
+			while((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad02+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad02+ Math.PI/2)){
 				dot_number++;
-				if(dot_number >= 24) dot_number = 0;
+				if(dot_number >= b.dot.length) dot_number = 0;
 			}
 		}
 		else{
-			while((b.dot[(dot_number+23)%24].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+23)%24].y- b.position.y)* Math.sin(rad02+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad02+ Math.PI/2)){
+			while((b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y)* Math.sin(rad02+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad02+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad02+ Math.PI/2)){
 				dot_number--;
 				if(dot_number <= -1) dot_number = 23
 			}
 		}
-		if(Math.cos(rad02)* (b.dot[dot_number].y- corner.y)> Math.sin(rad02)* (b.dot[(dot_number+24)%24].x- corner.x)){
+		if(Math.cos(rad02)* (b.dot[dot_number].y- corner.y)> Math.sin(rad02)* (b.dot[(dot_number+b.dot.length)%b.dot.length].x- corner.x)){
 			//接点の計算
-			var div = Math.sin(rad02)* (b.dot[dot_number].x- b.position.x)- Math.cos(rad02)* (b.dot[(dot_number+24)%24].y- b.position.y)
+			var div = Math.sin(rad02)* (b.dot[dot_number].x- b.position.x)- Math.cos(rad02)* (b.dot[(dot_number+b.dot.length)%b.dot.length].y- b.position.y)
 			b.contact[b.collisionC+ b.collisionCC].x = ((b.position.y* b.dot[dot_number].x- b.position.x* b.dot[dot_number].y)* Math.cos(rad02)- (corner.y* (corner.x+ Math.cos(rad02))- corner.x* (corner.y+ Math.sin(rad02)))* (b.dot[dot_number].x- b.position.x))/ div;
 			b.contact[b.collisionC+ b.collisionCC].y = ((b.position.y* b.dot[dot_number].x- b.position.x* b.dot[dot_number].y)* Math.sin(rad02)- (corner.y* (corner.x+ Math.cos(rad02))- corner.x* (corner.y+ Math.sin(rad02)))* (b.dot[dot_number].y- b.position.y))/ div;
 			b.contact[b.collisionC+ b.collisionCC].rad = rad02 + Math.PI/2;
@@ -467,7 +493,7 @@ Object.prototype.collision02 = function(b, nt){
 	//それ以外はボールが内側に入っていることになる、ありえない挙動なのでエラーを返すようにする
 	else console.log("error 正円が内部に入り込んでいる");
 	//if(this.tlx == 512) console.log(b.dot[dot_number].x)
-};	
+};*/	
 	
 	
 	
