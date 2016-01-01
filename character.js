@@ -20,9 +20,10 @@ var Character = function(){
 		this.contact[i].excess = 0;
 		this.contact[i].tangent = 0;
 	}
-	this.dot = new Array(24)
+	this.dot = new Array(64);
 	for(i=0; i < this.dot.length; i++){
 		this.dot[i] = new Point();
+		this.dot[i].rad = 0;
 	}
 	this.lastPosition = new Point();
 	this.rad_gap = new Array(8);
@@ -33,6 +34,18 @@ var Character = function(){
 		this.touchArea[i].len = 0;
 		this.touchArea[i].rad = 0;
 		this.touchArea[i].num = 0;
+	}
+	this.bezier = new Array(8);
+	for(i=0; i<this.bezier.length; i++){
+		this.bezier[i] = {}
+		this.bezier.midPoint = new Point();
+		this.bezier.midPoint.x = 0;
+		this.bezier.midPoint.y =0;
+		this.bezier.midPoint_tangent = 0
+		this.bezier.midPoint_excess = 0
+		this.bezier.arc1 = 0;
+		this.bezier.arc2 = 0;
+		this.bezier.arc_mid = 0;
 	}
 }
 
@@ -84,18 +97,17 @@ Character.prototype.strokeDottedLine = function(){
 
 		ctx.moveTo(p1x, p1y);
 		ctx.lineTo(p2x, p2y);
-		ctx.closePath();
 	}
 
 	if(dotted % 2 == 0){
 		ctx.moveTo(this.position.x + (length - 8 - space * (2 * i) + this.size) * Math.cos(radian), this.position.y + (length - 8 - space * (2 * i) + this.size) * -Math.sin(radian))
 		ctx.lineTo(this.position.x + this.size * Math.cos(radian), this.position.y + this.size * -Math.sin(radian));
-		ctx.closePath();
 	}
 
 	ctx.strokeStyle = DOTTED_LINE_COLOR;
-	ctx.lineCap = "round";
-	ctx.lineWidth = 4;
+	//ctx.lineCap = "round";
+	ctx.lineWidth = 6;
+	ctx.closePath();
 	ctx.stroke();
 };
 
@@ -238,11 +250,56 @@ Character.prototype.absorptionCalculate = function(b){
 
 	//古いほうのボールのaliveフラグを偽にし、位置情報と速度、サイズ、質量を更新する
 	this.alive = false;
-	b.position.x = cp.x;
-	b.position.y = cp.y;
+	//b.position.x = cp.x;
+	//b.position.y = cp.y;
 	b.velocity.x = cv.x;
 	b.velocity.y = cv.y;
 	b.weight = b.weight + this.weight;
 	b.size = Math.sqrt(b.weight);
 
 };
+
+//正円と歪円の衝突判定
+Character.prototype.collision01 = function(b){
+	var rad = Math.atan2(b.position.y- this.position.y, b.position.x- this.position.x);
+	var i = (Math.round(rad* this.dot.length/Math.PI/2) + this.dot.length)% this.dot.length;
+	//正円と一番近い歪円のdotがどこにあるのかを調べる。iがdot_numberになる
+	if(this.dot[(i+1)%b.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+		i++;
+		if(i >= this.dot.length) i = 0;
+		while(this.dot[(i+1)%b.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length() ){
+			i++;
+			if(i >= this.dot.length) i = 0;
+		}
+	}
+	else{
+		while(this.dot[(i+this.dot.length-1)%this.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+			i--;
+			if(i <= 0) i = this.dot.length-1;
+		}
+	}
+	if (this.size == 45 && b.color == 0) console.log(i)
+	var drop = ((this.dot[i].y - this.dot[(i+this.dot.length-1)%this.dot.length].y)* (b.position.x- this.dot[i].x) - (this.dot[i].x - this.dot[(i+this.dot.length-1)%this.dot.length].x)* (b.position.y- this.dot[i].y));
+	drop /= this.dot[i].distance(this.dot[(i+this.dot.length-1)%this.dot.length]).length();
+	if(drop < b.size){
+		this.contact[this.collisionC+this.collisionCC].rad =rad; 
+		this.contact[this.collisionC+this.collisionCC].tangent = rad+ Math.PI/2;
+		this.contact[this.collisionC+this.collisionCC].excess = (b.size-drop)*this.size/(b.size+this.size);
+		this.contact[this.collisionC+this.collisionCC].x = b.position.x + (b.size- b.contact[b.collisionC+b.collisionCC].excess)* Math.cos(rad + Math.PI);
+		this.contact[this.collisionC+this.collisionCC].y = b.position.y + (b.size- b.contact[b.collisionC+b.collisionCC].excess)* Math.sin(rad + Math.PI);
+		
+		b.contact[b.collisionC+b.collisionCC].rad = rad + Math.PI;
+		b.contact[b.collisionC+b.collisionCC].tangent = rad- Math.PI/2;
+		b.contact[b.collisionC+b.collisionCC].excess = (b.size-drop)*b.size/(b.size+this.size);
+		b.contact[b.collisionC+b.collisionCC].x = this.contact[this.collisionC+this.collisionCC].x;
+		b.contact[b.collisionC+b.collisionCC].y = this.contact[this.collisionC+this.collisionCC].y;
+		if (this.size == 45 && b.color == 0) console.log(b.contact[b.collisionC+b.collisionCC].excess)
+		this.collisionCC++;
+		b.collisionCC++;
+		//if (this.size == 45 && b.color == 0) console.log(i, drop, rad)
+		//if (this.size == 45 && b.color == 0) console.log(b.contact[b.collisionC+b.collisionCC-1].excessa)
+	}
+}
+
+Character.prototype.collision02 = function(b){
+}

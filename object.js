@@ -165,20 +165,28 @@ Object.prototype.collision01 = function(b, j){
 	b.touchArea[j].num = 0;
 }
 
+//壁と歪円の衝突判定
 Object.prototype.collision02 = function(b, j){
 	//点とぶつかるかの判定
 	if(b.touchArea[j].num < 2){
-		var dot_number = (Math.floor(Math.atan2(b.touchArea[j].y - b.position.y, b.touchArea[j].x - b.position.x)*12/Math.PI) + b.dot.length) % b.dot.length
-		if( (b.dot[(dot_number+1)%b.dot.length].x- b.dot[dot_number].x)* (b.touchArea[j].y- b.dot[dot_number].y)> (b.touchArea[j].x- b.dot[dot_number].x)* (b.dot[(dot_number+1)%b.dot.length].y- b.dot[dot_number].y) ){
+		var rad = Math.atan2(b.touchArea[j].y - b.position.y, b.touchArea[j].x - b.position.x);
+		//接点がどのdotの間にあるのか調べる。iがdot_numberになる
+		var i;
+		for(i=0; i<b.dot.length; i++){
+			if( (rad+ 2*Math.PI)%(2*Math.PI) < (b.dot[i].rad+ 2*Math.PI- b.dot[0].rad)%(2*Math.PI)) break;
+		}
+		if(i >= b.dot.length) i = 0;
+		var t = (rad- b.dot[(i+b.dot.length-1)%b.dot.length].rad)/ (b.dot[i].rad- b.dot[(i+b.dot.length-1)%b.dot.length].rad);
+		var tangent1 = Math.atan2(b.dot[i].y- b.dot[(i+b.dot.length-2)%b.dot.length].y, b.dot[i].x- b.dot[(i+b.dot.length-2)%b.dot.length].x); 
+		var tangent2 = Math.atan2(b.dot[(i+1)%b.dot.length].y- b.dot[(i+b.dot.length-1)%b.dot.length].y, b.dot[(i+1)%b.dot.length].x- b.dot[(i+b.dot.length-1)%b.dot.length].x); 
+		var excess = (b.dot[(i+b.dot.length-1)%b.dot.length].x- b.dot[i].x)* (b.touchArea[j].y- b.dot[i].y)- (b.touchArea[j].x- b.dot[i].x)* (b.dot[(i+b.dot.length-1)%b.dot.length].y- b.dot[i].y);
+		if(excess < 0){
 			//接点の計算
-			var rad = Math.atan2(b.touchArea[j].y - b.position.y, b.touchArea[j].x - b.position.x );
 			b.contact[b.collisionC+ b.collisionCC].x = b.touchArea[j].x;
 			b.contact[b.collisionC+ b.collisionCC].y = b.touchArea[j].y;
 			b.contact[b.collisionC+ b.collisionCC].rad = rad;
-			b.contact[b.collisionC+ b.collisionCC].tangent = rad+ Math.PI/2//"NaN"
-			b.contact[b.collisionC+ b.collisionCC].excess = b.touchArea[j].distance(b.dot[dot_number]).length()// - b.touchArea[j].len;
-			//console.log(123, b.touchArea[j].x, b.touchArea[j].y, b.dot[dot_number].x, b.dot[dot_number].y)
-			console.log(b.contact[b.collisionC+ b.collisionCC].excess)
+			b.contact[b.collisionC+ b.collisionCC].tangent = (1-t)*tangent1 + t*tangent2; 
+			b.contact[b.collisionC+ b.collisionCC].excess = -excess;
 			b.collisionCC++;
 		}
 		return;
@@ -186,18 +194,18 @@ Object.prototype.collision02 = function(b, j){
 	//線とぶつかるかの判定
 	else if(b.touchArea[j].num < 3){
 		var rad = b.touchArea[j].rad
-		var dot_number = (Math.round((rad + Math.PI/2)*12/Math.PI) + b.dot.length) % b.dot.length;
+		var dot_number = (Math.round((rad + Math.PI/2)*b.dot.length/Math.PI/2) + b.dot.length) % b.dot.length;
 		//壁に垂直な向きへの長さが一番大きい点を調べる
-		if((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y) *Math.sin(rad+ Math.PI/2)){
+		if((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[(dot_number+b.dot.length-1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+b.dot.length-1)%b.dot.length].y- b.position.y) *Math.sin(rad+ Math.PI/2)){
 			while((b.dot[(dot_number+1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+1)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad+ Math.PI/2)){
 				dot_number++;
 				if(dot_number >= b.dot.length) dot_number = 0;
 			}
 		}
 		else{
-			while((b.dot[(dot_number+23)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+23)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad+ Math.PI/2)){
+			while((b.dot[(dot_number+b.dot.length-1)%b.dot.length].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[(dot_number+b.dot.length-1)%b.dot.length].y- b.position.y)* Math.sin(rad+ Math.PI/2)> (b.dot[dot_number].x- b.position.x)* Math.cos(rad+ Math.PI/2)+ (b.dot[dot_number].y- b.position.y)* Math.sin(rad+ Math.PI/2)){
 				dot_number--;
-				if(dot_number <= -1) dot_number = 23
+				if(dot_number <= -1) dot_number = b.dot.length-1;
 			}
 		}
 		if(Math.cos(rad)* (b.dot[dot_number].y- b.touchArea[j].y)> Math.sin(rad)* (b.dot[dot_number].x- b.touchArea[j].x)){
