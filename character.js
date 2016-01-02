@@ -13,7 +13,7 @@ var Character = function(){
 	this.collisionC = 0;
 	this.collisionCC = 0;
 	this.touchF = false;
-	this.contact = new Array(8);
+	this.contact = new Array(12);
 	for(i=0; i < this.contact.length; i++){
 		this.contact[i] = new Point();
 		this.contact[i].rad = 0;
@@ -26,16 +26,20 @@ var Character = function(){
 		this.dot[i].rad = 0;
 	}
 	this.lastPosition = new Point();
-	this.rad_gap = new Array(8);
-	this.gap_number = new Array(8);
+	this.rad_gap = new Array(12);
+	this.gap_number = new Array(12);
 	this.touchArea = new Array(OBJECT_MAX_COUNT);
-	for(i=0; i < OBJECT_MAX_COUNT; i++){
+	for(i=0; i < this.touchArea.length; i++){
 		this.touchArea[i] = new Point();
 		this.touchArea[i].len = 0;
 		this.touchArea[i].rad = 0;
 		this.touchArea[i].num = 0;
 	}
-	this.bezier = new Array(8);
+	this.ballCollisionF = new Array(BALL_MAX_COUNT)
+	for(i=0; i<this.ballCollisionF.length; i++){
+		this.ballCollisionF[i] = false;
+	}
+	this.bezier = new Array(12);
 	for(i=0; i<this.bezier.length; i++){
 		this.bezier[i] = {}
 		this.bezier.midPoint = new Point();
@@ -115,8 +119,8 @@ Character.prototype.strokeDottedLine = function(){
 Character.prototype.shoot = function(b){
 	this.size = 13;
 	this.weight = this.size*this.size;
-	this.velocity.x = length / 40 * Math.cos(radian);
-	this.velocity.y = length / 40 * Math.sin(radian);
+	this.velocity.x = length / 25 * Math.cos(radian);
+	this.velocity.y = length / 25 * Math.sin(radian);
 	this.position.x = b.position.x + (b.size + this.size) * Math.cos(radian) - this.velocity.x;
 	this.position.y = b.position.y - (b.size + this.size) * Math.sin(radian) + this.velocity.y;
 	this.alive = true;
@@ -138,7 +142,7 @@ Character.prototype.fall = function(){
 //速度を位置情報に変換
 Character.prototype.move = function(){
 	//速度の上限を設定
-	var maxvel = 20;
+	var maxvel = 30;
 	if(this.velocity.x >=  maxvel) this.velocity.x =  maxvel;
 	if(this.velocity.x <= -maxvel) this.velocity.x = -maxvel;
 	if(this.velocity.y >=  maxvel) this.velocity.y =  maxvel;
@@ -256,7 +260,6 @@ Character.prototype.absorptionCalculate = function(b){
 	b.velocity.y = cv.y;
 	b.weight = b.weight + this.weight;
 	b.size = Math.sqrt(b.weight);
-
 };
 
 //正円と歪円の衝突判定
@@ -278,28 +281,184 @@ Character.prototype.collision01 = function(b){
 			if(i <= 0) i = this.dot.length-1;
 		}
 	}
-	if (this.size == 45 && b.color == 0) console.log(i)
-	var drop = ((this.dot[i].y - this.dot[(i+this.dot.length-1)%this.dot.length].y)* (b.position.x- this.dot[i].x) - (this.dot[i].x - this.dot[(i+this.dot.length-1)%this.dot.length].x)* (b.position.y- this.dot[i].y));
-	drop /= this.dot[i].distance(this.dot[(i+this.dot.length-1)%this.dot.length]).length();
-	if(drop < b.size){
-		this.contact[this.collisionC+this.collisionCC].rad =rad; 
-		this.contact[this.collisionC+this.collisionCC].tangent = rad+ Math.PI/2;
-		this.contact[this.collisionC+this.collisionCC].excess = (b.size-drop)*this.size/(b.size+this.size);
+	var len = this.dot[i].distance(b.position).length();
+	if(len < b.size){
+	console.log(this.contact)
+	console.log(this, b)
+		this.contact[this.collisionC+this.collisionCC].excess = (b.size-len)*this.size/(b.size+this.size);
 		this.contact[this.collisionC+this.collisionCC].x = b.position.x + (b.size- b.contact[b.collisionC+b.collisionCC].excess)* Math.cos(rad + Math.PI);
 		this.contact[this.collisionC+this.collisionCC].y = b.position.y + (b.size- b.contact[b.collisionC+b.collisionCC].excess)* Math.sin(rad + Math.PI);
+		this.contact[this.collisionC+this.collisionCC].rad = this.dot[i].rad;
+		this.contact[this.collisionC+this.collisionCC].tangent = this.dot[i].rad+ Math.PI/2;
 		
-		b.contact[b.collisionC+b.collisionCC].rad = rad + Math.PI;
-		b.contact[b.collisionC+b.collisionCC].tangent = rad- Math.PI/2;
-		b.contact[b.collisionC+b.collisionCC].excess = (b.size-drop)*b.size/(b.size+this.size);
+		b.contact[b.collisionC+b.collisionCC].excess = (b.size-len)*b.size/(b.size+this.size);
 		b.contact[b.collisionC+b.collisionCC].x = this.contact[this.collisionC+this.collisionCC].x;
 		b.contact[b.collisionC+b.collisionCC].y = this.contact[this.collisionC+this.collisionCC].y;
-		if (this.size == 45 && b.color == 0) console.log(b.contact[b.collisionC+b.collisionCC].excess)
+		b.contact[b.collisionC+b.collisionCC].rad = Math.atan2(b.contact[b.collisionC+b.collisionCC].y- b.position.y, b.contact[b.collisionC+b.collisionCC].x- b.position.x);
+		b.contact[b.collisionC+b.collisionCC].tangent =b.contact[b.collisionC+b.collisionCC].rad+ Math.PI/2;
 		this.collisionCC++;
 		b.collisionCC++;
-		//if (this.size == 45 && b.color == 0) console.log(i, drop, rad)
-		//if (this.size == 45 && b.color == 0) console.log(b.contact[b.collisionC+b.collisionCC-1].excessa)
 	}
 }
 
+//歪円と歪円の衝突判定
 Character.prototype.collision02 = function(b){
+	//歪円1の中心と一番近い歪円2のdotがどこにあるのかを調べる。iがdot_numberになる
+	var rad01 = Math.atan2(b.position.y- this.position.y, b.position.x- this.position.x);
+	var i = (Math.round(rad01* this.dot.length/Math.PI/2)+ this.dot.length)% this.dot.length;
+	if(this.dot[(i+1)%this.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+		i++
+		if(i >= this.dot.length) i =0;
+		while(this.dot[(i+1)%b.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+			i++;
+			if(i >= this.dot.length) i = 0;
+		}
+	}
+	else{
+		while(this.dot[(i+this.dot.length-1)%this.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+			i--;
+			if(i <= 0) i = this.dot.length-1;
+		}
+	}
+	//歪円2の中心と一番近い歪円1のdotがどこにあるのかを調べる。iがdot_numberになる
+	var rad02 = Math.atan2(this.position.y- b.position.y, this.position.x- b.position.x);
+	var j = (Math.round(rad02* b.dot.length/Math.PI/2)+ b.dot.length)% b.dot.length;
+	if(b.dot[(j+1)%b.dot.length].distance(this.position).length() < b.dot[j].distance(this.position).length()){
+		j++
+		if(j >= b.dot.length) j = 0;
+		while(b.dot[(j+1)%b.dot.length].distance(this.position).length() < b.dot[j].distance(this.position).length()){
+			j++;
+			if(j >= b.dot.length) j = 0;
+		}
+	}
+	else{
+		while(b.dot[(j+b.dot.length-1)%b.dot.length].distance(this.position).length() <  b.dot[j].distance(this.position).length()){
+			j--;
+			if(j <= 0) j= b.dot.length-1;
+		}
+	}
+	var len01 = this.dot[i].distance(this.position).length();
+	var len02 = b.dot[j].distance(b.position).length();
+	excess = (len01+ len02)- this.position.distance(b.position).length();
+	if(excess > 0){
+		this.contact[this.collisionC+this.collisionCC].excess = excess* this.size/(b.size+this.size);
+		this.contact[this.collisionC+this.collisionCC].x = this.position.x + (len01- this.contact[this.collisionC+this.collisionCC].excess)* Math.cos(this.dot[i].rad);
+		this.contact[this.collisionC+this.collisionCC].y = this.position.y + (len01- this.contact[this.collisionC+this.collisionCC].excess)* Math.sin(this.dot[i].rad);
+		this.contact[this.collisionC+this.collisionCC].rad = this.dot[i].rad;
+		this.contact[this.collisionC+this.collisionCC].tangent = this.dot[i].rad+ Math.PI/2;
+		
+		b.contact[b.collisionC+b.collisionCC].excess = excess* b.size/(b.size+this.size);
+		b.contact[b.collisionC+b.collisionCC].x = b.position.x + (len02- b.contact[b.collisionC+b.collisionCC].excess)* Math.cos(b.dot[j].rad);
+		b.contact[b.collisionC+b.collisionCC].y = b.position.y + (len02- b.contact[b.collisionC+b.collisionCC].excess)* Math.sin(b.dot[j].rad);
+		b.contact[b.collisionC+b.collisionCC].rad = b.dot[j].rad;
+		b.contact[b.collisionC+b.collisionCC].tangent = b.dot[j].rad+ Math.PI/2;
+		this.collisionCC++;
+		b.collisionCC++;
+	}
+}
+
+//正円と歪円の吸収判定
+Character.prototype.absorption01 = function(b){
+	var rad = Math.atan2(b.position.y- this.position.y, b.position.x- this.position.x);
+	var i = (Math.round(rad* this.dot.length/Math.PI/2) + this.dot.length)% this.dot.length;
+	//正円と一番近い歪円のdotがどこにあるのかを調べる。iがdot_numberになる
+	if(this.dot[(i+1)%b.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+		i++;
+		if(i >= this.dot.length) i = 0;
+		while(this.dot[(i+1)%b.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length() ){
+			i++;
+			if(i >= this.dot.length) i = 0;
+		}
+	}
+	else{
+		while(this.dot[(i+this.dot.length-1)%this.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+			i--;
+			if(i <= 0) i = this.dot.length-1;
+		}
+	}
+	var len = this.dot[i].distance(b.position).length();
+	if(len < b.size*0.95){
+		//二体間の重心を求める
+		var cp = new Point();
+		cp.x = (this.weight * this.position.x + b.weight * b.position.x) / (this.weight + b.weight);
+		cp.y = (this.weight * this.position.y + b.weight * b.position.y) / (this.weight + b.weight);
+
+		//吸収後の速度を求める
+		var cv = new Point();
+		cv.x = (this.weight * this.velocity.x + b.weight * b.velocity.x) / (this.weight + b.weight);
+		cv.y = (this.weight * this.velocity.y + b.weight * b.velocity.y) / (this.weight + b.weight);
+
+		//古いほうのボールのaliveフラグを偽にし、位置情報と速度、サイズ、質量を更新する
+		b.alive = false;
+		b.collisionC  =0 ;
+		b.collisionCC = 0;
+		//b.position.x = cp.x;
+		//b.position.y = cp.y;
+		this.velocity.x = cv.x;
+		this.velocity.y = cv.y;
+		this.weight = b.weight + this.weight;
+		this.size = Math.sqrt(this.weight);
+	}
+}
+
+//歪円と歪円の吸収判定
+Character.prototype.absorption02 = function(b){
+	//歪円1の中心と一番近い歪円2のdotがどこにあるのかを調べる。iがdot_numberになる
+	var rad01 = Math.atan2(b.position.y- this.position.y, b.position.x- this.position.x);
+	var i = (Math.round(rad01* this.dot.length/Math.PI/2)+ this.dot.length)% this.dot.length;
+	if(this.dot[(i+1)%this.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+		i++
+		if(i >= this.dot.length) i =0;
+		while(this.dot[(i+1)%b.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+			i++;
+			if(i >= this.dot.length) i = 0;
+		}
+	}
+	else{
+		while(this.dot[(i+this.dot.length-1)%this.dot.length].distance(b.position).length() < this.dot[i].distance(b.position).length()){
+			i--;
+			if(i <= 0) i = this.dot.length-1;
+		}
+	}
+	//歪円2の中心と一番近い歪円1のdotがどこにあるのかを調べる。iがdot_numberになる
+	var rad02 = Math.atan2(this.position.y- b.position.y, this.position.x- b.position.x);
+	var j = (Math.round(rad02* b.dot.length/Math.PI/2)+ b.dot.length)% b.dot.length;
+	if(b.dot[(j+1)%b.dot.length].distance(this.position).length() < b.dot[j].distance(this.position).length()){
+		j++
+		if(j >= b.dot.length) j = 0;
+		while(b.dot[(j+1)%b.dot.length].distance(this.position).length() < b.dot[j].distance(this.position).length()){
+			j++;
+			if(j >= b.dot.length) j = 0;
+		}
+	}
+	else{
+		while(b.dot[(j+b.dot.length-1)%b.dot.length].distance(this.position).length() <  b.dot[j].distance(this.position).length()){
+			j--;
+			if(j <= 0) j= b.dot.length-1;
+		}
+	}
+	var len01 = this.dot[i].distance(this.position).length();
+	var len02 = b.dot[j].distance(b.position).length();
+	if( this.position.distance(b.position).length()* 1.05 < len01+ len02){
+		//二体間の重心を求める
+		var cp = new Point();
+		cp.x = (this.weight * this.position.x + b.weight * b.position.x) / (this.weight + b.weight);
+		cp.y = (this.weight * this.position.y + b.weight * b.position.y) / (this.weight + b.weight);
+
+		//吸収後の速度を求める
+		var cv = new Point();
+		cv.x = (this.weight * this.velocity.x + b.weight * b.velocity.x) / (this.weight + b.weight);
+		cv.y = (this.weight * this.velocity.y + b.weight * b.velocity.y) / (this.weight + b.weight);
+
+		//古いほうのボールのaliveフラグを偽にし、位置情報と速度、サイズ、質量を更新する
+		b.alive = false;
+		b.collisionC  = 0;
+		b.collisionCC = 0;
+		//b.position.x = cp.x;
+		//b.position.y = cp.y;
+		this.velocity.x = cv.x;
+		this.velocity.y = cv.y;
+		this.weight = b.weight + this.weight;
+		this.size = Math.sqrt(this.weight);
+	}
 }

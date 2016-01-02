@@ -18,9 +18,10 @@ var vector;
 var length;
 var lenAlt;
 var radian;
-var keyCode = new Array();
+var keyCode1 = new Array();
+var keyCode2 = new Array();
+var testF = false;
 var e = 0.6;
-var lastSpace = false;
 var pauseF = false;
 var lCounter = 0;
 
@@ -100,11 +101,11 @@ window.onload = function(){
 object[0].set(   0, 497, 800, 316, 0, 0, 3);
 object[1].set(-300,-300, 300, 812, 0, 0, 3);
 object[2].set( 800,-300, 300, 812, 0, 0, 3);
-object[3].set(  40, 463, 100,  10, -Math.PI / 15, 0, 0);
+object[3].set(  40, 463, 100,  10, -Math.PI / 15, 0, 1);
 object[4].set( 100, 228,  80,  80, Math.PI / 8,  0, 2);
-object[5].set( 280, 330, 240,  75, 0,     0, 2);
+object[5].set( 280, 330, 450,  75, 0,     0, 2);
 object[7].set(  30, 330, 220,  75, 0,     0, 2);
-object[8].set( 470, 330,  60,  100,  0., 0, 1);
+//object[8].set( 470, 330,  60,  100,  0., 0, 1);
 //aobject[6].set( 360,  40,  30, 250, 0.1,          0, 3);
 /*object[3].set(   0, 130,  74,  75, 0,  0,  2);
 object[5].set( 272, 130, 170,  75, 0.0,            0, 3);
@@ -112,7 +113,7 @@ object[4].set(  74, 130, 170,  75, 0.0,            0, 3);
 object[6].set( 442, 130,  30,  367,  0,  0,  3);*/
 //object[8].set( 470, 449,  50,  50, -0.75, 0, 1);
 //チュートリアル用ステージ
-p.x = 100, p.y = 50;
+/*p.x = 100, p.y = 50;
 //test
 //p.x = 700, p.y = 400;
 ball[0].set(p, 25, v, 0);
@@ -144,11 +145,11 @@ object[14].set( 760, 347,  40,  50, 0, 0, 3);
 object[15].set( 280, 280, 420,  30, 0, 0, 3);
 object[16].set( 180, 180,  20, 120, 0, 0, 3);
 object[17].set( 200, 280,  80,  20, 0, 0, 0);
-
+*/
 	//レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 
 	(function(){
-		if(keyCode[32] && !lastSpace) pauseF = !pauseF;
+		if(keyCode1[32] && !keyCode2[32]) pauseF = !pauseF;
 		if(!pauseF){
 			//カcウンターの値を増やす
 			counter ++;
@@ -162,30 +163,34 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 			if(kc){
 				//console.log("入力されたキーコードは " + kc)
 
-				if(keyCode[67]) creatF = true;
-				if(keyCode[65]) ball[0].velocity.x += -0.3; if(ball[0].velocity.x <= -4) ball[0].velocity.x = -4;
-				if(keyCode[87] && ball[0].jumpF) ball[0].velocity.y  =  5; ball[0].jumpF = false
-				if(keyCode[68]) ball[0].velocity.x +=  0.3; if(ball[0].velocity.x >=  4) ball[0].velocity.x =  4;
-				if(keyCode[83]) ball[0].velocity.x =  0;
+				if(keyCode1[67]) creatF = true;
+				if(keyCode1[65]) ball[0].velocity.x += -0.3; if(ball[0].velocity.x <= -4) ball[0].velocity.x = -4;
+				if(keyCode1[87] && ball[0].jumpF){
+				ball[0].velocity.y = 7;
+				ball[0].jumpF = false;
+				testF = false;
+				}
+				if(keyCode1[68]) ball[0].velocity.x +=  0.3; if(ball[0].velocity.x >=  4) ball[0].velocity.x =  4;
+				if(keyCode1[83]) ball[0].velocity.x =  0;
 				
-				if(keyCode[70]) ball[0].velocity.x  = -3;
-				if(keyCode[84]) ball[0].velocity.y  =  3;
-				if(keyCode[72]) ball[0].velocity.x  =  3;
+				if(keyCode1[70]) ball[0].velocity.x  = -3;
+				if(keyCode1[84]) ball[0].velocity.y  =  3;
+				if(keyCode1[72]) ball[0].velocity.x  =  3;
 
-				if(keyCode[39]) ball[0].position.x += 0.3;
-				if(keyCode[37]) ball[0].position.x -= 0.3;
+				if(keyCode1[39]) ball[0].position.x += 0.3;
+				if(keyCode1[37]) ball[0].position.x -= 0.3;
 
-				if(keyCode[73]) fps = 1000 / 2 ;
-				if(keyCode[79]) fps = 1000 / 20;
-				if(keyCode[80]) fps = 1000 / 60;
-				if(keyCode[76]) lCounter++
+				if(keyCode1[73]) fps = 1000 / 2 ;
+				if(keyCode1[79]) fps = 1000 / 20;
+				if(keyCode1[80]) fps = 1000 / 60;
+				if(keyCode1[76]) lCounter++
 				
-				if(keyCode[81]) ball[0].position.x = 345;
+				if(keyCode1[81]) ball[0].position.x = 345;
 
 			}
 
 
-			if(!keyCode[65] && !keyCode[68]) ball[0].velocity.x *= 0.85;
+			if(!keyCode1[65] && !keyCode1[68]) ball[0].velocity.x *= 0.85;
 
 
 
@@ -256,7 +261,7 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 					//衝突カウンターと接点、歪フラグを初期化
 					ball[i].collisionC = 0;
 					ball[i].collisionCC = 0;
-					for(j=0; j<=7; j++){
+					for(j=0; j<ball[i].contact.length; j++){
 						ball[i].contact[j].x = 0;
 						ball[i].contact[j].y = 0;
 						ball[i].distortionF = false;
@@ -286,6 +291,9 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 							ball[j].positionCorrect(ball[i]);
 							//ボールの衝突後の速度を求める
 							ball[j].collisionCalculate(ball[i]);
+							//ボールの互いの接触判定をtrueにし、二回衝突判定を取らないようにする
+							ball[i].ballCollisionF[j] = true;
+							ball[j].ballCollisionF[i] = true;
 						}
 						else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color != 3){
 							if(!i && ball[0].size < ball[j].size + 1){
@@ -317,7 +325,7 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 			length = ball[0].position.distance(mouse).length() - ball[0].size;
 			radian = Math.atan2(vector.y, vector.x);
 
-			if(keyCode[16]){
+			if(keyCode1[16]){
 				var n = Math.round(Math.atan2(vector.y, vector.x) * 4 / Math.PI);
 				radian = n / 4 * Math.PI;
 				switch(n % 4){
@@ -339,10 +347,9 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 				}
 			}
 
-			if(length >= 280) length = 280;
+			if(length >= 380) length = 380;
 		};
 
-		lastSpace = keyCode[32];
 
 
 
@@ -390,17 +397,37 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 		//ボールのひずみを計算する
 		//2点以上で物体に接している場合
 		for(i=0; i<=BALL_MAX_COUNT; i++){
+			var excessC = 0;
+			//各接点において、ボールの中心座標からの角度とめり込みぐらいを計算する。あと接線の角度を計算する
+			for(j=0; j<ball[i].collisionC; j++){
+				ball[i].contact[j].rad = Math.atan2(ball[i].contact[j].y - ball[i].lastPosition.y, ball[i].contact[j].x - ball[i].lastPosition.x);
+				ball[i].contact[j].excess = ball[i].size - ball[i].lastPosition.distance(ball[i].contact[j]).length();
+				if(ball[i].contact[j].tangent == "NaN") ball[i].contact[j].tangent = ball[i].contact[j].rad + Math.PI/2;
+				if(ball[i].contact[j].excess >= ball[i].size* 0.25) excessC++;
+			}
+			//各接点において、接点の座標が極めて近いときはその接点を無視する。
+			for(j=0; j<ball[i].collisionC-1; j++){
+				for(k=j+1; k<ball[i].collisionC; k++){
+					if(ball[i].contact[j].distance(ball[i].contact[k]).length() < 0.1){
+						console.log(1)
+						for(l=k; l<ball[i].collisionC; l++){
+							ball[i].contact[l] = ball[i].contact[l+1];
+						}
+						ball[i].collisionC--;
+					}
+				}
+			}
 			if(ball[i].alive && ball[i].collisionC >= 2){
-				ball[i].position.x = ball[i].lastPosition.x
-				ball[i].position.y = ball[i].lastPosition.y
-				var excessC = 0;
+				ball[i].position.x = ball[i].lastPosition.x;
+				ball[i].position.y = ball[i].lastPosition.y;
+				/*var excessC = 0;
 				//各接点において、ボールの中心座標からの角度とめり込みぐらいを計算する。あと接線の角度を計算する
 				for(j=0; j<=ball[i].collisionC-1; j++){
 					ball[i].contact[j].rad = Math.atan2(ball[i].contact[j].y - ball[i].position.y, ball[i].contact[j].x - ball[i].position.x);
 					ball[i].contact[j].excess = ball[i].size - ball[i].position.distance(ball[i].contact[j]).length();
 					if(ball[i].contact[j].tangent == "NaN") ball[i].contact[j].tangent = ball[i].contact[j].rad + Math.PI/2;
 					if(ball[i].contact[j].excess >= ball[i].size* 0.25) excessC++;
-				}
+				}*/
 				//もしボールが３つ以上の接点を持っている場合
 				if(ball[i].collisionC >= 3){
 					//excessの値が大きい接点を上から２つ選び、maxとして保存する
@@ -441,13 +468,15 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 				//もし各接点でボールが基準値よりめり込んでいたら破裂する
 				if(excessC >= ball[i].collisionC){
 					ball[i].alive = false;
+					ball[i].collisionC = 0;
+					ball[i].collisionCC = 0;
 					var amount = Math.floor((Math.random()*3) + 7);
 					for(j=BALL_MAX_COUNT; j >= BALL_MAX_COUNT - amount; j--){
 						ball[j].size = Math.random()*3+Math.sqrt(ball[i].weight/amount)-2;
 						ball[j].velocity.x = Math.random()*12 - 6;
 						ball[j].velocity.y = Math.random()*12;
 						ball[j].set(ball[i].position, ball[j].size, ball[j].velocity, Math.ceil(Math.random()*2));
-						ball[j].touchF = false
+						ball[j].touchF = false;
 					}
 				}
 				else{
@@ -478,9 +507,6 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 					ball[i].position.x += 2*power.x/ ball[i].size;
 					ball[i].position.y += 2*power.y/ ball[i].size;
 					//ベジエ曲線で歪みを表現していく。ついでに曲線状の各点の座標を計算していく
-					ctx.beginPath();
-					ctx.moveTo(ball[i].contact[0].x, ball[i].contact[0].y);
-					//var bezier = new Array(ball[i].collisionC);
 					for(j=0; j<ball[i].collisionC; j++){
 						//bezier[j] = {};
 						ball[i].bezier[j].arc1 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[j].excess)* Math.tan(ball[i].rad_gap[j]/4);
@@ -527,20 +553,34 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 		
 		//もう一度衝突判定を行う========================================================================================================
 		for(i=0; i<BALL_MAX_COUNT; i++){
-			if(ball[i].distortionF == true){
+			if(ball[i].distortionF){
 				//歪円と壁の衝突判定をもう一度行う
 				for(j=0; j<OBJECT_MAX_COUNT; j++){
 					if(ball[i].touchArea[j].num != 0) object[j].collision02(ball[i], j);
 				}
 				//歪円とそれより遅い番号の円の衝突判定を行う
 				for(j=0; j<BALL_MAX_COUNT; j++){
-					if(ball[j].alive == true && i!=j && ball[i].color != ball[j].color){
-						if(ball[j].distortionF == false) ball[i].collision01(ball[j]);
-						else                             ball[i].collision02(ball[j]);
+					if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
+						if(ball[i].color == ball[j].color && i!=j){
+							if(!ball[j].distortionF) ball[i].absorption01(ball[j]);
+							else if(i<j)             ball[i].absorption02(ball[j]);
+						}
+						else if(!ball[i].ballCollisionF[j] && ball[i].alive){
+							if(!ball[j].distortionF) ball[i].collision01(ball[j]);
+							else if(i<j)             ball[i].collision02(ball[j]);
+						}
 					}
 				}
 			}
 		}
+					/*if(ball[j].alive && ball[j].touchF && i!=j && ball[i].color != ball[j].color && !ball[i].ballCollisionF[j]){
+						if(ball[j].distortionF == false) ball[i].collision01(ball[j]);
+						else                             ball[i].collision02(ball[j]);
+					}
+					if(ball[j].alive && ball[j].touchF)
+				}
+			}
+		}*/
 		
 		
 		for(i=0; i<BALL_MAX_COUNT; i++){
@@ -549,15 +589,28 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 				if(ball[i].collisionCC>0){
 					//新しくできた接点のめり込みぐらいから、中心座標が受けるべき力の大きさ、方向を計算する
 					var power = new Point();
-					for(j=ball[i].collisionC; j<=ball[i].collisionC+ball[i].collisionCC; j++){
+					for(j=ball[i].collisionC; j<ball[i].collisionC+ball[i].collisionCC; j++){
+						console.log(ball[i].contact[j].excess)
 						if(ball[i].contact[j].excess<0) continue;
 						power.x += ball[i].contact[j].excess* ball[i].contact[j].excess* -Math.cos(ball[i].contact[j].rad);
 						power.y += ball[i].contact[j].excess* ball[i].contact[j].excess* -Math.sin(ball[i].contact[j].rad);
 						ball[i].contact[j].excess = ball[i].size - ball[i].position.distance(ball[i].contact[j]).length();
 					}
-					ball[i].position.x += power.x/ ball[i].size;
-					ball[i].position.y += power.y/ ball[i].size;
-					//新しくできた接点を既存の接点の間に差し込んでいく
+					ball[i].position.x += power.x/ ball[i].size*2;
+					ball[i].position.y += power.y/ ball[i].size*2;
+					
+					//各接点を中心からの角度が小さい順に並び返す
+					for(j=0; j<ball[i].collisionC+ball[i].collisionCC; j++){
+						for(k=ball[i].collisionC+ball[i].collisionCC-1; k>j; k--){
+							if(ball[i].contact[k-1].rad > ball[i].contact[k].rad){
+							var temp
+								temp = ball[i].contact[k];
+								ball[i].contact[k] = ball[i].contact[k-1];
+								ball[i].contact[k-1] = temp;
+							}
+						}
+					}
+					/*//新しくできた接点を既存の接点の間に差し込んでいく
 					for(j=0; j<ball[i].collisionCC; j++){
 						for(k=0; k<ball[i].collisionCC+j+1; k++){
 							if(ball[i].contact[ball[i].collisionC+j].rad < ball[i].contact[k].rad){
@@ -570,7 +623,7 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 								break;
 							}
 						}
-					}
+					}*/
 					
 					//それぞれの接点間の角度を改めて計算する。あと曲線の変わり目がどこにあるのか計算する
 					for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
@@ -579,7 +632,6 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 					}
 					
 					//ベジエ曲線で歪みを表現していく
-					ctx.beginPath();
 					for(j=0; j<ball[i].collisionC+ball[i].collisionCC; j++){
 						ball[i].bezier[j].arc1 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[j].excess)* Math.tan(ball[i].rad_gap[j]/4);
 						ball[i].bezier[j].arc2 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].excess)* Math.tan(ball[i].rad_gap[j]/4);
@@ -604,6 +656,7 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 					}
 				}
 				//そうでないなら前のまま書く
+				ctx.beginPath();
 				ctx.moveTo(ball[i].contact[0].x, ball[i].contact[0].y)
 				for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
 					//ベジエで曲線を描いていく
@@ -640,15 +693,19 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 					ctx.fillStyle = GRAY;
 					ctx.fill()
 				}
+			//もう一回歪フラグを真にする
+			ball[i].distortionF = true;
 			}
 		}
 		
+		//衝突判定ここまで================================================================================================================
+
 		//ジャンプフラグの確認を行う
+		if(keyCode1[87] && !keyCode2[87]) testF = true;
 		for(j=0; j<ball[0].collisionC+ball[0].collisionCC; j++){
 			var j_rad = (ball[0].contact[j].tangent+ 2*Math.PI)% (2*Math.PI);
-			if(j_rad >= 3/4* Math.PI && j_rad <= 5/4* Math.PI) ball[0].jumpF = true;
+			if(j_rad >= 3/4* Math.PI && j_rad <= 5/4* Math.PI && testF) ball[0].jumpF = true;
 		}
-
 		//球の描写
 		for(i=0; i<BALL_MAX_COUNT; i++){
 			if(ball[i].alive　&& !ball[i].distortionF){
@@ -744,8 +801,8 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 
 console.log(ball[0]);
 console.log(ball[1]);
-console.log(ball[5]);
-console.log(ball[6]);
+console.log(ball[2]);
+console.log(ball[3]);
 
 
 
@@ -753,6 +810,12 @@ console.log(ball[6]);
 		//その他の設定----------------------------------------------------------------------------------------------------
 		//キーコード初期化
 		//kc = null;
+		//前フレームにキーを押していたかの情報
+		keyCode2[32] = keyCode1[32];
+		keyCode2[87] = keyCode1[87];
+		for(i=0; i<BALL_MAX_COUNT; i++){
+			ball[i].ballCollisionF.length = 0;
+		}
 
 		//HTMLを更新
 		info.innerHTML = "PLAYER WEIGHT: " + ball[0].weight +
@@ -781,12 +844,12 @@ var mouseMove = function(e){
 
 var keyDown = function(e){
 	kc = e.keyCode;
-	keyCode[kc] = true;
-	if(keyCode[27]) run = false;
+	keyCode1[kc] = true;
+	if(keyCode1[27]) run = false;
 };
 
 var keyUp = function(e){
-	keyCode[e.keyCode] = false;
+	keyCode1[e.keyCode] = false;
 };
 
 var mouseDown = function(e){
@@ -801,5 +864,5 @@ var mouseUp = function(e){
 window.onblur = function (){
 
 	// 配列をクリアする
-	keyCode.length = 0;
+	keyCode1.length = 0;
 };

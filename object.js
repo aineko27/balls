@@ -215,8 +215,8 @@ Object.prototype.collision02 = function(b, j){
 			b.contact[b.collisionC+ b.collisionCC].y = ((b.position.y* b.dot[dot_number].x- b.position.x* b.dot[dot_number].y)* Math.sin(rad)- (b.touchArea[j].y* (b.touchArea[j].x+ Math.cos(rad))- b.touchArea[j].x* (b.touchArea[j].y+ Math.sin(rad)))* (b.dot[dot_number].y- b.position.y))/ div;
 			b.contact[b.collisionC+ b.collisionCC].rad = rad + Math.PI/2; 
 			b.contact[b.collisionC+ b.collisionCC].tangent = rad + Math.PI;
-			b.contact[b.collisionC+ b.collisionCC].excess = Math.cos(rad)* (b.dot[dot_number].y- b.contact[b.collisionC].y)- Math.sin(rad)* (b.dot[dot_number].x- b.contact[b.collisionC].x);
-			console.log(b.contact[b.collisionC+ b.collisionCC].excess)
+			b.contact[b.collisionC+ b.collisionCC].excess = Math.cos(rad)* (b.dot[dot_number].y- b.contact[b.collisionC+ b.collisionCC].y)- Math.sin(rad)* (b.dot[dot_number].x- b.contact[b.collisionC+ b.collisionCC].x);
+			console.log(dot_number, b.dot[dot_number], b.contact[b.collisionC], b.contact[b.collisionC+ b.collisionCC].excess)
 			b.collisionCC++;
 		}
 		return;
