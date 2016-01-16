@@ -5,7 +5,7 @@ var run = true;
 var fps = 1000 / 60;
 var mouse = new Point();
 var ctx;
-var counter;
+var counter = 0;
 var creatF = false;
 var prepLF = false;
 var prepRF = false;
@@ -24,6 +24,8 @@ var testF = false;
 var e = 0.6;
 var pauseF = false;
 var lCounter = 0;
+var nowStage = 0;
+
 
 // -const -------------------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +49,7 @@ window.onload = function(){
 	var i, j, k, l;
 	var p = new Point();
 	var v = new Point();
-	vector = new Point();
+	var vector = new Point();
 
 
 	//スクリーンの初期化
@@ -97,55 +99,10 @@ window.onload = function(){
 	v.y = 0;
 	ball[0].set(p, 15, v, 0);
 	
-//test
-object[0].set(   0, 497, 800, 316, 0, 0, 3);
-object[1].set(-300,-300, 300, 812, 0, 0, 3);
-object[2].set( 800,-300, 300, 812, 0, 0, 3);
-object[3].set(  40, 463, 100,  10, -Math.PI / 15, 0, 1);
-object[4].set( 100, 228,  80,  80, Math.PI / 8,  0, 2);
-object[5].set( 280, 330, 450,  75, 0,     0, 2);
-object[7].set(  30, 330, 220,  75, 0,     0, 2);
-//object[8].set( 470, 330,  60,  100,  0., 0, 1);
-//aobject[6].set( 360,  40,  30, 250, 0.1,          0, 3);
-/*object[3].set(   0, 130,  74,  75, 0,  0,  2);
-object[5].set( 272, 130, 170,  75, 0.0,            0, 3);
-object[4].set(  74, 130, 170,  75, 0.0,            0, 3);
-object[6].set( 442, 130,  30,  367,  0,  0,  3);*/
-//object[8].set( 470, 449,  50,  50, -0.75, 0, 1);
-//チュートリアル用ステージ
-/*p.x = 100, p.y = 50;
-//test
-//p.x = 700, p.y = 400;
-ball[0].set(p, 25, v, 0);
-p.x = 285, p.y = 120;
-ball[1].set(p, 45, v, 1);
-p.x = 650, p.y = 135;
-ball[2].set(p, 15, v, 2);
-p.x = 700, p.y = 135;
-ball[3].set(p, 15, v, 1);
-p.x = 750, p.y = 135;
-ball[4].set(p, 15, v, 2);
-p.x = 240, p.y = 480;
-ball[5].set(p, 22, v, 1);
-p.x = 220, p.y = 420;
-ball[6].set(p, 22, v, 2);
 
-object[03].set(   0, 140, 220,  10, 0, 0, 3);
-object[04].set(   0, 150, 760,  30, 0, 0, 3);
-object[05].set( 200,   0, 150,  80, 0, 0, 3);
-object[06].set( 350,   0,  40, 100, 0, 0, 3);
-object[07].set( 600,   0, 200, 110, 0, 0, 3);
-object[08].set( 280, 467, 200,  30, 0, 0, 3);
-object[09].set( 280, 400, 200,  67, 0, 0, 2);
-object[10].set( 280, 310, 200,  90, 0, 0, 3);
-object[11].set( 180, 350,  20, 147, 0, 0, 3);
-object[12].set( 680, 447, 120,  50, 0, 0, 3);
-object[13].set( 720, 397,  80,  50, 0, 0, 3);
-object[14].set( 760, 347,  40,  50, 0, 0, 3);
-object[15].set( 280, 280, 420,  30, 0, 0, 3);
-object[16].set( 180, 180,  20, 120, 0, 0, 3);
-object[17].set( 200, 280,  80,  20, 0, 0, 0);
-*/
+//初期ステージ読み込み
+stage00(ball, object);
+
 	//レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 
 	(function(){
@@ -160,10 +117,17 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 
 			//入力による変更-------------------------------------------------------------------------------------------
 
+			/*if(counter>200){
+			ball[0].size = 65;
+			ball[0].weight = 4225;
+			keyCode1[68]  = true;
+			kc = true;
+			}*/
 			if(kc){
 				//console.log("入力されたキーコードは " + kc)
 
-				if(keyCode1[67]) creatF = true;
+				if(keyCode1[67]) creatF = 1;// true;
+				if(keyCode1[86]) creatF = 2;
 				if(keyCode1[65]) ball[0].velocity.x += -0.3; if(ball[0].velocity.x <= -4) ball[0].velocity.x = -4;
 				if(keyCode1[87] && ball[0].jumpF){
 				ball[0].velocity.y = 7;
@@ -180,25 +144,47 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 				if(keyCode1[39]) ball[0].position.x += 0.3;
 				if(keyCode1[37]) ball[0].position.x -= 0.3;
 
+				if(keyCode1[85]) fps = 2000 / 1 ;
 				if(keyCode1[73]) fps = 1000 / 2 ;
 				if(keyCode1[79]) fps = 1000 / 20;
 				if(keyCode1[80]) fps = 1000 / 60;
+				if(keyCode1[192]) fps = 1000/120;
 				if(keyCode1[76]) lCounter++
 				
 				if(keyCode1[81]) ball[0].position.x = 345;
-
+				if(keyCode1[90]){
+				ball[0].size = 65;
+				ball[0].weight = 4225;
+				}
 			}
 
 
 			if(!keyCode1[65] && !keyCode1[68]) ball[0].velocity.x *= 0.85;
+			
+			//ステージ読み込み================================================================================================
+			if(keyCode1[48]) stage00(ball, object);
+			if(keyCode1[49]) stage01(ball, object);
+			if(keyCode1[50]) stage02(ball, object);
+			if(keyCode1[51]) stage03(ball, object);
+			if(keyCode1[52]) stage04(ball, object);
+			
+			//ステージごとのフラグ管理
+			//ステージ1について
+			if(nowStage == 1){
+				if(ball[0].position.x > 800) stage02(ball, object);
+				for(i=0; i<ball.length; i++){
+					if(ball[i].position.x > 755 && ball[i].position.y>220 && ball[i].position.y < 260) object[4].alive = false;
+				}
+			}
 
 
 
 			//フラグ管理-----------------------------------------------------------------------------------------------
 
+			
 			//他機生成
 			if(creatF){
-				for(i = 0; i < BALL_MAX_COUNT; i++){
+				for(i = 1; i < BALL_MAX_COUNT; i++){
 					if(!ball[i].alive){
 						p.x = mouse.x;
 						p.y = mouse.y;
@@ -206,6 +192,7 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 						v.y = 0;
 						var s = 10//Math.floor(Math.random() * 4) + 6;
 						var c = 1//Math.floor(Math.random() * 2) + 1;
+						if(creatF == 2) c = 2;
 						ball[i].set(p, s, v, c);
 						creatF = false;
 						break;
@@ -258,65 +245,155 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 					}
 					//速度を位置情報に変換
 					ball[i].move();
-					//衝突カウンターと接点、歪フラグを初期化
-					ball[i].collisionC = 0;
-					ball[i].collisionCC = 0;
-					for(j=0; j<ball[i].contact.length; j++){
-						ball[i].contact[j].x = 0;
-						ball[i].contact[j].y = 0;
+					if(ball[i].touchF){
+						//衝突カウンターと接点、歪フラグを初期化
+						ball[i].collisionC = 0;
+						ball[i].collisionCC = 0;
 						ball[i].distortionF = false;
-					}
-					//周りの点の情報を更新
-					for(j=0; j<ball[i].dot.length; j++){
-						ball[i].dot[j].x = ball[i].position.x+ ball[i].size* Math.cos(j* 2* Math.PI/ ball[i].dot.length);
-						ball[i].dot[j].y = ball[i].position.y+ ball[i].size* Math.sin(j* 2* Math.PI/ ball[i].dot.length);
-					}
-					//現在の位置情報を仮の値で保存しておく
-					ball[i].lastPosition.x = ball[i].position.x;
-					ball[i].lastPosition.y = ball[i].position.y;
-					//歪円当り判定チャンスをfalseにしておく
-					for(j=0; j<ball[i].touchArea.length; j++){
-						ball[i].touchArea[j].num = 0;
-					}
-				}
-			}
-
-			//ボール同士の衝突、結合
-			for(i = 0; i < BALL_MAX_COUNT; i++){
-				for(j = i + 1; j < BALL_MAX_COUNT; j++){
-					if(ball[i].alive && ball[i].touchF && ball[j].alive && ball[j].touchF){
-						p = ball[j].position.distance(ball[i].position);
-						if( (p.length() < ball[j].size + ball[i].size) && (ball[i].color + ball[j].color == 3|| !i && ball[0].size < ball[j].size + 1) ){
-							//ボールのめり込んだ位置関係を元に戻す
-							ball[j].positionCorrect(ball[i]);
-							//ボールの衝突後の速度を求める
-							ball[j].collisionCalculate(ball[i]);
-							//ボールの互いの接触判定をtrueにし、二回衝突判定を取らないようにする
-							ball[i].ballCollisionF[j] = true;
-							ball[j].ballCollisionF[i] = true;
+						for(j=0; j<ball[i].contact.length; j++){
+							ball[i].contact[j].x = 0;
+							ball[i].contact[j].y = 0;
+							ball[i].contact[j].rad = 0;
+							ball[i].contact[j].excess = 0;
+							ball[i].contact[j].length = 0;
+							ball[i].contact[j].tangent = 0;
 						}
-						else if( p.length() < ball[j].size + ball[i].size - 2 && ball[i].color + ball[j].color != 3){
-							if(!i && ball[0].size < ball[j].size + 1){
-								break;
+						//周りの点の情報を更新
+						for(j=0; j<ball[i].dot.length; j++){
+							if(!ball[i].lastDistortion){
+								ball[i].dot[j].rel.x = ball[i].size* Math.cos(j* 2* Math.PI/ ball[i].dot.length);
+								ball[i].dot[j].rel.y = ball[i].size* Math.sin(j* 2* Math.PI/ ball[i].dot.length);
+								ball[i].dot[j].abs.x = ball[i].position.x+ ball[i].dot[j].rel.x;
+								ball[i].dot[j].abs.y = ball[i].position.y+ ball[i].dot[j].rel.y;
 							}
-							//ボール同士を結合する
-							ball[j].absorptionCalculate(ball[i]);
+							else{
+								ball[i].dot[j].rel.x = (90*ball[i].dot[j].rel.x + 10*ball[i].size* Math.cos(j* 2* Math.PI/ ball[i].dot.length))/100;
+								ball[i].dot[j].rel.y = (90*ball[i].dot[j].rel.y + 10*ball[i].size* Math.sin(j* 2* Math.PI/ ball[i].dot.length))/100;
+								ball[i].dot[j].abs.x = ball[i].position.x+ ball[i].dot[j].rel.x;
+								ball[i].dot[j].abs.y = ball[i].position.y+ ball[i].dot[j].rel.y;
+							}
+						}
+						//現在の位置情報を仮の値で保存しておく
+						ball[i].lastPosition.x = ball[i].position.x;
+						ball[i].lastPosition.y = ball[i].position.y;
+						//歪円当り判定チャンスをfalseにしておく
+						for(j=0; j<ball[i].touchArea.length; j++){
+							ball[i].touchArea[j].num = 0;
 						}
 					}
 				}
 			}
-
-			//壁との衝突
-			for(i = 0; i < BALL_MAX_COUNT; i++){
+			
+			//吸収判定、衝突判定について========================================================================================
+			for(i=0; i<ball.length; i++){
 				if(ball[i].alive && ball[i].touchF){
-					for(j = 0; j < OBJECT_MAX_COUNT; j++){
-						if(object[j].alive && ball[i].color != object[j].color){
-							//ボールと壁の衝突判定を行う
-							object[j].collision01(ball[i], j);
+					for(j=i+1; j<ball.length; j++){
+						if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
+							//ここまではお互いの球が生きていて十分に近いかの判定。ここからは2つの球の色から吸収するのか反発するのかの計算
+							if(ball[i].color == ball[j].color || ((ball[i].color == 0) && (ball[i].size > ball[j].size))){
+								//ボールが発射された直後は吸収判定を取らない
+								if(ball[i].color==0 && ball[j].firedC + 3 > counter) continue;
+								//この場合は吸収判定になる
+								if(!ball[i].lastDistortion && !ball[j].lastDistortion){
+									//ここはどちらも正円だった場合の当り判定
+									ball[i].absorption01(ball[j]);
+								}
+								else if(ball[i].lastDistortion && !ball[j].lastDistortion){
+									//ここは若い番号が歪円、遅い番号が正円だった場合
+									ball[i].absorption02(ball[j], true);
+								}
+								else if(!ball[i].lastDistortion && ball[j].lastDistortion){
+									//ここは若い番号が正円、遅い番号が歪円だった場合
+									ball[j].absorption02(ball[i], false);
+								}
+								else{
+									//ここはどちらも歪円だった場合
+									ball[i].absorption03(ball[j])
+								}
+							}
 						}
 					}
 				}
-			};
+			}
+			//衝突判定始まり=================================================================================================
+			
+			//ボールの衝突判定について
+			for(i=0; i<ball.length; i++){
+				if(ball[i].alive && ball[i].touchF){
+					//ボールがひずんでいるかで場合分けをする必要がある
+					if(true){//!ball[i].lastDistortion){
+						//この場合はボールは正円
+						for(j=i+1; j<ball.length; j++){
+							//ボールが発射された直後は吸収判定を取らない
+							if(ball[i].color==0 && ball[j].firedC + 3 > counter) continue;
+							//まずはほかのボールとの当り判定
+							if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
+								if(!ball[j].lastDistortion){
+									//ここはどちらも正円だった場合の当り判定
+									ball[i].collision01(ball[j]);
+								}
+								else{
+									//ここは若い番号が正円、遅い番号が歪円だった場合
+									ball[j].collision02(ball[i], false);
+								}
+							}
+						}
+						//次に壁との当り判定
+						for(j=0; j<object.length; j++){
+							if(object[j].alive && ball[i].color != object[j].color){
+								object[j].collision01(ball[i], j)
+							}
+						}
+						if(!ball[i].lastDistortion){
+							ball[i].touchCheck();
+							//得られた接点の数からボールの状態を場合分けする
+							if(ball[i].collisionC == 0) continue;
+							else if(ball[i].collisionC == 1) ball[i].bound();//この後にもう一回移動した先で当り判定を取る必要がある
+							else{
+								//ball[i].bound();
+								ball[i].distort(ball);
+							}
+						}
+					}
+					//一度目の衝突判定終わり、次は二回目=========================================================================
+					if(ball[i].lastDistortion || ball[i].distortionF){
+						//この場合はボールは歪円
+						for(j=i+1; j<ball.length; j++){
+							//ボールが発射された直後は吸収判定を取らない
+							if(ball[i].color==0 && ball[j].firedC + 3 > counter) continue;
+							//まずはほかのボールとの当り判定
+							if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
+								if(!ball[j].lastDistortion){
+									//ここは若い番号が歪円で遅い番号が正円だった場合
+									ball[i].collision02(ball[j], true);
+								}
+								else{
+									//ここはどちらも歪円だった場合
+									ball[i].collision03(ball[j]);
+								}
+							}
+						}
+						//次に壁との当り判定
+						for(j=0; j<object.length; j++){
+							if(object[j].alive && ball[i].color != object[j].color){
+								object[j].collision02(ball[i], j);
+							}
+						}
+						ball[i].touchCheck();
+						var num = ball[i].collisionC + ball[i].collisionCC;
+						if(num==0) continue;
+						if(num==1) ball[i].bound()
+						else{
+							ball[i].distortCheck();
+							ball[i].bound();
+							ball[i].distort(ball);
+						}
+					}
+				}
+			}
+			//当り判定終わり==================================================================================================
+			
+
 
 
 			//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(radian)をそれぞれ計算する
@@ -393,313 +470,6 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 			}
 		}
 		
-		//動体の描画-------------------------------------------------
-		//ボールのひずみを計算する
-		//2点以上で物体に接している場合
-		for(i=0; i<=BALL_MAX_COUNT; i++){
-			var excessC = 0;
-			//各接点において、ボールの中心座標からの角度とめり込みぐらいを計算する。あと接線の角度を計算する
-			for(j=0; j<ball[i].collisionC; j++){
-				ball[i].contact[j].rad = Math.atan2(ball[i].contact[j].y - ball[i].lastPosition.y, ball[i].contact[j].x - ball[i].lastPosition.x);
-				ball[i].contact[j].excess = ball[i].size - ball[i].lastPosition.distance(ball[i].contact[j]).length();
-				if(ball[i].contact[j].tangent == "NaN") ball[i].contact[j].tangent = ball[i].contact[j].rad + Math.PI/2;
-				if(ball[i].contact[j].excess >= ball[i].size* 0.25) excessC++;
-			}
-			//各接点において、接点の座標が極めて近いときはその接点を無視する。
-			for(j=0; j<ball[i].collisionC-1; j++){
-				for(k=j+1; k<ball[i].collisionC; k++){
-					if(ball[i].contact[j].distance(ball[i].contact[k]).length() < 0.1){
-						console.log(1)
-						for(l=k; l<ball[i].collisionC; l++){
-							ball[i].contact[l] = ball[i].contact[l+1];
-						}
-						ball[i].collisionC--;
-					}
-				}
-			}
-			if(ball[i].alive && ball[i].collisionC >= 2){
-				ball[i].position.x = ball[i].lastPosition.x;
-				ball[i].position.y = ball[i].lastPosition.y;
-				/*var excessC = 0;
-				//各接点において、ボールの中心座標からの角度とめり込みぐらいを計算する。あと接線の角度を計算する
-				for(j=0; j<=ball[i].collisionC-1; j++){
-					ball[i].contact[j].rad = Math.atan2(ball[i].contact[j].y - ball[i].position.y, ball[i].contact[j].x - ball[i].position.x);
-					ball[i].contact[j].excess = ball[i].size - ball[i].position.distance(ball[i].contact[j]).length();
-					if(ball[i].contact[j].tangent == "NaN") ball[i].contact[j].tangent = ball[i].contact[j].rad + Math.PI/2;
-					if(ball[i].contact[j].excess >= ball[i].size* 0.25) excessC++;
-				}*/
-				//もしボールが３つ以上の接点を持っている場合
-				if(ball[i].collisionC >= 3){
-					//excessの値が大きい接点を上から２つ選び、maxとして保存する
-					var max1, max2, num1, num2;
-					max1 = 0;
-					max2 = 0;
-					for(j=0; j<ball[i].collisionC; j++){
-						if(ball[i].contact[j].excess > max1){
-							max2 = max1;
-							num2 = num1;
-							max1 = ball[i].contact[j].excess;
-							num1 = j;
-						} 
-						else if(ball[i].contact[j].excess > ball[i].contact[ball[i].contact.length-2].excess){
-							max2 = ball[i].contact[j].excess;
-							num2 = j;
-						}
-					}
-					if(max2) {
-						for(j=0; j<ball[i].collisionC; j++){
-							if((num1 != j && (Math.cos(ball[i].contact[num1].tangent)* (ball[i].contact[j].y - ball[i].contact[num1].y) - Math.sin(ball[i].contact[num1].tangent)* (ball[i].contact[j].x - ball[i].contact[num1].x) < 0.0001))||
-							   (num2 != j && (Math.cos(ball[i].contact[num2].tangent)* (ball[i].contact[j].y - ball[i].contact[num2].y) - Math.sin(ball[i].contact[num2].tangent)* (ball[i].contact[j].x - ball[i].contact[num2].x) < 0.0001))){
-							   var temp;
-							   temp = ball[i].contact[j]
-								for(k=j; k<ball[i].collisionC; k++){
-									if(k == ball[i].collisionC-1) break;
-									ball[i].contact[k] = ball[i].contact[k+1];
-							   }
-							   ball[i].contact[ball[i].collisionC-1] = temp;
-							   ball[i].collisionC--;
-							   ball[i].excessC--;
-							   break;
-							}
-						}
-					}
-				}
-				
-				//もし各接点でボールが基準値よりめり込んでいたら破裂する
-				if(excessC >= ball[i].collisionC){
-					ball[i].alive = false;
-					ball[i].collisionC = 0;
-					ball[i].collisionCC = 0;
-					var amount = Math.floor((Math.random()*3) + 7);
-					for(j=BALL_MAX_COUNT; j >= BALL_MAX_COUNT - amount; j--){
-						ball[j].size = Math.random()*3+Math.sqrt(ball[i].weight/amount)-2;
-						ball[j].velocity.x = Math.random()*12 - 6;
-						ball[j].velocity.y = Math.random()*12;
-						ball[j].set(ball[i].position, ball[j].size, ball[j].velocity, Math.ceil(Math.random()*2));
-						ball[j].touchF = false;
-					}
-				}
-				else{
-					//各接点を中心からの角度が小さい順に並び返す
-					for(j=0; j<ball[i].collisionC; j++){
-						for(k=ball[i].collisionC-1; k>j; k--){
-							if(ball[i].contact[k-1].rad > ball[i].contact[k].rad){
-							var temp
-								temp = ball[i].contact[k];
-								ball[i].contact[k] = ball[i].contact[k-1];
-								ball[i].contact[k-1] = temp;
-							}
-						}
-					}
-					//それぞれの接点間の角度を計算する。あと曲線の変わり目がどこにあるのか計算する
-					for(j=0; j<ball[i].collisionC; j++){
-						ball[i].rad_gap[j] = (ball[i].contact[(j+1)%ball[i].collisionC].rad - ball[i].contact[j].rad + 2*Math.PI) % (2*Math.PI);
-						ball[i].gap_number[j] = (Math.round(ball[i].contact[j].rad* ball[i].dot.length/ Math.PI/2) + ball[i].dot.length) % ball[i].dot.length;
-					}
-					
-					//各接点におけるめり込みぐらいから、中心座標が受けるべき力の大きさ、方向を計算する
-					var power = new Point();
-					for(j=0; j<ball[i].collisionC; j++){
-						if(ball[i].contact[j].excess<=0) continue;
-						power.x += ball[i].contact[j].excess* ball[i].contact[j].excess* -Math.cos(ball[i].contact[j].tangent- Math.PI/2);
-						power.y += ball[i].contact[j].excess* ball[i].contact[j].excess* -Math.sin(ball[i].contact[j].tangent- Math.PI/2);
-					}
-					ball[i].position.x += 2*power.x/ ball[i].size;
-					ball[i].position.y += 2*power.y/ ball[i].size;
-					//ベジエ曲線で歪みを表現していく。ついでに曲線状の各点の座標を計算していく
-					for(j=0; j<ball[i].collisionC; j++){
-						//bezier[j] = {};
-						ball[i].bezier[j].arc1 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[j].excess)* Math.tan(ball[i].rad_gap[j]/4);
-						ball[i].bezier[j].arc2 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[(j+1)%ball[i].collisionC].excess)* Math.tan(ball[i].rad_gap[j]/4);
-						//各接点間の中点を求める
-						ball[i].bezier[j].midPoint = new Point();
-						ball[i].bezier[j].midPoint.x = 1/8* ball[i].contact[j].x+ 3/8* (ball[i].contact[j].x + ball[i].bezier[j].arc1* Math.cos(ball[i].contact[j].tangent))+ 3/8* (ball[i].contact[(j+1)%ball[i].collisionC].x- ball[i].bezier[j].arc2* Math.cos(ball[i].contact[(j+1)%ball[i].collisionC].tangent)) + 1/8* ball[i].contact[(j+1)%ball[i].collisionC].x
-						ball[i].bezier[j].midPoint.y = 1/8* ball[i].contact[j].y+ 3/8* (ball[i].contact[j].y + ball[i].bezier[j].arc1* Math.sin(ball[i].contact[j].tangent))+ 3/8* (ball[i].contact[(j+1)%ball[i].collisionC].y- ball[i].bezier[j].arc2* Math.sin(ball[i].contact[(j+1)%ball[i].collisionC].tangent)) + 1/8* ball[i].contact[(j+1)%ball[i].collisionC].y
-						ball[i].bezier[j].midPoint_tangent = ball[i].contact[j].rad + ball[i].rad_gap[j]/2 + Math.PI/2;
-						ball[i].bezier[j].midPoint_excess = ball[i].size - ball[i].position.distance(ball[i].bezier[j].midPoint).length();
-						ball[i].bezier[j].arc1    = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[j].excess)* Math.tan(ball[i].rad_gap[j]/8);
-						ball[i].bezier[j].arc_mid = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].bezier[j].midPoint_excess)* Math.tan(ball[i].rad_gap[j]/8);
-						ball[i].bezier[j].arc2    = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[(j+1)%ball[i].collisionC].excess)* Math.tan(ball[i].rad_gap[j]/8);
-						//ここから曲線状の各点の座標計算
-						var gap = (ball[i].gap_number[(j+1)%ball[i].collisionC] - ball[i].gap_number[j] + ball[i].dot.length) % ball[i].dot.length
-						for(k=0; k<gap/2; k++){
-							var t = 2*k/gap;
-							ball[i].dot[(ball[i].gap_number[j]+k)%ball[i].dot.length].x = (1-t)*(1-t)*(1-t)*ball[i].contact[j].x + 3*(1-t)*(1-t)*t*(ball[i].contact[j].x+ ball[i].bezier[j].arc1* Math.cos(ball[i].contact[j].tangent)) +
-													  3*(1-t)*t*t*(ball[i].bezier[j].midPoint.x- ball[i].bezier[j].arc_mid* Math.cos(ball[i].bezier[j].midPoint_tangent)) + t*t*t*ball[i].bezier[j].midPoint.x
-							ball[i].dot[(ball[i].gap_number[j]+k)%ball[i].dot.length].y = (1-t)*(1-t)*(1-t)*ball[i].contact[j].y + 3*(1-t)*(1-t)*t*(ball[i].contact[j].y+ ball[i].bezier[j].arc1* Math.sin(ball[i].contact[j].tangent)) +
-													  3*(1-t)*t*t*(ball[i].bezier[j].midPoint.y- ball[i].bezier[j].arc_mid* Math.sin(ball[i].bezier[j].midPoint_tangent)) + t*t*t*ball[i].bezier[j].midPoint.y
-						}
-						for(k=gap-1; k>=gap/2; k--){
-							var t = (k-gap/2)*2/(gap);
-							ball[i].dot[(ball[i].gap_number[j]+k)%ball[i].dot.length].x = (1-t)*(1-t)*(1-t)*ball[i].bezier[j].midPoint.x + 3*(1-t)*(1-t)*t*(ball[i].bezier[j].midPoint.x+ ball[i].bezier[j].arc_mid* Math.cos(ball[i].bezier[j].midPoint_tangent)) +
-													  3*(1-t)*t*t*( ball[i].contact[(j+1)%ball[i].collisionC].x- ball[i].bezier[j].arc2* Math.cos(ball[i].contact[(j+1)%ball[i].collisionC].tangent)) + t*t*t*ball[i].contact[(j+1)%ball[i].collisionC].x
-							ball[i].dot[(ball[i].gap_number[j]+k)%ball[i].dot.length].y = (1-t)*(1-t)*(1-t)*ball[i].bezier[j].midPoint.y + 3*(1-t)*(1-t)*t*(ball[i].bezier[j].midPoint.y+ ball[i].bezier[j].arc_mid* Math.sin(ball[i].bezier[j].midPoint_tangent)) +
-													  3*(1-t)*t*t*( ball[i].contact[(j+1)%ball[i].collisionC].y- ball[i].bezier[j].arc2* Math.sin(ball[i].contact[(j+1)%ball[i].collisionC].tangent)) + t*t*t*ball[i].contact[(j+1)%ball[i].collisionC].y
-						}
-					
-					}
-					//歪フラグを真にする
-					ball[i].distortionF = true;
-					//各dotのradを求める
-					for(j=0; j<ball[i].dot.length; j++){
-						ball[i].dot[j].rad = Math.atan2(ball[i].dot[j].y- ball[i].position.y, ball[i].dot[j].x- ball[i].position.x);
-					}
-				}
-			}
-		}
-		
-		
-		
-		
-		//もう一度衝突判定を行う========================================================================================================
-		for(i=0; i<BALL_MAX_COUNT; i++){
-			if(ball[i].distortionF){
-				//歪円と壁の衝突判定をもう一度行う
-				for(j=0; j<OBJECT_MAX_COUNT; j++){
-					if(ball[i].touchArea[j].num != 0) object[j].collision02(ball[i], j);
-				}
-				//歪円とそれより遅い番号の円の衝突判定を行う
-				for(j=0; j<BALL_MAX_COUNT; j++){
-					if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
-						if(ball[i].color == ball[j].color && i!=j){
-							if(!ball[j].distortionF) ball[i].absorption01(ball[j]);
-							else if(i<j)             ball[i].absorption02(ball[j]);
-						}
-						else if(!ball[i].ballCollisionF[j] && ball[i].alive){
-							if(!ball[j].distortionF) ball[i].collision01(ball[j]);
-							else if(i<j)             ball[i].collision02(ball[j]);
-						}
-					}
-				}
-			}
-		}
-					/*if(ball[j].alive && ball[j].touchF && i!=j && ball[i].color != ball[j].color && !ball[i].ballCollisionF[j]){
-						if(ball[j].distortionF == false) ball[i].collision01(ball[j]);
-						else                             ball[i].collision02(ball[j]);
-					}
-					if(ball[j].alive && ball[j].touchF)
-				}
-			}
-		}*/
-		
-		
-		for(i=0; i<BALL_MAX_COUNT; i++){
-			if(ball[i].collisionC + ball[i].collisionCC >= 2){
-				//もし新しい衝突判定が生まれたなら
-				if(ball[i].collisionCC>0){
-					//新しくできた接点のめり込みぐらいから、中心座標が受けるべき力の大きさ、方向を計算する
-					var power = new Point();
-					for(j=ball[i].collisionC; j<ball[i].collisionC+ball[i].collisionCC; j++){
-						console.log(ball[i].contact[j].excess)
-						if(ball[i].contact[j].excess<0) continue;
-						power.x += ball[i].contact[j].excess* ball[i].contact[j].excess* -Math.cos(ball[i].contact[j].rad);
-						power.y += ball[i].contact[j].excess* ball[i].contact[j].excess* -Math.sin(ball[i].contact[j].rad);
-						ball[i].contact[j].excess = ball[i].size - ball[i].position.distance(ball[i].contact[j]).length();
-					}
-					ball[i].position.x += power.x/ ball[i].size*2;
-					ball[i].position.y += power.y/ ball[i].size*2;
-					
-					//各接点を中心からの角度が小さい順に並び返す
-					for(j=0; j<ball[i].collisionC+ball[i].collisionCC; j++){
-						for(k=ball[i].collisionC+ball[i].collisionCC-1; k>j; k--){
-							if(ball[i].contact[k-1].rad > ball[i].contact[k].rad){
-							var temp
-								temp = ball[i].contact[k];
-								ball[i].contact[k] = ball[i].contact[k-1];
-								ball[i].contact[k-1] = temp;
-							}
-						}
-					}
-					/*//新しくできた接点を既存の接点の間に差し込んでいく
-					for(j=0; j<ball[i].collisionCC; j++){
-						for(k=0; k<ball[i].collisionCC+j+1; k++){
-							if(ball[i].contact[ball[i].collisionC+j].rad < ball[i].contact[k].rad){
-								var temp;
-								temp = ball[i].contact[ball[i].collisionC+j];
-								for(l=ball[i].collisionC+j; l>k; l--){
-									ball[i].contact[l] = ball[i].contact[l-1];
-								}
-								ball[i].contact[k] = temp;
-								break;
-							}
-						}
-					}*/
-					
-					//それぞれの接点間の角度を改めて計算する。あと曲線の変わり目がどこにあるのか計算する
-					for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
-						ball[i].rad_gap[j] = (ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].rad - ball[i].contact[j].rad + 2*Math.PI) % (2*Math.PI);
-						ball[i].gap_number[j] = (Math.round(ball[i].contact[j].rad* ball[i].dot.length/ Math.PI/2) + ball[i].dot.length) % ball[i].dot.length;
-					}
-					
-					//ベジエ曲線で歪みを表現していく
-					for(j=0; j<ball[i].collisionC+ball[i].collisionCC; j++){
-						ball[i].bezier[j].arc1 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[j].excess)* Math.tan(ball[i].rad_gap[j]/4);
-						ball[i].bezier[j].arc2 = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].excess)* Math.tan(ball[i].rad_gap[j]/4);
-						//各接点間の中点を求める
-						ball[i].bezier[j].midPoint = new Point();
-						var x1 = ball[i].contact[j].x;
-						var x2 = ball[i].contact[j].x + ball[i].bezier[j].arc1* Math.cos(ball[i].contact[j].tangent);
-						var x3 = ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].x- ball[i].bezier[j].arc2* Math.cos(ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].tangent);
-						var x4 = ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].x;
-						var y1 = ball[i].contact[j].y;
-						var y2 = ball[i].contact[j].y + ball[i].bezier[j].arc1* Math.sin(ball[i].contact[j].tangent);
-						var y3 = ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].y- ball[i].bezier[j].arc2* Math.sin(ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].tangent);
-						var y4 = ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].y;
-						
-						ball[i].bezier[j].midPoint.x = 1/8* x1+ 3/8* x2+ 3/8* x3 + 1/8* x4
-						ball[i].bezier[j].midPoint.y = 1/8* y1+ 3/8* y2+ 3/8* y3 + 1/8* y4;
-						ball[i].bezier[j].midPoint_tangent = Math.atan2(y1+y2-y3-y4, x1+x2-x3-x4) + Math.PI;
-						ball[i].bezier[j].midPoint_excess = ball[i].size - ball[i].position.distance(ball[i].bezier[j].midPoint).length();
-						ball[i].bezier[j].arc1    = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[j].excess)* Math.tan(ball[i].rad_gap[j]/8);
-						ball[i].bezier[j].arc_mid = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].bezier[j].midPoint_excess)* Math.tan(ball[i].rad_gap[j]/8);
-						ball[i].bezier[j].arc2    = 4/3* ball[i].size* ball[i].size/ (ball[i].size- ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].excess)* Math.tan(ball[i].rad_gap[j]/8);
-					}
-				}
-				//そうでないなら前のまま書く
-				ctx.beginPath();
-				ctx.moveTo(ball[i].contact[0].x, ball[i].contact[0].y)
-				for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
-					//ベジエで曲線を描いていく
-					ctx.bezierCurveTo(ball[i].contact[j].x+ ball[i].bezier[j].arc1* Math.cos(ball[i].contact[j].tangent), ball[i].contact[j].y+ ball[i].bezier[j].arc1* Math.sin(ball[i].contact[j].tangent),
-									  ball[i].bezier[j].midPoint.x- ball[i].bezier[j].arc_mid* Math.cos(ball[i].bezier[j].midPoint_tangent), ball[i].bezier[j].midPoint.y- ball[i].bezier[j].arc_mid* Math.sin(ball[i].bezier[j].midPoint_tangent),
-									  ball[i].bezier[j].midPoint.x, ball[i].bezier[j].midPoint.y);
-					
-					ctx.bezierCurveTo(ball[i].bezier[j].midPoint.x+ ball[i].bezier[j].arc_mid* Math.cos(ball[i].bezier[j].midPoint_tangent), ball[i].bezier[j].midPoint.y+ ball[i].bezier[j].arc_mid* Math.sin(ball[i].bezier[j].midPoint_tangent),
-									  ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].x- ball[i].bezier[j].arc2* Math.cos(ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].tangent), ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].y- ball[i].bezier[j].arc2* Math.sin(ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].tangent),
-									  ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].x, ball[i].contact[(j+1)%(ball[i].collisionC+ ball[i].collisionCC)].y);
-				}
-				
-				ctx.closePath();
-				switch(ball[i].color){
-					case 0:
-					ctx.fillStyle = GREEN;
-					break;
-					
-					case 1:
-					ctx.fillStyle = BLUE;
-					break;
-					
-					case 2:
-					ctx.fillStyle = RED;
-					break;
-					
-					default:
-					ctx.fillStyle = GRAY;
-				}
-				ctx.fill();
-				for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
-					ctx.beginPath();
-					ctx.arc(ball[i].bezier[j].midPoint.x, ball[i].bezier[j].midPoint.y, 2, 0, 2*Math.PI, true);
-					ctx.fillStyle = GRAY;
-					ctx.fill()
-				}
-			//もう一回歪フラグを真にする
-			ball[i].distortionF = true;
-			}
-		}
-		
-		//衝突判定ここまで================================================================================================================
-
 		//ジャンプフラグの確認を行う
 		if(keyCode1[87] && !keyCode2[87]) testF = true;
 		for(j=0; j<ball[0].collisionC+ball[0].collisionCC; j++){
@@ -707,56 +477,34 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 			if(j_rad >= 3/4* Math.PI && j_rad <= 5/4* Math.PI && testF) ball[0].jumpF = true;
 		}
 		//球の描写
-		for(i=0; i<BALL_MAX_COUNT; i++){
-			if(ball[i].alive　&& !ball[i].distortionF){
-				switch(ball[i].color){
-					case 0:
-					ctx.fillStyle = GREEN;
-					break;
-			
-					case 1:
-					ctx.fillStyle = BLUE;
-					break;
-			
-					case 2:
-					ctx.fillStyle = RED;
-					break;
-					
-					default:
-					ctx.fillStyle = GRAY;
-				}
-				ctx.beginPath();
-				ctx.arc(ball[i].position.x, ball[i].position.y, ball[i].size, 0, 2*Math.PI, true);
-				ctx.fill()
-			}
-		}
-		for(i=0; i<BALL_MAX_COUNT; i++){
+		for(i=0; i<ball.length; i++){
 			if(ball[i].alive){
+				//球そのものの描写
+				ball[i].draw();
+				//球の中心の描写
 				ctx.beginPath()
 				ctx.arc(ball[i].position.x, ball[i].position.y, 2, 0, 2* Math.PI, true);
 				ctx.fillStyle = GRAY;
 				ctx.fill();
+				//球の接点の中点の描写
+				if(ball[i].collisionC+ball[i].collisionCC < 2) continue;
+				for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
+					ctx.beginPath();
+					ctx.arc(ball[i].bezier[j].midPoint.x, ball[i].bezier[j].midPoint.y, 2, 0, 2*Math.PI, true);
+					ctx.fillStyle = GRAY;
+					ctx.fill()
+				}
 			}
 		}
-		//自球の各点の描写
-		/*if(lCounter){
-			ctx.beginPath();
-			/*var px = ball[0].dot[lCounter%ball[i].dot.length].x;
-			var py = ball[0].dot[lCounter%ball[i].dot.length].y;
-			ctx.arc(px, py, 4, 0, Math.PI* 2, true);*//*
-			ctx.arc(ball[0].position.x, ball[0].position.y, ball[0].size, 0, 2*Math.PI, true)
-			ctx.fillStyle = GRAY;
-			ctx.fill();
-		}*/
 		
-		if(lCounter){
-			ctx.beginPath();
-			ctx.moveTo(ball[0].dot[0].x, ball[0].dot[0].y);
-			for(i=1; i<ball[0].dot.length; i++){
-				ctx.lineTo(ball[0].dot[i].x, ball[0].dot[i].y);
+		if(lCounter%4){
+			ctx.fillStyle = "BLACK";
+			for(i=0; i<ball[0].dot.length; i++){
+				ctx.beginPath();
+				ctx.arc(ball[0].dot[i].abs.x, ball[0].dot[i].abs.y, 1, 0, 2*Math.PI, true)
+				ctx.closePath();
+				ctx.fill();
 			}
-			ctx.closePath();
-			ctx.stroke();
 		}
 		//マウスの現在地の描画
 		var mx = ball[0].position.x + vector.x;
@@ -786,24 +534,19 @@ object[17].set( 200, 280,  80,  20, 0, 0, 0);
 			ball[0].strokeDottedLine();
 		}
 
-		if(pauseF){
-			ctx.beginPath();
-			ctx.arc(mouse.x, mouse.y, 6, 0, Math.PI * 2, true);
-			ctx.fillStyle = "rgba(  0,   0, 000, 0.5)";
-			ctx.fill();
-			
-			ctx.fillStyle = DARK_RED;
-			ctx.font = "60px 'MSゴシック'"
-			ctx.fillText("PAUSE", screenCanvas.width / 2 - 94, screenCanvas.height / 3);
-		}
-
-
-
-console.log(ball[0]);
-console.log(ball[1]);
-console.log(ball[2]);
-console.log(ball[3]);
-
+		
+if(ball[0].collisionC+ball[0].collisionCC >1) console.log(ball[0].collisionC, ball[0].collisionCC)
+console.log(ball[0].position)
+console.log(ball[0].contact[0])
+console.log(ball[0].contact[1])
+console.log(ball[0].contact[2])
+//console.log(ball[0]);
+//console.log(ball[1], ball[1].collisionC, ball[1].collisionCC);
+//console.log(ball[2], ball[2].collisionC, ball[2].collisionCC);
+//console.log(ball[3]);*/
+console.log(ball[0].dot)
+console.log(counter, ball[0].position, ball[0].velocity)
+console.log(" ")
 
 
 
@@ -813,15 +556,40 @@ console.log(ball[3]);
 		//前フレームにキーを押していたかの情報
 		keyCode2[32] = keyCode1[32];
 		keyCode2[87] = keyCode1[87];
+		//物体との接触判定のフラグを初期化しておく
 		for(i=0; i<BALL_MAX_COUNT; i++){
 			ball[i].ballCollisionF.length = 0;
+			ball[i].wallCollisionF.length = 0;
+			if(ball[i].distortionF) ball[i].lastDistortion = true;
+			else ball[i].lastDistortion = false;
+		}
+
+		//スペースバーが押されたらポーズ/ポーズ解除　する
+		if(pauseF && ball[0].alive){
+			ctx.beginPath();
+			ctx.arc(mouse.x, mouse.y, 6, 0, Math.PI * 2, true);
+			ctx.fillStyle = "rgba(  0,   0, 000, 0.5)";
+			ctx.fill();
+			
+			ctx.fillStyle = DARK_RED;
+			ctx.font = "60px 'MSゴシック'"
+			ctx.fillText("PAUSE", screenCanvas.width / 2 - 94, screenCanvas.height / 3);
+		}
+		
+		//自機が死んだら描写をストップしてリトライを促す
+		if(!ball[0].alive){
+			ctx.fillStyle = DARK_RED;
+			ctx.font = "60px 'MSゴシック'"
+			ctx.fillText("GAME OVER", screenCanvas.width / 2 -165, screenCanvas.height/ 3);
+			ctx.fillText('PRESS "F5" TO RETRY', screenCanvas.width / 2 - 295, screenCanvas.height/ 3*2);
 		}
 
 		//HTMLを更新
 		info.innerHTML = "PLAYER WEIGHT: " + ball[0].weight +
 				 "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
 				 "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
-				 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C,"
+				 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C,<br>" +
+				 mouse.x +" "+ mouse.y
 
 
 
