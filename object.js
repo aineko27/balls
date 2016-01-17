@@ -4,6 +4,7 @@ var Object = function(){
 	this.alive = false;
 	this.color = 0;
 	this.rad   = 0;
+	this.num   = 0;
 
 	this.vechx = 0;
 	this.vechy = 0;
@@ -49,61 +50,63 @@ Object.prototype.draw = function(){
 };
 
 //壁と正円の衝突判定
-Object.prototype.collision01 = function(b, j){
-		//円がどの辺あるいはどの角と衝突するかの判定
-		if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
-			if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
-				b.touchArea[j].x = this.tlx;
-				b.touchArea[j].y = this.tly;
-				b.touchArea[j].num = 1;
-			}
-			else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
-				b.touchArea[j].x = this.trx;
-				b.touchArea[j].y = this.try;
-				b.touchArea[j].num = 1;
-			}
-			else{
-				b.touchArea[j].x = this.tlx;
-				b.touchArea[j].y = this.tly;
-				b.touchArea[j].rad = this.rad1;
-				b.touchArea[j].num = 2;
-			}
+Object.prototype.collision01 = function(b){
+	var j = this.num;
+	if(b.contact[0].num == this.num+BALL_MAX_COUNT) return;
+	//円がどの辺あるいはどの角と衝突するかの判定
+	if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
+		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
+			b.touchArea[j].x = this.tlx;
+			b.touchArea[j].y = this.tly;
+			b.touchArea[j].num = 1;
 		}
-		else if(Math.cos(this.rad1+Math.PI)* (b.position.y-this.bry) - Math.sin(this.rad1+Math.PI)* (b.position.x-this.brx) < 0){
-			if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
-				b.touchArea[j].x = this.blx;
-				b.touchArea[j].y = this.bly;
-				b.touchArea[j].num = 1;
-			}
-			else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
-				b.touchArea[j].x = this.brx;
-				b.touchArea[j].y = this.bry;
-				b.touchArea[j].num = 1;
-			}
-			else{
-				b.touchArea[j].x = this.brx;
-				b.touchArea[j].y = this.bry;
-				b.touchArea[j].rad = this.rad1 + Math.PI;
-				b.touchArea[j].num = 2;
-			}
+		else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
+			b.touchArea[j].x = this.trx;
+			b.touchArea[j].y = this.try;
+			b.touchArea[j].num = 1;
 		}
 		else{
-			if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
-				b.touchArea[j].x = this.blx;
-				b.touchArea[j].y = this.bly;
-				b.touchArea[j].rad = this.rad2;
-				b.touchArea[j].num = 2;
-			}
-			else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
-				b.touchArea[j].x = this.trx;
-				b.touchArea[j].y = this.try;
-				b.touchArea[j].rad = this.rad2 + Math.PI
-				b.touchArea[j].num = 2;
-			}
-			else{
-				b.touchArea[j].num = 3;
-			}
+			b.touchArea[j].x = this.tlx;
+			b.touchArea[j].y = this.tly;
+			b.touchArea[j].rad = this.rad1;
+			b.touchArea[j].num = 2;
 		}
+	}
+	else if(Math.cos(this.rad1+Math.PI)* (b.position.y-this.bry) - Math.sin(this.rad1+Math.PI)* (b.position.x-this.brx) < 0){
+		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
+			b.touchArea[j].x = this.blx;
+			b.touchArea[j].y = this.bly;
+			b.touchArea[j].num = 1;
+		}
+		else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
+			b.touchArea[j].x = this.brx;
+			b.touchArea[j].y = this.bry;
+			b.touchArea[j].num = 1;
+		}
+		else{
+			b.touchArea[j].x = this.brx;
+			b.touchArea[j].y = this.bry;
+			b.touchArea[j].rad = this.rad1 + Math.PI;
+			b.touchArea[j].num = 2;
+		}
+	}
+	else{
+		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
+			b.touchArea[j].x = this.blx;
+			b.touchArea[j].y = this.bly;
+			b.touchArea[j].rad = this.rad2;
+			b.touchArea[j].num = 2;
+		}
+		else if(Math.cos(this.rad2+Math.PI)* (b.position.y-this.try) - Math.sin(this.rad2+Math.PI)* (b.position.x-this.trx) < 0){
+			b.touchArea[j].x = this.trx;
+			b.touchArea[j].y = this.try;
+			b.touchArea[j].rad = this.rad2 + Math.PI
+			b.touchArea[j].num = 2;
+		}
+		else{
+			b.touchArea[j].num = 3;
+		}
+	}
 	
 	//得られた判別から当り判定を取っていく
 	if(b.touchArea[j].num < 2){
@@ -133,6 +136,7 @@ Object.prototype.collision01 = function(b, j){
 			b.contact[b.collisionC].tangent = b.contact[b.collisionC].rad+ Math.PI/2;
 			b.contact[b.collisionC].excess = b.size- b.touchArea[j].distance(b.position).length();
 			b.contact[b.collisionC].weight = "NaN";
+			b.contact[b.collisionC].num = BALL_MAX_COUNT + this.num;
 			b.collisionC++;
 		}
 		else if(b.touchArea[j].len <= b.size*1.5) return;
@@ -154,6 +158,7 @@ Object.prototype.collision01 = function(b, j){
 			b.contact[b.collisionC].tangent = b.touchArea[j].rad + Math.PI;
 			b.contact[b.collisionC].excess = b.size- drop;
 			b.contact[b.collisionC].weight = "NaN";
+			b.contact[b.collisionC].num = BALL_MAX_COUNT + this.num;
 			b.collisionC++;
 			
 			/*var excess = b.size - drop;
@@ -175,7 +180,8 @@ Object.prototype.collision01 = function(b, j){
 }
 
 //壁と歪円の衝突判定
-Object.prototype.collision02 = function(b, j){
+Object.prototype.collision02 = function(b){
+	var j = this.num;
 	if(b.touchArea[j].num == 4) return;
 	if(b.lastDistortion){
 		//円がどの辺あるいはどの角と衝突するかの判定
@@ -255,6 +261,7 @@ Object.prototype.collision02 = function(b, j){
 			b.contact[b.collisionC+ b.collisionCC].tangent = (1-t)*tangent1 + t*tangent2; 
 			b.contact[b.collisionC+ b.collisionCC].excess = -excess;
 			b.contact[b.collisionC].weight = "NaN";
+			b.contact[b.collisionC].num = 1000 + BALL_MAX_COUNT + this.num;
 			b.collisionCC++;
 		}
 		return;
@@ -276,10 +283,10 @@ Object.prototype.collision02 = function(b, j){
 				if(dot_number <= -1) dot_number = b.dot.length-1;
 			}
 		}
-		console.log(b.position)
-		console.log(b.touchArea[j], rad)
-		console.log(dot_number)
-		console.log(b.dot[dot_number].abs)
+		//console.log(b.position)
+		//console.log(b.touchArea[j], rad)
+		//console.log(dot_number)
+		//console.log(b.dot[dot_number].abs)
 		if(Math.cos(rad)* (b.dot[dot_number].abs.y- b.touchArea[j].y)>= Math.sin(rad)* (b.dot[dot_number].abs.x- b.touchArea[j].x)){
 			//接点の計算
 			var a1 = (b.dot[dot_number].abs.y- b.position.y)/ (b.dot[dot_number].abs.x- b.position.x);
@@ -294,6 +301,7 @@ Object.prototype.collision02 = function(b, j){
 			b.contact[b.collisionC+ b.collisionCC].tangent = rad + Math.PI;
 			b.contact[b.collisionC+ b.collisionCC].excess = Math.cos(rad)* (b.dot[dot_number].abs.y- b.contact[b.collisionC+ b.collisionCC].y)- Math.sin(rad)* (b.dot[dot_number].abs.x- b.contact[b.collisionC+ b.collisionCC].x);
 			b.contact[b.collisionC].weight = "NaN";
+			b.contact[b.collisionC].num = 1000 + BALL_MAX_COUNT + this.num;
 			b.collisionCC++;
 			
 		}
