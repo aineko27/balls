@@ -25,12 +25,31 @@ var e = 0.6;
 var pauseF = false;
 var lCounter = 0;
 var nowStage = 0;
+var PI = Math.PI;
+var PI2 = Math.PI*2;
+var PI_2 = Math.PI/2;
+var PI_4 = Math.PI/4;
 
 
 // -const -------------------------------------------------------------------------------------------------------------------------
 
 var BALL_MAX_COUNT = 63;
 var OBJECT_MAX_COUNT = 31;
+var color = new Array();
+color[00] = "rgba(  0, 255,   0, 0.75)";//緑
+color[01]　= "rgba(  0,   0, 255, 0.75)";//青
+color[02] = "rgba(255,   0,   0, 0.75)";//赤
+color[03]　= "rgba( 85,  85,  85, 0.80)";//グレー
+color[04] = "rgba(255, 255, 255, 1.00)";//白
+color[05] = "rgba(255, 140,   0, 0.80)";//オレンジ
+color[06] = "rgba(200,   0, 100, 0.80)";//暗赤
+color[10] = "rgba(  0, 255,   0, 0.30)";//緑
+color[11]　= "rgba(  0,   0, 255, 0.30)";//青
+color[12] = "rgba(255,   0,   0, 0.30)";//赤
+color[13]　= "rgba( 85,  85,  85, 0.30)";//グレー
+color[14] = "rgba(255, 255, 255, 1.00)";//白
+color[15] = "rgba(255, 140,   0, 0.80)";//オレンジ
+color[16] = "rgba(200,   0, 100, 0.80)";//暗赤
 var GREEN  　　= "rgba(  0, 255,   0, 0.85)";//緑
 var BLUE 　　= "rgba(  0,   0, 255, 0.60)";//青
 var RED　　 = "rgba(255,   0,   0, 0.60)";//赤
@@ -101,9 +120,13 @@ window.onload = function(){
 	v.y = 0;
 	ball[0].set(p, 15, v, 0);
 	
-
 //初期ステージ読み込み
 stage03(ball, object);
+
+//test
+//p.x = 778, p.y=330;
+//v.x = 0, v.y = 0;
+//ball[1].set(p, 20, v, 2);
 
 	//レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 
@@ -119,12 +142,14 @@ stage03(ball, object);
 
 			//入力による変更-------------------------------------------------------------------------------------------
 
-			/*if(counter>200){
-			ball[0].size = 65;
-			ball[0].weight = 4225;
-			keyCode1[65]  = true;
-			kc = true;
-			}*/
+			/*if(counter>100){
+				kc = true;
+				ball[0].size = 65;
+				ball[0].weight = 4225;
+				keyCode1[65] = true;
+			}
+			if(counter>155) keyCode1[65] = false;
+			if(counter == 170) run = false;*/
 			if(kc){
 				//console.log("入力されたキーコードは " + kc)
 
@@ -132,7 +157,7 @@ stage03(ball, object);
 				if(keyCode1[86]) creatF = 2;
 				if(keyCode1[65]) ball[0].velocity.x += -0.3; if(ball[0].velocity.x <= -4) ball[0].velocity.x = -4;
 				if(keyCode1[87] && ball[0].jumpF){
-				ball[0].velocity.y = 7;
+				ball[0].velocity.y = -7;
 				ball[0].jumpF = false;
 				testF = false;
 				}
@@ -140,7 +165,7 @@ stage03(ball, object);
 				if(keyCode1[83]) ball[0].velocity.x =  0;
 				
 				if(keyCode1[70]) ball[0].velocity.x  = -3;
-				if(keyCode1[84]) ball[0].velocity.y  =  3;
+				if(keyCode1[84]) ball[0].velocity.y  = -3;
 				if(keyCode1[72]) ball[0].velocity.x  =  3;
 
 				if(keyCode1[39]) ball[0].position.x += 0.3;
@@ -150,16 +175,16 @@ stage03(ball, object);
 				if(keyCode1[73]) fps = 1000 / 2 ;
 				if(keyCode1[79]) fps = 1000 / 20;
 				if(keyCode1[80]) fps = 1000 / 60;
-				if(keyCode1[192]) fps = 1000/120;
+				if(keyCode1[192]) fps = 1000/180;
 				if(keyCode1[76]) lCounter++
 				
 				if(keyCode1[81]) {
 					ball[0].position.x = 180//345;
 					ball[0].velocity.x = 0;
 				}
-				if(keyCode1[90]){
-				ball[0].size = 65;
-				ball[0].weight = 4225;
+				if(keyCode1[90] && !keyCode2[90]){
+					ball[0].size = 65;
+					ball[0].weight = 4225;
 				}
 			}
 
@@ -172,6 +197,7 @@ stage03(ball, object);
 			if(keyCode1[50]) stage02(ball, object);
 			if(keyCode1[51]) stage03(ball, object);
 			if(keyCode1[52]) stage04(ball, object);
+			if(keyCode1[53]) stage05(ball, object);
 			
 			//ステージごとのフラグ管理
 			//ステージ1について
@@ -236,10 +262,9 @@ stage03(ball, object);
 				fireRF = false;
 				lineRF = false;
 			}
-
+			
 			//物体の動きを制御-----------------------------------------------------------------------------------------
-
-			for(i = 0; i < ball.length; i++){
+			for(i=0; i<ball.length; i++){
 				if(ball[i].alive){
 					//重力を反映
 					if(!ball[i].distortionF) ball[i].fall();
@@ -255,6 +280,7 @@ stage03(ball, object);
 						ball[i].collisionC = 0;
 						ball[i].collisionCC = 0;
 						ball[i].distortionF = false;
+						ball[i].arc = 0;
 						for(j=0; j<ball[i].contact.length; j++){
 							ball[i].contact[j].x = 0;
 							ball[i].contact[j].y = 0;
@@ -263,7 +289,23 @@ stage03(ball, object);
 							ball[i].contact[j].length = 0;
 							ball[i].contact[j].tangent = 0;
 							ball[i].contact[j].weight = "NaN"
-							ball[i].contact[j].num = 0;
+							ball[i].contact[j].num = ""+0;
+							ball[i].contact[j].side = 0;
+							ball[i].contact[j].position.x = 0;
+							ball[i].contact[j].position.y = 0;
+							ball[i].contact[j].velocity.x = 0;
+							ball[i].contact[j].velocity.y = 0;
+						}
+						for(j=0; j<ball[i].bezier.length; j++){
+							ball[i].bezier[j].rad_gap = 0;
+							ball[i].bezier[j].gap_number = 0;
+							ball[i].bezier[j].midPoint.x = 0;
+							ball[i].bezier[j].midPoint.y = 0;
+							ball[i].bezier[j].midTangent = 0;
+							ball[i].bezier[j].midExcess = 0;
+							ball[i].bezier[j].arc1 = 0;
+							ball[i].bezier[j].arc2 = 0;
+							ball[i].bezier[j].arc_mid = 0;
 						}
 						//周りの点の情報を更新
 						for(j=0; j<ball[i].dot.length; j++){
@@ -287,17 +329,42 @@ stage03(ball, object);
 						for(j=0; j<ball[i].touchArea.length; j++){
 							ball[i].touchArea[j].num = 0;
 						}
-						//球の、ほかの球と壁に対する衝突判定結果を初期化する
-						for(j=0; j<ball.length; j++){
-							ball[i].ballCollisionF[j] = 0;
-						}
-						for(j=0; j<object.length; j++){
-							ball[i].wallCollisionF[j] = 0;
-						}
 					}
 				}
 			}
 			
+			for(i=0; i<object.length; i++){
+				if(object[i].alive){
+					if(object[i].type == 2){
+						//object[i].vel.x *= 0.9;
+						if(object[i].vel.y > 0) object[i].vel.y *= .9;
+						object[i].vel.y -= 0.01
+						object[i].move();
+					}
+					
+					else if(object[i].type == 3){
+						if(object[i].collisionC == 0) object[i].vel.y *= 0.95;
+						object[i].move();
+					}
+					else if(object[i].type == 4){
+						if(keyCode1[78]) object[i].radv += -0.003;
+						else if(keyCode1[77]) object[i].radv += 0.003;
+						else object[i].radv *= 0.93;
+						object[i].move();
+					}
+					object[i].collisionC = 0;
+					for(j=0; j<object[i].contact.length; j++){
+						object[i].contact[j].x = 0;
+						object[i].contact[j].y = 0;
+						object[i].contact[j].excess = 0;
+						object[i].contact[j].num = "0";
+						object[i].contact[j].weight = 0;
+						object[i].contact[j].rad = 0;
+						object[i].contact[j].color = 0;
+						object[i].contact[j].side = 0;
+					}
+				}
+			}
 			//吸収判定、衝突判定について========================================================================================
 			for(i=0; i<ball.length; i++){
 				if(ball[i].alive && ball[i].touchF){
@@ -330,84 +397,108 @@ stage03(ball, object);
 				}
 			}
 			//衝突判定始まり=================================================================================================
-			
-			//ボールの衝突判定について
 			for(i=0; i<ball.length; i++){
 				if(ball[i].alive && ball[i].touchF){
 					//ボールがひずんでいるかで場合分けをする必要がある
 					collisionCheck = function(){
 						//この場合はボールは正円
 						for(j=i+1; j<ball.length; j++){
-							//ボールが発射された直後は吸収判定を取らない
-							if(ball[i].color==0 && ball[j].firedC + 6 > counter) continue;
+							//if(ball[i].color==0 && ball[j].firedC + 6 > counter) continue;//ボールが発射された直後は衝突判定を取らない
 							//まずはほかのボールとの当り判定
-							if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
-								if(!ball[j].lastDistortion){
-									//ここはどちらも正円だった場合の当り判定
-									ball[i].collision01(ball[j]);
-								}
-								else{
-									//ここは若い番号が正円、遅い番号が歪円だった場合
-									ball[j].collision02(ball[i], false);
-								}
+							if(ball[j].alive && ball[j].touchF && ball[i].color != ball[j].color){
+								if(!ball[j].lastDistortion) ball[i].collision01(ball[j]);
+								else                        ball[j].collision02(ball[i], false);
 							}
 						}
 						//次に壁との当り判定
 						for(j=0; j<object.length; j++){
-							if(object[j].alive && ball[i].color != object[j].color){
-								object[j].collision01(ball[i])
-							}
+							if(object[j].alive && ball[i].color != object[j].color) object[j].collision01(ball[i]);
 						}
 					}
 					collisionCheck();
-					if(!ball[i].lastDistortion){
-						ball[i].touchCheck();
-						//得られた接点の数からボールの状態を場合分けする
-						if(ball[i].collisionC == 0) continue;
-						else if(ball[i].collisionC == 1) {
-							ball[i].positionCorrection();
-							collisionCheck();
-							ball[i].touchCheck();
-							if(ball[i].collisionC == 1) ball[i].bound();
-							else ball[i].distort(ball);
-						}
-						else ball[i].distort(ball);
+					//ほぼ同じ位置にある接点を排除する
+					ball[i].touchCheck(ball, object);
+					//得られた接点の数からボールの状態を場合分けする
+					//接点が無いの場合
+					if(ball[i].collisionC == 0){
+						ball[i].collisionC_temp = ball[i].collisionC;
+						continue;
 					}
-					if(ball[i].lastDistortion && ball[i].collisionC>1) ball[i].distort(ball);
-					//一度目の衝突判定終わり、次は二回目=========================================================================
+					//接点が一つの場合
+					else if(ball[i].collisionC == 1){
+						ball[i].positionCorrection();
+						collisionCheck();
+						ball[i].touchCheck(ball, object);;
+						if(ball[i].collisionC == 1) {}//ball[i].bound(ball, object);
+						else{
+							ball[i].distortCheck01(ball, object);
+							ball[i].distort01(ball);
+						}
+					}
+					//接点が二つ以上の場合
+					else {
+						ball[i].distortCheck01(ball, object);
+						if(ball[i].collisionC == 1){
+							ball[i].positionCorrection();//この後にもっかい当り判定取るべき
+							collisionCheck();
+							ball[i].touchCheck(ball, object);;
+							if(ball[i].collisionC == 1) {}//ball[i].bound(ball, object);
+							else{
+								ball[i].distortCheck01(ball, object);
+								ball[i].distort01(ball);
+							}
+						}
+						else{
+							//ball[i].bound(ball, object);
+							ball[i].distort01(ball);
+						}
+					}
+					ball[i].collisionC_temp = ball[i].collisionC;
+				}
+			}
+			//一度目の衝突判定終わり、次は二回目=================================================================================
+			for(i=0; i<ball.length; i++){
+				if(ball[i].alive && ball[i].touchF){
 					if(ball[i].lastDistortion || ball[i].distortionF){
 						//この場合はボールは歪円
 						for(j=i+1; j<ball.length; j++){
-							//ボールが発射された直後は吸収判定を取らない
-							if(ball[i].color==0 && ball[j].firedC + 6 > counter) continue;
-							//まずはほかのボールとの当り判定
-							if(ball[j].alive && ball[j].touchF && ball[i].position.distance(ball[j].position).length() < (ball[i].size+ball[j].size)*2){
-								if(!ball[j].lastDistortion || ball[j].distortionF){
-									//ここは若い番号が歪円で遅い番号が正円だった場合
-									ball[i].collision02(ball[j], true);
-								}
-								else{
-									//ここはどちらも歪円だった場合
-									ball[i].collision03(ball[j]);
-								}
+							//if(ball[i].color==0 && ball[j].firedC + 6 > counter) continue;//ボールが発射された直後は吸収判定を取らない
+							if(ball[j].alive && ball[j].touchF && ball[i].color != ball[j].color){//まずはほかのボールとの当り判定
+								if(!ball[j].lastDistortion || !ball[j].distortionF) ball[i].collision02(ball[j], true);
+								else                                                ball[i].collision03(ball[j]);
 							}
 						}
 						//次に壁との当り判定
 						for(j=0; j<object.length; j++){
-							if(object[j].alive && ball[i].color != object[j].color){
-								object[j].collision02(ball[i]);
-							}
+							if(object[j].alive && ball[i].color != object[j].color) object[j].collision02(ball[i]);
 						}
-						ball[i].touchCheck();
+						ball[i].touchCheck(ball, object);;
 						var num = ball[i].collisionC + ball[i].collisionCC;
-						if(num==0) continue;
-						if(num==1) ball[i].bound()
-						else{
-							ball[i].distortCheck();
-							ball[i].bound();
-							ball[i].distort(ball);
+						if(num>ball[i].collisionC && ball[i].collisionC>0){
+							//ball[i].bound(ball, object);
+							ball[i].distort02(ball);
+							num = ball[i].collisionC + ball[i].collisionCC;
 						}
+					}//console.log("ball"+ball[i].num+"isEnd")
+				}
+			}
+			//とられた接点から衝突の計算を行う
+			for(i=0; i<ball.length; i++){
+				if(ball[i].alive && ball[i].touchF){
+					if(ball[i].collisionC_temp < 2 && ball[i].collisionC >1){
+						ball[i].distortCheck01(ball, object);
+						ball[i].distort01(ball);
 					}
+					if(ball[i].collisionC_temp < 1 && ball[i].collisionC==1) ball[i].positionCorrection();
+					ball[i].bound(ball, object);
+				}
+			}
+			for(i=0; i<object.length; i++){
+				if(object[i].alive){
+					if(object[i].type == 1) object[i].detect01(ball, object);
+					else if(object[i].type == 2) object[i].detect02(ball, object);
+					else if(object[i].type == 3) object[i].detect03(ball, object);
+					else if(object[i].type == 4) object[i].detect04(ball, object);
 				}
 			}
 			//当り判定終わり==================================================================================================
@@ -417,7 +508,7 @@ stage03(ball, object);
 
 			//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(radian)をそれぞれ計算する
 			vector.x =   mouse.x - ball[0].position.x;
-			vector.y = -(mouse.y - ball[0].position.y);
+			vector.y =  -(mouse.y - ball[0].position.y);
 			length = ball[0].position.distance(mouse).length() - ball[0].size;
 			radian = Math.atan2(vector.y, vector.x);
 
@@ -447,6 +538,12 @@ stage03(ball, object);
 		};
 
 
+		//ジャンプフラグの確認を行う
+		if(keyCode1[87] && !keyCode2[87]) testF = true;
+		for(j=0; j<ball[0].collisionC+ball[0].collisionCC; j++){
+			var j_rad = (ball[0].contact[j].tangent+ 2*Math.PI)% (2*Math.PI);
+			if(j_rad >= 3/4* Math.PI && j_rad <= 5/4* Math.PI && testF) ball[0].jumpF = true;
+		}
 
 
 		//画面の描画を行う-------------------------------------------------------------------------------------------------
@@ -457,44 +554,36 @@ stage03(ball, object);
 
 		//背景の描画-------------------------------------------------
 
+		//背景の描画
+		for(i=0; i<object.length; i++){
+			object[i].draw1(object);
+		}
+		
+		//球の描写1
+		for(i=0; i<ball.length; i++){
+			if(ball[i].alive) ball[i].draw(1);
+		}
+		
 		//壁の描画
-		for(i = 0;i <= OBJECT_MAX_COUNT; i++){
+		for(i=0; i<object.length; i++){
 			if(object[i].alive){
-				switch (object[i].color){
-				case 0:
-					ctx.fillStyle = GREEN;
-					break;
-				case 1:
-					ctx.fillStyle = BLUE;
-					break;
-				case 2:
-					ctx.fillStyle = RED;
-					break;
-				default:
-					ctx.fillStyle = GRAY;
-				}
-				object[i].draw();
+				object[i].draw2(object);
 			}
 		};
 
 		
-		//ジャンプフラグの確認を行う
-		if(keyCode1[87] && !keyCode2[87]) testF = true;
-		for(j=0; j<ball[0].collisionC+ball[0].collisionCC; j++){
-			var j_rad = (ball[0].contact[j].tangent+ 2*Math.PI)% (2*Math.PI);
-			if(j_rad >= 3/4* Math.PI && j_rad <= 5/4* Math.PI && testF) ball[0].jumpF = true;
-		}
-		//球の描写
+		//球の描写2
 		for(i=0; i<ball.length; i++){
 			if(ball[i].alive){
 				//球そのものの描写
-				ball[i].draw();
+				ball[i].draw(2);
 				//球の中心の描写
 				ctx.beginPath()
 				ctx.arc(ball[i].position.x, ball[i].position.y, 2, 0, 2* Math.PI, true);
 				ctx.fillStyle = GRAY;
 				ctx.fill();
 				//球の接点の中点の描写
+				continue;
 				if(ball[i].collisionC+ball[i].collisionCC < 2) continue;
 				for(j=0; j<ball[i].collisionC+ ball[i].collisionCC; j++){
 					ctx.beginPath();
@@ -506,6 +595,12 @@ stage03(ball, object);
 		}
 		
 		if(lCounter%4){
+			ctx.beginPath();
+			ctx.arc(ball[1].position.x, ball[1].position.y, ball[1].size, 0, PI2, true)
+			ctx.fillStyle = GRAY;
+			ctx.fill()
+		}
+		if(false){//lCounter%4){
 			ctx.fillStyle = "BLACK";
 			for(i=0; i<ball[0].dot.length; i++){
 				ctx.beginPath();
@@ -533,29 +628,19 @@ stage03(ball, object);
  
 		//点線の描画
 		if(lineLF && (ball[0].size + 19 < length)){
- 		DOTTED_LINE_COLOR = BLUE;
-			ball[0].strokeDottedLine();
+			ball[0].strokeDottedLine(1);
 		}
 
 		if(lineRF && (ball[0].size + 19 < length)){
- 		DOTTED_LINE_COLOR = RED;
-			ball[0].strokeDottedLine();
+			ball[0].strokeDottedLine(2);
 		}
-
 		
-if(ball[0].collisionC+ball[0].collisionCC >1) console.log(ball[0].collisionC, ball[0].collisionCC)
-console.log(ball[0].position)
-//console.log(ball)
-//console.log(ball[0].contact[0])
-//console.log(ball[0].contact[1])
-//console.log(ball[0].contact[2])
-//console.log(ball[0]);
-//console.log(ball[1], ball[1].collisionC, ball[1].collisionCC);
-//console.log(ball[2], ball[2].collisionC, ball[2].collisionCC);
-//console.log(ball[3]);
-//console.log(ball[0].contact[0].num, ball[0].contact[1].num)
-console.log(counter, ball[0].position, ball[0].velocity)
-console.log(" ")
+console.log(object[4])
+//console.log(ball);
+console.log(ball[1])
+console.log(ball[0].velocity, ball[0].position, ball[0].arc)
+console.log(ball[1].velocity, ball[1].position.x)
+console.log(counter, "===================================================================================================")
 
 
 
@@ -567,10 +652,10 @@ console.log(" ")
 		keyCode2[87] = keyCode1[87];
 		//物体との接触判定のフラグを初期化しておく
 		for(i=0; i<ball.length; i++){
-			ball[i].ballCollisionF.length = 0;
-			ball[i].wallCollisionF.length = 0;
-			if(ball[i].distortionF) ball[i].lastDistortion = true;
-			else ball[i].lastDistortion = false;
+			if(ball[i].alive){
+				if(ball[i].arc > ball[i].size*0.15)ball[i].lastDistortion = true;
+				else ball[i].lastDistortion = false;
+			}
 		}
 
 		//スペースバーが押されたらポーズ/ポーズ解除　する
@@ -597,7 +682,7 @@ console.log(" ")
 		info.innerHTML = "PLAYER WEIGHT: " + ball[0].weight +
 				 "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
 				 "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
-				 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C,<br>" +
+				 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C, V, Q, Z, N, M<br>" +
 				 mouse.x +" "+ mouse.y
 
 
