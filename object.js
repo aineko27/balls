@@ -138,14 +138,21 @@ Object.prototype.draw1 = function(object){
 	ctx.fill();
 	if(this.type == 3){
 		ctx.beginPath();
+		ctx.moveTo(this.center.x+ 3/10* this.wid, this.center.y+ this.uMax+4);
+		ctx.lineTo(this.center.x+ 3/10* this.wid, this.center.y- this.lMax-4);
+		ctx.moveTo(this.center.x- 3/10* this.wid, this.center.y+ this.uMax+4);
+		ctx.lineTo(this.center.x- 3/10* this.wid, this.center.y- this.lMax-4);
+		ctx.lineCap = "round";
+		ctx.lineWidth = 20;
+		ctx.strokeStyle = color[10+this.color];
+		ctx.stroke();
+		ctx.stroke();
 		ctx.moveTo(this.center.x+ 3/10* this.wid, this.center.y+ this.uMax);
 		ctx.lineTo(this.center.x+ 3/10* this.wid, this.center.y- this.lMax);
 		ctx.moveTo(this.center.x- 3/10* this.wid, this.center.y+ this.uMax);
 		ctx.lineTo(this.center.x- 3/10* this.wid, this.center.y- this.lMax);
-		ctx.lineCap = "round";
-		ctx.lineWidth = 10;
-		ctx.strokeStyle = color[10+this.color];
-		ctx.stroke();
+		ctx.lineWidth = 6;
+		ctx.strokeStyle = color[14];
 		ctx.stroke();
 	}
 }
@@ -177,7 +184,42 @@ Object.prototype.draw2 = function(object){
 			var str = "!";
 			ctx.fillText(str, this.center.x-len/6, this.center.y+len/3);
 			break;
-			
+		
+		case 2:
+			var wid = this.wid;
+			ctx.beginPath();
+			ctx.moveTo(this.center.x- 3/8*wid, this.tly);
+			ctx.lineTo(this.center.x- 3/8*wid, this.tly+ 1/6* this.uMax);
+			ctx.lineTo(this.center.x- 1/6*wid, this.tly+ 1/6* this.uMax);
+			ctx.lineTo(this.center.x- 1/6*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			//ctx.lineTo(this.center.x- 2/8*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			ctx.moveTo(this.center.x+ 3/8*wid, this.tly);
+			ctx.lineTo(this.center.x+ 3/8*wid, this.tly+ 1/6* this.uMax);
+			ctx.lineTo(this.center.x+ 1/6*wid, this.tly+ 1/6* this.uMax);
+			ctx.lineTo(this.center.x+ 1/6*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			//ctx.lineTo(this.center.x+ 2/8*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			ctx.moveTo(this.center.x, this.tly+ this.hei/8);
+			ctx.lineTo(this.center.x, this.bly- this.hei/5);
+			ctx.lineWidth = Math.min(3, wid/ 12);
+			ctx.lineCap = "square";
+			ctx.strokeStyle = color[4];
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.center.x- 1/6*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			ctx.lineTo(this.center.x- 2/8*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			ctx.moveTo(this.center.x+ 1/6*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			ctx.lineTo(this.center.x+ 2/8*wid, this.tlyTemp+ this.uMax-Math.min(wid/24, 1.5));
+			ctx.stroke();
+			ctx.clearRect(this.center.x- 1/5*wid, this.bly- this.hei/5, 2/5*wid, this.hei/5);
+			ctx.beginPath();
+			ctx.moveTo(this.center.x, this.bly- this.hei/6);
+			ctx.lineTo(this.center.x, this.bly);
+			ctx.lineWidth = wid/3;
+			ctx.lineCap = "butt";
+			ctx.strokeStyle = color[3];
+			ctx.stroke();
+			break;
+		
 		case 3:
 			if(this.wid > this.hei) var len = this.hei;
 			else var len = this.wid;
@@ -235,7 +277,7 @@ Object.prototype.draw2 = function(object){
 	}
 };
 
-Object.prototype.move = function(){
+Object.prototype.move = function(ball, object){
 	//速度の上限を設定
 	var maxVel = 3;
 	if(this.vel.x >=  maxVel) this.vel.x =  maxVel;
@@ -361,16 +403,17 @@ Object.prototype.detect02 = function(ball, object){
 			console.log(b, temp, this.vel.y, b.velocity.y, e, this.weight, b.weight, b.velocity.y, this.vel.y)
 		}
 	}
-	if(this.tly- this.tlyTemp > this.uMax){
-		this.tly = this.tlyTemp + this.uMax;
-		this.try = this.tryTemp + this.uMax;
+	var uMax = Math.max(this.uMax*5/6-this.wid/24, this.uMax*5/6-1.5);
+	if(this.tly- this.tlyTemp > uMax){
+		this.tly = this.tlyTemp + uMax;
+		this.try = this.tryTemp + uMax;
 	}
 	if(this.tlyTemp- this.tly > this.lMax){
 		this.tly = this.tlyTemp - this.lMax;
 		this.try = this.tryTemp - this.lMax;
 	}
-	if(this.tly- this.tlyTemp > this.uMax* 0.85) object[this.pair].alive = false;
-	if(this.tly- this.tlyTemp < this.uMax* 0.5) object[this.pair].alive = true;
+	if(this.tly- this.tlyTemp > (this.uMax*5/6-this.wid/24)* 0.85) object[this.pair].alive = false;
+	if(this.tly- this.tlyTemp < (this.uMax*5/6-this.wid/24)* 0.50) object[this.pair].alive = true;
 }
 
 Object.prototype.detect03 = function(ball, object){
@@ -379,20 +422,17 @@ Object.prototype.detect03 = function(ball, object){
 	for(i=0; i<this.collisionC; i++){
 		var b = this.contact[i];
 		if(b.side == 2 || b.side == 8){
-			console.log(b.velocity.y, this.vel.y, ball[0].velocity)
-			//var temp = (b.velocity.y* (b.weight- e*this.weight) + this.vel.y* this.weight*(1+e))/ (this.weight+b.weight);
 			if(b.side == 2 && b.velocity.y < 0) b.velocity.y *= -0.1;
 			else if(b.side == 8 && b.velocity.y > 0) b.velocity.y *= -0.1;
 			this.vel.y = (this.vel.y* (this.weight- e*b.weight) + b.velocity.y* b.weight*(1+e))/ (this.weight+b.weight);
-			//b.velocity.y = temp;
 		}
 		else if(b.side < 4 || b.side > 6){
 			var velhx =  (b.velocity.x* Math.sin(b.rad)- b.velocity.y* Math.cos(b.rad))* Math.sin(b.rad);
 			var velhy = -(b.velocity.x* Math.sin(b.rad)- b.velocity.y* Math.cos(b.rad))* Math.cos(b.rad);
 			var velvx = b.velocity.x - velhx;
 			var velvy = b.velocity.y - velhy;
-			if(b.side < 4 && velvy < 0) velvy = b.velocity.y *= -0.1;
-			if(b.side > 6 && velvy > 0) velvy = b.velocity.y *= -0.1;
+			if(b.side < 4 && velvy < 0) velvy = velvy *= -0.1;
+			if(b.side > 6 && velvy > 0) velvy = velvy *= -0.1;
 			//var temp = (velvy* (b.weight- e*this.weihgt) + this.vel.y* this.weight*(1+e))/ (this.weight+b.weight);
 			this.vel.y = (this.vel.y* (this.weight- e*b.weight) + velvy* b.weight*(1+e))/ (this.weight+b.weight);
 		}
@@ -400,23 +440,26 @@ Object.prototype.detect03 = function(ball, object){
 	for(i=0; i<obje.collisionC; i++){
 		var b = obje.contact[i];
 		if(b.side == 2 || b.side == 8){
-			var temp = (b.velocity.y* (b.weight- e*obje.weight) + obje.vel.y* obje.weight*(1+e))/ (obje.weight+b.weight);
+			if(b.side == 2 && b.velocity.y < 0) b.velocity.y *= -0.1;
+			else if(b.side == 8 && b.velocity.y > 0) b.velocity.y *= -0.1;
 			obje.vel.y = (obje.vel.y* (obje.weight- e*b.weight) + b.velocity.y* b.weight*(1+e))/ (obje.weight+b.weight);
-			b.velocity.y = temp;
 		}
 		else if(b.side < 4 || b.side > 6){
 			var velhx =  (b.velocity.x* Math.sin(b.rad)- b.velocity.y* Math.cos(b.rad))* Math.sin(b.rad);
 			var velhy = -(b.velocity.x* Math.sin(b.rad)- b.velocity.y* Math.cos(b.rad))* Math.cos(b.rad);
 			var velvx = b.velocity.x - velhx;
 			var velvy = b.velocity.y - velhy;
-			if(b.side < 4) velvy =  Math.abs(velvy);
-			if(b.side > 6) velvy = -Math.abs(velvy);
-			var temp = (velvy* (b.weight- e*obje.weihgt) + obje.vel.y* obje.weight*(1+e))/ (obje.weight+b.weight);
+			if(b.side < 4 && velvy < 0) velvy = velvy *= -0.1;
+			if(b.side > 6 && velvy > 0) velvy = velvy *= -0.1;
 			obje.vel.y = (obje.vel.y* (obje.weight- e*b.weight) + velvy* b.weight*(1+e))/ (obje.weight+b.weight);
 		}
 	}
 	this.vel.y = (this.weight* this.vel.y - obje.weight* obje.vel.y)/ (this.weight+obje.weight);
 	obje.vel.y = -this.vel.y;
+	if(object[3].tly+ object[5].tly != 717){
+		console.log(object[3], object[5], object[3].tly+ object[5].tly, "!!!!!!!object422")
+		run = false;
+	}
 }
 
 Object.prototype.detect04 = function(ball, object){
@@ -458,13 +501,86 @@ Object.prototype.detect04 = function(ball, object){
 	}
 }
 
-//壁と正円の衝突判定
-Object.prototype.collision01 = function(b){
+Object.prototype.areaCheck = function(b, p){
 	var j = this.num;
-	var side = 0;
+	if(Math.sin(this.rad2)* (p.y-this.tly)+ Math.cos(this.rad2)* (p.x-this.tlx) >= 0
+	&& Math.sin(this.rad1)* (p.y-this.tly)+ Math.cos(this.rad1)* (p.x-this.tlx) <= 0){
+		b.touchArea[j].x = this.tlx;
+		b.touchArea[j].y = this.tly;
+		b.touchArea[j].num = 1;
+		b.touchArea[j].side = 1;
+	}
+	else if(Math.cos(this.rad1)* (p.y-this.tly)- Math.sin(this.rad1)* (p.x-this.tlx) <= 0
+	     && Math.sin(this.rad1)* (p.y-this.tly)+ Math.cos(this.rad1)* (p.x-this.tlx) >= 0
+		 && Math.sin(this.rad1)* (p.y-this.try)+ Math.cos(this.rad1)* (p.x-this.trx) <= 0){
+		b.touchArea[j].x = this.tlx;
+		b.touchArea[j].y = this.tly;
+		b.touchArea[j].rad = this.rad1;
+		b.touchArea[j].num = 2;
+		b.touchArea[j].side = 2;
+	}
+	else if(Math.sin(this.rad1)* (p.y-this.try)+ Math.cos(this.rad1)* (p.x-this.trx) >= 0
+	     && Math.sin(this.rad2)* (p.y-this.try)+ Math.cos(this.rad2)* (p.x-this.trx) >= 0){
+		b.touchArea[j].x = this.trx;
+		b.touchArea[j].y = this.try;
+		b.touchArea[j].num = 1;
+		b.touchArea[j].side = 3;
+	}
+	else if(Math.cos(this.rad2)* (p.y-this.bly)- Math.sin(this.rad2)* (p.x-this.blx) <= 0
+	     && Math.sin(this.rad2)* (p.y-this.bly)+ Math.cos(this.rad2)* (p.x-this.blx) >= 0
+		 && Math.sin(this.rad2)* (p.y-this.tly)+ Math.cos(this.rad2)* (p.x-this.tlx) <= 0){
+		b.touchArea[j].x = this.blx;
+		b.touchArea[j].y = this.bly;
+		b.touchArea[j].rad = this.rad2;
+		b.touchArea[j].num = 2;
+		b.touchArea[j].side = 4;
+	}
+	else if(Math.cos(this.rad2)* (p.y-this.try)- Math.sin(this.rad2)* (p.x-this.trx) >= 0
+	     && Math.sin(this.rad2)* (p.y-this.try)+ Math.cos(this.rad2)* (p.x-this.trx) <= 0
+		 && Math.sin(this.rad2)* (p.y-this.bry)+ Math.cos(this.rad2)* (p.x-this.brx) >= 0){
+		b.touchArea[j].x = this.trx;
+		b.touchArea[j].y = this.try;
+		b.touchArea[j].rad = this.rad2 + Math.PI;
+		b.touchArea[j].num = 2;
+		b.touchArea[j].side = 6;
+	}
+	else if(Math.sin(this.rad1)* (p.y-this.bly)+ Math.cos(this.rad1)* (p.x-this.blx) <= 0
+	     && Math.sin(this.rad2)* (p.y-this.bly)+ Math.cos(this.rad2)* (p.x-this.blx) <= 0){
+		b.touchArea[j].x = this.blx;
+		b.touchArea[j].y = this.bly;
+		b.touchArea[j].num = 1;
+		b.touchArea[j].side = 7;
+	}
+	else if(Math.cos(this.rad1)* (p.y-this.bry)- Math.sin(this.rad1)* (p.x-this.brx) >= 0
+	     && Math.sin(this.rad1)* (p.y-this.bry)+ Math.cos(this.rad1)* (p.x-this.brx) <= 0
+		 && Math.sin(this.rad1)* (p.y-this.bly)+ Math.cos(this.rad1)* (p.x-this.blx) >= 0){
+		b.touchArea[j].x = this.brx;
+		b.touchArea[j].y = this.bry;
+		b.touchArea[j].rad = this.rad1 + Math.PI;
+		b.touchArea[j].num = 2;
+		b.touchArea[j].side = 8;
+	}
+	else if(Math.sin(this.rad2)* (p.y-this.bry)+ Math.cos(this.rad2)* (p.x-this.brx) <= 0
+	     && Math.sin(this.rad1)* (p.y-this.bry)+ Math.cos(this.rad1)* (p.x-this.brx) >= 0){
+		b.touchArea[j].x = this.brx;
+		b.touchArea[j].y = this.bry;
+		b.touchArea[j].num = 1;
+		b.touchArea[j].side = 9;
+	}
+	else{
+		b.touchArea[j].side = 5;
+	}
+}
+
+//壁と正円の衝突判定
+Object.prototype.collision01 = function(b, ball, object){
+	var j = this.num;
+	b.touchArea[j].side = 0;
 	if(b.contact[0].num.slice(0,-2) == this.num+"w") return;
 	//円がどの辺あるいはどの角と衝突するかの判定
-	if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
+	this.areaCheck(b, b.position);
+	//if(b.num == 0 && this.num == 4) console.log(b.touchArea[j].side, b.touchArea[j].num)
+	/*if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
 		if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
 			b.touchArea[j].x = this.tlx;
 			b.touchArea[j].y = this.tly;
@@ -525,21 +641,45 @@ Object.prototype.collision01 = function(b){
 			b.touchArea[j].num = 3;
 			side = 5;
 		}
-	}
+	}*/
 	
 	//得られた判別から当り判定を取っていく
+	if(b.touchArea[j].side == 5){
+		var p = new Point();
+		p.x = b.position.x- b.velocity.x;
+		p.y = b.position.y- b.velocity.y;
+		this.areaCheck(b, p);
+		console.log(b.touchArea[j])
+		if(b.touchArea[j].side != 5) {
+			console.log("STOP")
+			//run = false;
+		}
+		if(b.touchArea[j].side == 5){
+			if(b.firedC == counter) this.areaCheck(b, ball[0].position);
+			else b.explosion(ball, object);
+			/*b.alive = false;
+			b.collisionC  = 0;
+			b.collisionCC = 0;
+			b.distortionF = false
+			b.lastDistortion = false;
+			var amount = Math.floor(Math.sqrt(b.size/3) + Math.random()*2);
+			for(j=ball.length-1; j>ball.length-amount-1; j--){
+				var v = new Point();
+				var size = Math.sqrt(b.weight/amount) + Math.random()*3 -2;
+				v.x = Math.sqrt(Math.abs(b.velocity.x/2))*Math.sin(b.velocity.x) +  Math.random()*10- 5;
+				v.y = Math.sqrt(Math.abs(b.velocity.y/2))*Math.sin(b.velocity.y) +  Math.random()*12- 5;
+				ball[j].set(b.position, size, v, Math.ceil(Math.random()*2));
+				ball[j].touchF = false;
+			}
+			return;*/
+		}
+	}
 	if(b.touchArea[j].num < 2){
 		//この場合は角に当たる
 		//console.log(b.touchArea[j].len, b.size)
 		b.touchArea[j].len = b.position.distance(b.touchArea[j]).length();
 		if(b.touchArea[j].len <= b.size){
-			//角に対して垂直、平行方向に速度ベクトルを分解
 			rad = Math.atan2(-b.position.y+ b.touchArea[j].y- b.velocity.y, -b.position.x+ b.touchArea[j].x- b.velocity.x);
-			/*var velhx = 　(b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.sin(rad);
-			var velhy =  (b.velocity.x * Math.sin(rad) - b.velocity.y * Math.cos(rad)) * Math.cos(rad);
-			var velvx = b.velocity.x - velhx;
-			var velvy = b.velocity.y - velhy;*/
-
 			//反発後の計算
 			this.contact[this.collisionC].x = b.touchArea[j].x;
 			this.contact[this.collisionC].y = b.touchArea[j].y;
@@ -548,7 +688,7 @@ Object.prototype.collision01 = function(b){
 			this.contact[this.collisionC].weight = b.weight;
 			this.contact[this.collisionC].rad = Math.atan2(b.position.y- b.touchArea[j].y, b.position.x- b.touchArea[j].x);
 			this.contact[this.collisionC].color = b.color;
-			this.contact[this.collisionC].side = side;
+			this.contact[this.collisionC].side = b.touchArea[j].side;
 			this.contact[this.collisionC].position.x = b.position.x;
 			this.contact[this.collisionC].position.y = b.position.y;
 			this.contact[this.collisionC].velocity.x = b.velocity.x;
@@ -562,7 +702,7 @@ Object.prototype.collision01 = function(b){
 			b.contact[b.collisionC].tangent = b.contact[b.collisionC].rad+ Math.PI/2;
 			b.contact[b.collisionC].weight = "NaN";
 			b.contact[b.collisionC].num = this.num+"w"+"c"+"0";
-			b.contact[b.collisionC].side = side;
+			b.contact[b.collisionC].side = b.touchArea[j].side;
 			//最後にcollisionCをインクリメントして終わり
 			this.collisionC++;
 			b.collisionC++;
@@ -573,11 +713,6 @@ Object.prototype.collision01 = function(b){
 		//この場合は辺に当たる
 		var drop = -Math.cos(b.touchArea[j].rad)* (b.position.y - b.touchArea[j].y) + (b.position.x - b.touchArea[j].x)* Math.sin(b.touchArea[j].rad)
 		if( drop <= b.size){
-			//壁に対して垂直、平行方向に速度ベクトルを分解
-			/*var velhx = (b.velocity.x * Math.cos(b.touchArea[j].rad) + b.velocity.y * Math.sin(-b.touchArea[j].rad)) * Math.cos(b.touchArea[j].rad);
-			var velhy = (b.velocity.x * Math.cos(b.touchArea[j].rad) + b.velocity.y * Math.sin(-b.touchArea[j].rad)) * Math.sin(b.touchArea[j].rad);
-			var velvx = b.velocity.x - velhx;
-			var velvy = b.velocity.y - velhy;*/
 			//反発後の計算
 			this.contact[this.collisionC].x = b.position.x - drop*Math.sin(b.touchArea[j].rad);
 			this.contact[this.collisionC].y = b.position.y + drop*Math.cos(b.touchArea[j].rad);
@@ -586,7 +721,7 @@ Object.prototype.collision01 = function(b){
 			this.contact[this.collisionC].weight = b.weight;
 			this.contact[this.collisionC].rad = b.touchArea[j].rad- Math.PI/2;
 			this.contact[this.collisionC].color = b.color;
-			this.contact[this.collisionC].side = side;
+			this.contact[this.collisionC].side = b.touchArea[j].side;
 			this.contact[this.collisionC].position.x = b.position.x;
 			this.contact[this.collisionC].position.y = b.position.y;
 			this.contact[this.collisionC].velocity.x = b.velocity.x;
@@ -600,7 +735,7 @@ Object.prototype.collision01 = function(b){
 			b.contact[b.collisionC].tangent = b.touchArea[j].rad + Math.PI;
 			b.contact[b.collisionC].weight = "NaN";
 			b.contact[b.collisionC].num = this.num+"w"+"c"+"0";
-			b.contact[b.collisionC].side = side;
+			b.contact[b.collisionC].side = b.touchArea[j].side;
 			//最後にcollisionCをインクリメントして終わり
 			this.collisionC++;
 			b.collisionC++;
@@ -616,12 +751,13 @@ Object.prototype.collision01 = function(b){
 //壁と歪円の衝突判定
 Object.prototype.collision02 = function(b){
 	var j = this.num;
-	var side = 0;
+	b.touchArea[j].side = 0;
 	//console.log(this.num, b.touchArea[j].num)
 	if(b.touchArea[j].num == 4) return;
 	if(true){//b.lastDistortion || b.touchArea[j].num == 5){
+		this.areaCheck(b, b.position);
 		//円がどの辺あるいはどの角と衝突するかの判定
-		if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
+		/*if(Math.cos(this.rad1)* (b.position.y-this.tly) - Math.sin(this.rad1)* (b.position.x-this.tlx) < 0){
 			if(Math.cos(this.rad2)* (b.position.y-this.bly) - Math.sin(this.rad2)* (b.position.x-this.blx) < 0){
 				b.touchArea[j].x = this.tlx;
 				b.touchArea[j].y = this.tly;
@@ -682,7 +818,7 @@ Object.prototype.collision02 = function(b){
 				b.touchArea[j].num = 3;
 				side = 5;
 			}
-		}
+		}*/
 	}
 	//console.log(b.num, this.num, b.touchArea[j])
 	//点とぶつかるかの判定
@@ -698,7 +834,7 @@ Object.prototype.collision02 = function(b){
 		var tangent1 = Math.atan2(b.dot[i].abs.y- b.dot[(i+b.dot.length-2)%b.dot.length].abs.y, b.dot[i].abs.x- b.dot[(i+b.dot.length-2)%b.dot.length].abs.x); 
 		var tangent2 = Math.atan2(b.dot[(i+1)%b.dot.length].abs.y- b.dot[(i+b.dot.length-1)%b.dot.length].abs.y, b.dot[(i+1)%b.dot.length].abs.x- b.dot[(i+b.dot.length-1)%b.dot.length].abs.x); 
 		var excess = (b.dot[(i+b.dot.length-1)%b.dot.length].abs.x- b.dot[i].abs.x)* (b.touchArea[j].y- b.dot[i].abs.y)- (b.touchArea[j].x- b.dot[i].abs.x)* (b.dot[(i+b.dot.length-1)%b.dot.length].abs.y- b.dot[i].abs.y);
-		if(excess < 0){
+		if(excess < 0 && excess > -b.size){
 			//接点の計算
 			this.contact[this.collisionC].x = b.touchArea[j].x;
 			this.contact[this.collisionC].y = b.touchArea[j].y;
@@ -707,12 +843,13 @@ Object.prototype.collision02 = function(b){
 			this.contact[this.collisionC].weight = b.weight;
 			this.contact[this.collisionC].rad = rad+ Math.PI;
 			this.contact[this.collisionC].color = b.color;
-			this.contact[this.collisionC].side = side;
+			this.contact[this.collisionC].side = b.touchArea[j].side;
 			this.contact[this.collisionC].position.x = b.position.x;
 			this.contact[this.collisionC].position.y = b.position.y;
 			this.contact[this.collisionC].velocity.x = b.velocity.x;
 			this.contact[this.collisionC].velocity.y = b.velocity.y;
-			
+console.log(b, b.collisionCC, this, t, tangent1, tangent2, excess)
+if(excess < -100) run = false;
 			b.contact[6+b.collisionCC].x = b.touchArea[j].x;
 			b.contact[6+b.collisionCC].y = b.touchArea[j].y;
 			b.contact[6+b.collisionCC].length = b.contact[6+b.collisionCC].distance(b.position).length();
@@ -721,7 +858,7 @@ Object.prototype.collision02 = function(b){
 			b.contact[6+b.collisionCC].tangent = (1-t)*tangent1 + t*tangent2;
 			b.contact[6+b.collisionCC].weight = "NaN";
 			b.contact[6+b.collisionCC].num = this.num+1+"w"+"d"+"0";
-			b.contact[6+b.collisionCC].side = side;
+			b.contact[6+b.collisionCC].side = b.touchArea[j].side;
 			//console.log(tangent1, tangent2, t, b.contact[b.collisionC+ b.collisionCC].tangent)
 			//console.log((rad- b.dot[(i+b.dot.length-1)%b.dot.length].rad), (b.dot[i].rad- b.dot[(i+b.dot.length-1)%b.dot.length].rad))
 			//最後にcollisionCをインクリメントして終わり
@@ -768,7 +905,7 @@ Object.prototype.collision02 = function(b){
 			this.contact[this.collisionC].weight = b.weight;
 			this.contact[this.collisionC].rad = rad- PI_2;
 			this.contact[this.collisionC].color = b.color;
-			this.contact[this.collisionC].side = side;
+			this.contact[this.collisionC].side = b.touchArea[j].side;
 			this.contact[this.collisionC].position.x = b.position.x;
 			this.contact[this.collisionC].position.y = b.position.y;
 			this.contact[this.collisionC].velocity.x = b.velocity.x;
@@ -786,7 +923,7 @@ Object.prototype.collision02 = function(b){
 			b.contact[6+b.collisionCC].tangent = rad + Math.PI;
 			b.contact[6+b.collisionCC].weight = "NaN";
 			b.contact[6+b.collisionCC].num = this.num+"w"+"d"+"0";
-			b.contact[6+b.collisionCC].side = side;
+			b.contact[6+b.collisionCC].side = b.touchArea[j].side;
 			//最後にcollisionCをインクリメントして終わり
 			this.collisionC++;
 			b.collisionCC++;

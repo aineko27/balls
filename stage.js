@@ -23,9 +23,7 @@ var stage01 = function(ball, object){
 		object[i].alive = false;
 	}
 	for(var i=1; i<ball.length; i++){
-		ball[i].alive = false;
-		ball[i].collisionC = 0;
-		ball[i].collisionCC = 0;
+		ball[i].initialize();
 	}
 	object[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
 	object[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
@@ -61,13 +59,9 @@ var stage01 = function(ball, object){
 var stage02 = function(ball, object){
 	for(var i=0; i<object.length; i++){
 		object[i].alive = false;
-		object[i].vel.x = 0;
-		object[i].vel.y = 0;
 	}
 	for(var i=1; i<ball.length; i++){
-		ball[i].alive = false;
-		ball[i].collisionC = 0;
-		ball[i].collisionCC = 0;
+		ball[i].initialize();
 	}
 	//チュートリアル用ステージ
 	p.x = 100, p.y = 50;
@@ -114,9 +108,7 @@ var stage03 = function(ball, object){
 		object[i].alive = false;
 	}
 	for(var i=1; i<ball.length; i++){
-		ball[i].alive = false;
-		ball[i].collisionC = 0;
-		ball[i].collisionCC = 0;
+		ball[i].initialize();
 	}
 	
 
@@ -146,19 +138,17 @@ var stage04 = function(ball, object){
 		object[i].alive = false;
 	}
 	for(var i=1; i<ball.length; i++){
-		ball[i].alive = false;
-		ball[i].collisionC = 0;
-		ball[i].collisionCC = 0;
+		ball[i].initialize();
 	}
 
 	object[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
 	object[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
 	object[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
-	object[03].set( 420, 150, 600, 300, 0, 0, 3, 0);
-	object[04].set( 400, 470, 100,  30, 0, 0, 3, 0);
-	//object[04].set(   0, 150, 350, 300, 0, 0, 3, 0);
-	object[03].set( 200, 350, 400,  30, 0, 0, 3, 0);
+	object[03].set(   0, 150, 380, 100, 0, 0, 3, 0);
+	object[04].set( 415, 150, 600, 100, 0, 0, 3, 0);
+	//object[03].set( 200, 350, 400,  30, 0, 0, 3, 0);
 	//object[04].set( 400, 350, 200,  30, 0, 0, 2, 0);
+	//object[04].set( 400, 470, 100,  30, 0, 0, 3, 0);
 	nowStage = 4;
 };
 
@@ -167,9 +157,7 @@ var stage05 = function(ball, object){
 		object[i].alive = false;
 	}
 	for(var i=1; i<ball.length; i++){
-		ball[i].alive = false;
-		ball[i].collisionC = 0;
-		ball[i].collisionCC = 0;
+		ball[i].initialize();
 	}
 	
 

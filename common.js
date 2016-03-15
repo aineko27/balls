@@ -16,11 +16,13 @@ Point.prototype.length = function(){
 
 Point.prototype.normalize = function(){
 	var i = this.length();
+	var q = new Point();
 	if(i > 0){
-		var j = 1 / i;
-		this.x *= j;
-		this.y *= j;
+		q.x = this.x/ i;
+		q.y = this.y/ i;
+		return q;
 	}
 	else console.log("Point.normalize ERROR")
+	run = false;
 };
 
