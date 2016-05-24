@@ -24,7 +24,6 @@ var nowStage = 0;
 
 var lCounter = 0;
 var test = new Array();
-test[0]=0;test[1]=0;
 
 // -const ----------------------------------=========------------------------------------------------------
 
@@ -276,21 +275,15 @@ window.onload = function(){
 					//周りの点の情報を更新
 					if(!ball[i].isDistorted){
 						for(j=0; j<dotLen; j++){
-							ball[i].dot[j].rel.x = ball[i].size* cos(j* PI2/ dotLen);
-							ball[i].dot[j].rel.y = ball[i].size* sin(j* PI2/ dotLen);
-							ball[i].dot[j].abs.x = ball[i].pos.x+ ball[i].dot[j].rel.x;
-							ball[i].dot[j].abs.y = ball[i].pos.y+ ball[i].dot[j].rel.y;
-							ball[i].dot[j].rad = atan2(ball[i].dot[j].rel.y, ball[i].dot[j].rel.x);
+							ball[i].dot[j].rel = angle(j* PI2/ dotLen).mul(ball[i].size);
+							ball[i].dot[j].abs = ball[i].pos.add(ball[i].dot[j].rel);
+							ball[i].dot[j].rad = atan2(ball[i].dot[j].rel);
 						}
 					}
 					else{
 						for(j=0; j<dotLen; j++){
-							// ball[i].dot[j].rel.x = (100*ball[i].dot[j].rel.x + 0*ball[i].size* cos(j* 2* Math.PI/ dotLen))/100;
-							// ball[i].dot[j].rel.y = (100*ball[i].dot[j].rel.y + 0*ball[i].size* sin(j* 2* Math.PI/ dotLen))/100;
-							// ball[i].calcuDotInfo(ball[i].pos);
-							ball[i].dot[j].abs.x = ball[i].pos.x+ ball[i].dot[j].rel.x;
-							ball[i].dot[j].abs.y = ball[i].pos.y+ ball[i].dot[j].rel.y;
-							ball[i].dot[j].rad = atan2(ball[i].dot[j].rel.y, ball[i].dot[j].rel.x);
+							ball[i].dot[j].abs = ball[i].pos.add(ball[i].dot[j].rel);
+							ball[i].dot[j].rad = atan2(ball[i].dot[j].rel);
 						}
 					}
 					//歪円当り判定チャンスをtrueにしておく
@@ -438,6 +431,11 @@ if(run==false)console.log("衝突判定三回目終了");
 				}
 				if(ball[i].contactCnt01Temp < 1 && ball[i].contactCnt01==1) ball[i].positionCorrection();
 				ball[i].bound(ball, wall);
+				// if(ball[i].isDistort && ball[i].isDistorted){
+					// for(j=0; j<dotLen; j++){
+						// ball[i].dot[j].abs = ball[i].dot[j].rel.add(ball[i].pos)
+					// }
+				// }
 				ball[i].calcuDotInfo(ball[i].pos)
 			}
 		}
@@ -449,6 +447,14 @@ if(run==false)console.log("衝突判定三回目終了");
 
 		//物体の処理演算終わり===============================================================================
 		
+		if(!ball[0].isDistort || !ball[0].isDistorted){
+			for(i=0; i<dotLen; i++){
+				ball[0].dot[i].rel = angle(i* PI2/ dotLen).mul(ball[0].size);
+				ball[0].dot[i].abs = ball[0].pos.add(ball[0].dot[i].rel);
+				ball[0].dot[i].rad = atan2(ball[0].dot[i].rel);
+			}
+		}
+		ball[0].calcuDotInfo(ball[0].pos);
 		//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(radian)をそれぞれ計算する
 		vector = mouse.sub(ball[0].pos);
 		if(!keyCode1[16]){
@@ -560,20 +566,47 @@ if(run==false)console.log("衝突判定三回目終了");
 		}
 	}
 	// マウスの現在地の描画
-	var mx = ball[0].pos.x + vector.x;
-	var my = ball[0].pos.y + vector.y;
+	var m = ball[0].pos.add(angle(radian).mul(length+ ball[0].dot[radNum].rel.norm()));
+	if(!pauseFlag) m2 = new Point(mouse.x, mouse.y);
 
+
+	if(leftDown) ctx.fillStyle = color[01];
+	else if(rightDown) ctx.fillStyle = color[02];
+	if(length>0){
+		if(leftDown != rightDown){
+			var rad = radian+ PI_2;
+			var t = 0.9+ length/1440;
+			ctx.beginPath();
+			var p1 = new Point(m.x, m.y-18*t).rot(m, rad);
+			var p2 = new Point(m.x+13*t, m.y+12*t).rot(m, rad);
+			var p3 = new Point(m.x, m.y+8*t).rot(m, rad);
+			var p4 = new Point(m.x-13*t, m.y+12*t).rot(m, rad);
+			ctx.moveTo(p1.x, p1.y);
+			ctx.lineTo(p2.x, p2.y);
+			ctx.lineTo(p3.x, p3.y);
+			ctx.lineTo(p4.x, p4.y);
+			ctx.closePath();
+			ctx.arc(m.x, m.y, 6, 0, PI2, true);
+			ctx.closePath();
+			ctx.fill();
+		}
+		else{
+			ctx.beginPath();
+			ctx.moveTo(m2.x, m2.y - 14);
+			ctx.lineTo(m2.x + 14, m2.y);
+			ctx.lineTo(m2.x, m2.y + 14);
+			ctx.lineTo(m2.x - 14, m2.y);
+			ctx.closePath();
+			ctx.arc(m2.x, m2.y, 9, 0, PI2, true);
+			ctx.closePath();
+			ctx.fillStyle = color[00];
+			ctx.fill();
+		}
+	}
+	
 	ctx.beginPath();
-	ctx.moveTo(mx, my - 15);
-	ctx.lineTo(mx + 15, my);
-	ctx.lineTo(mx, my + 15);
-	ctx.lineTo(mx - 15, my);
+	ctx.arc(m2.x, m2.y, 4, 0, PI2, true);
 	ctx.closePath();
-	ctx.arc(mx, my, 10, 0, PI2, true);
-	ctx.closePath();
-	ctx.arc(mx, my, 4, 0, PI2, true);
-	ctx.closePath();
-	ctx.fillStyle = color[00];
 	ctx.fill();
 
 	// 点線の描画
@@ -630,12 +663,9 @@ console.log(counter, "==========================================================
 	}
 	
 	//test
-	ctx.beginPath();
-	ctx.arc(test[01].x, test[01].y, 2, 0, PI2, true)
-	ctx.fill()
 
 	//HTMLを更新
-	info.innerHTML = test[1].x+"PLAYER WEIGHT: " + ball[0].weight +
+	info.innerHTML = ball[0].pos.y+" "+ball[0].dot[16].rel.y+"PLAYER WEIGHT: " + ball[0].weight +
 	 "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
 	 "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
 	 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C, V, X, B, Q, Z, N, M, 1～9<br>" +

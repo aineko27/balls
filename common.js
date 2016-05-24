@@ -87,6 +87,15 @@ Point.prototype.normalize = function(){
 	run = false;
 };
 
+Point.prototype.rot = function(center, rad){
+	if(typeof(center.x)=="number" && typeof(rad)=="number"){
+		var x = (this.x- center.x)*cos(rad)- (this.y- center.y)*sin(rad);
+		var y = (this.x- center.x)*sin(rad)+ (this.y- center.y)*cos(rad);
+		return new Point(center.x+ x, center.y+ y)
+	}
+	else console.log("!ERROR Point.rot");
+}
+
 var mod = function(a, b){
 	if(!b) return a-dotLen*(Math.floor(a/dotLen));
 	else if(typeof(a)=="number" && typeof(b)=="number") return a-b*(Math.floor(a/b));

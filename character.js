@@ -195,6 +195,15 @@ Character.prototype.explosion = function(ball, wall){
 
 //球同士の吸収を処理する関数
 Character.prototype.absorb = function(b){
+	//もし自機と撃ったばかりの球が遠ざかるようになっていたら、吸収を無視する
+	if(this.num==0 && b.shootedFrame+30 > counter){
+		var rad = atan2(this.pos.sub(b.pos))
+		console.log(this.vel.add(b.vel))
+		console.log(this.vel.add(b.vel).dot(rad))
+		console.log(angle(rad))
+		console.log(angle(rad).mul(this.vel.add(b.vel).dot(rad)).dot(rad))
+		if(angle(rad).mul(this.vel.add(b.vel).dot(rad)).dot(rad) < 0) return
+	}
 	//吸収後の重さと半径、重心と速度を求める
 	var weight = this.weight + b.weight;
 	if(b.shootedFrame+2 < counter){
@@ -304,9 +313,15 @@ Character.prototype.bound = function(ball, wall){
 					len = con[i].pos.sub(obje.center).dot(rad);
 					var vx = len* obje.radv* cos(rad+ PI_2);
 					var vy = len* obje.radv* sin(rad+ PI_2);
-					if(new Point(velvx- vx, velvy- vy).dot(rad) < 0) return;
-					velvx = (velvx* (this.weight- e*obje.weight*10)+ vx* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
-					velvy = (velvy* (this.weight- e*obje.weight*10)+ vy* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
+					if(new Point(velvx- vx, velvy- vy).dot(rad) < -0.001) return;
+					if(new Point(velvx, velvy).norm() < 0.1 && new Point(vx, vy).norm() < 0.1){
+						velvx *= -e;
+						velvy *= -e;
+					}
+					else{
+						velvx = (velvx* (this.weight- e*obje.weight*10)+ vx* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
+						velvy = (velvy* (this.weight- e*obje.weight*10)+ vy* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
+					}
 				}
 				else if(con[i].side != 0 && con[i].side != 5){
 					rad = atan2(con[i].pos.sub(this.pos))- atan2(obje.center.sub(con[i].pos));
@@ -315,8 +330,14 @@ Character.prototype.bound = function(ball, wall){
 					var vx = len* obje.radv* cos(rad);
 					var vy = len* obje.radv* sin(rad);
 					if(new Point(velvx- vx, velvy- vy).dot(rad) < 0) return;
-					velvx = (velvx* (this.weight- e*obje.weight*10)+ vx* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
-					velvy = (velvy* (this.weight- e*obje.weight*10)+ vy* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
+					if(new Point(velvx, velvy).norm() < 0.1 && new Point(vx, vy).norm() < 0.1){
+						velvx *= -e;
+						velvy *= -e;
+					}
+					else{
+						velvx = (velvx* (this.weight- e*obje.weight*10)+ vx* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
+						velvy = (velvy* (this.weight- e*obje.weight*10)+ vy* (1+e)* obje.weight*10)/ (this.weight+ obje.weight*10);
+					}
 				}
 			}
 		}
@@ -343,11 +364,11 @@ Character.prototype.bound = function(ball, wall){
 //クリック時に動作する関数======================================================================================
 //マウスを押した時に点線を描画する関数
 Character.prototype.strokeDottedLine = function(c){
-	var space = 10;
-	var dotted = Math.floor((length+11)/ space);
+	var space = 2+ Math.max(Math.min(sqrt(this.size), 10), 3)+ length/50;
+	var dotted = Math.floor((length+space+1)/ space);
 	var p1x, p1y, p2x, p2y;
 	var len1 = this.dot[radNum].rel.norm();
-	var len2 = length+ len1- 8;
+	var len2 = length+ len1- space +2;
 	ctx.beginPath();
 	for(var i=1; i<dotted/2-1; i++){
 		ctx.moveTo(this.pos.x+ (len2- space*2*i)* cos(radian), this.pos.y+ (len2- space*2*i)* sin(radian));
@@ -359,7 +380,8 @@ Character.prototype.strokeDottedLine = function(c){
 	}
 	ctx.strokeStyle = color[c];
 	ctx.lineCap = "butt";
-	ctx.lineWidth = 6;
+	ctx.lineWidth = 2+ Math.max(Math.min(sqrt(this.size), 8), 3)+ length/260;
+	test[0] = sqrt(this.size);
 	ctx.closePath();
 	ctx.stroke();
 };
@@ -454,7 +476,7 @@ Character.prototype.detectAbsorption03 = function(b){
 
 //正円と正円で衝突判定を取る関数
 Character.prototype.detectCollision01 = function(b){
-	if(this.contact[0].num.slice(0,-3) == b.num+"b") return;
+	if(this.contact[0].num.slice(0,-2) == b.num+"c") return;
 	if(b.pos.sub(this.pos).norm() < this.size + b.size){
 		//衝突時の接点の情報を求める
 		var rad = atan2(b.pos.sub(this.pos));
