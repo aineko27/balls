@@ -21,6 +21,8 @@ var jumpFlag2;
 var jumpFrame = 0;
 var creatFlag = false;
 var nowStage = 0;
+var debugFlag = "save";
+var saveCode ="\n";
 
 var lCounter = 0;
 var test = new Array();
@@ -38,6 +40,8 @@ var PI_4 = Math.PI/4;
 var SQRT2 = 1.41421356237;
 var BALL_MAX_COUNT = 512;
 var WALL_MAX_COUNT = 31;
+var STAR_MAX_COUNT = 3;
+var CONVERTER_MAX_COUNT = 10;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -51,13 +55,21 @@ color[04] = "rgba(255, 255, 255, 1.00)";//白
 color[05] = "rgba(255, 140,   0, 0.80)";//オレンジ
 color[06] = "rgba(200,   0, 100, 0.80)";//暗赤
 color[07] = "rgba(000, 000, 000, 1.00)";//黒
-color[10] = "rgba(  0, 255,   0, 0.30)";//薄緑
-color[11]　= "rgba(  0,   0, 255, 0.30)";//薄青
-color[12] = "rgba(255,   0,   0, 0.30)";//薄赤
-color[13]　= "rgba( 85,  85,  85, 0.30)";//薄グレー
-color[14] = "rgba(255, 255, 255, 1.00)";//白
+color[10] = "rgba( 60, 255,  60, 0.30)";//薄緑
+color[11]　= "rgba( 60,  60, 255, 0.30)";//薄青
+color[12] = "rgba(255,  60,  60, 0.30)";//薄赤
+color[13]　= "rgba(115, 115, 115, 0.30)";//薄グレー
+color[14] = "rgba(255, 255, 255, 0.30)";//白
 color[15] = "rgba(255, 140,   0, 0.80)";//薄オレンジ
 color[16] = "rgba(200,   0, 100, 0.80)";//薄暗赤
+color[17] = "rgba(000, 000, 000, 0.30)";//黒
+color[20] = "rgba(  0, 140,   0, 0.85)";//濃緑
+color[21] = "rgba(  0,   0, 140, 0.85)";//濃青
+color[22] = "rgba(140,   0,   0, 0.85)";//濃赤
+color[23] = "rgba( 20,  20,  20, 0.85)";//濃灰
+color[30] = "rgba(  0, 255,   0, "
+color[31] = "rgba(  0,   0, 255, "
+color[32] = "rgba(255,   0,   0, "
 
 
 
@@ -111,12 +123,27 @@ window.onload = function(){
 	dotLen = ball[0].dot.length;
 
 	//壁初期化
-	var wall =new Array(WALL_MAX_COUNT);
+	var wall = new Array(WALL_MAX_COUNT);
 	for(i=0; i<wall.length; i++){
 		wall[i] = new Wall;
 		wall[i].num = i;
 	};
+	
+	//星初期化
+	var star = new Array(STAR_MAX_COUNT);
+	for(i=0; i<star.length; i++){
+		star[i] = new Star;
+		star[i].num = i;
+	}
 
+	//変換器初期化
+	var converter = new Array(CONVERTER_MAX_COUNT);
+	for(i=0; i<converter.length; i++){
+		converter[i] = new Converter;
+		converter[i].num = i;
+	}
+	
+	console.log(converter)
 
 	//自機初期化
 	p.x = screenCanvas.width/2;
@@ -124,14 +151,19 @@ window.onload = function(){
 	ball[0].set(p, 15, P0, 0);
 	
 	//初期ステージ読み込み
-	stage00(ball, wall);
+	stage00(ball, wall, star, converter);
 //レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
-
+//loadCode();
 (function(){
 	//カウンターの値をインクリメントする
 	counter++;
-	
+	//デバッグ用に押されているキーコードを保存する
 	if(keyCode1[32] && !keyCode2[32]) pauseFlag = !pauseFlag;
+	saveCode += '"' + counter + '"'
+	for(i=0; i<keyCode1.length; i++){
+		if(keyCode1[i] == true) saveCode += '+",' + i + '"';
+	}
+	saveCode += '+"' + '\\n"+' + "\n";
 	if(!pauseFlag){
 
 		//入力による変更-------------------------------------------------------------------------------------------
@@ -168,19 +200,19 @@ window.onload = function(){
 			ball[0].vel = P0.add(P0);
 		}
 		if(keyCode1[90] && !keyCode2[90]){
-			ball[0].size = 65;
-			ball[0].weight = 4225;
+			ball[0].size = 35;
+			ball[0].weight = 1225;
 		}
 
 		if(!keyCode1[65] && !keyCode1[68]) ball[0].vel.x *= 0.85;
 		
 		//ステージ読み込み================================================================================================
-		if(keyCode1[48]) stage00(ball, wall);
-		if(keyCode1[49]) stage01(ball, wall);
-		if(keyCode1[50]) stage02(ball, wall);
-		if(keyCode1[51]) stage03(ball, wall);
-		if(keyCode1[52]) stage04(ball, wall);
-		if(keyCode1[53]) stage05(ball, wall);
+		if(keyCode1[48]) stage00(ball, wall, star, converter);
+		if(keyCode1[49]) stage01(ball, wall, star, converter);
+		if(keyCode1[50]) stage02(ball, wall, star, converter);
+		if(keyCode1[51]) stage03(ball, wall, star, converter);
+		if(keyCode1[52]) stage04(ball, wall, star, converter);
+		if(keyCode1[53]) stage05(ball, wall, star, converter);
 		
 		//ステージごとのフラグ管理
 		//ステージ1について
@@ -305,9 +337,62 @@ window.onload = function(){
 			wall[i].contactCnt01 = 0;
 		}
 		
+		//星の情報反映
+		for(i=0; i<star.length; i++){
+			if(star[i].condition=="rotation"){
+				//星がその場で回転するようにする。一回転したら止まる
+				star[i].rad += PI/6;
+				if(star[i].rad >= PI2){
+					star[i].condition = "moving"
+				}
+			}
+			if(star[i].condition=="moving"){
+				//所定の位置まで星が移動するようにする
+				star[i].pos.x = (star[i].homePos.x+ 2*star[i].pos.x)/3;
+				star[i].pos.y = (star[i].homePos.y+ 2*star[i].pos.y)/3;
+				if(star[i].pos.sub(star[i].homePos).norm()<0.1){
+					star[i].pos = star[i].homePos.add(P0);
+					star[i].condition = "scaling"
+					star[i].homeFlame = counter;
+				}
+			}
+			if(star[i].condition=="scaling"){
+				star[i].div = 5.5 - 1*sin((counter- star[i].homeFlame)/15*PI2)
+				if(counter- star[i].homeFlame> 23){
+					star[i].condition = "home"
+					star[i].div = 5.5
+				}
+			}
+			if(star[i].isBlink==true){
+				star[i].blink();
+			}
+		}
+		
+		//変換器の情報反映
+		for(i=0; i<converter.length; i++){
+			if(converter[i].isAlive==true){
+				console.log(converter[i].color)
+				if(converter[i].color==3) converter[i].rampCnt = 0;
+				converter[i].color = 3;
+				for(j=0; j<ball.length; j++){
+					if(ball[j].isAlive==true){
+						converter[i].attract(ball[j], wall);
+					}
+				}
+			}
+		}
+		
+		//演出の情報反映
+		
 		//吸収判定をとる=====================================================================================
 		for(i=0; i<ball.length; i++){
 			if(ball[i].isAlive){
+				//まずは星との吸収判定をとる
+				for(j=0; j<star.length; j++){
+					if(star[j].isAlive==true){
+						star[j].detectCollision(ball[i]);
+					}
+				}
 				for(j=i+1; j<ball.length; j++){
 					if(ball[j].isAlive && ball[i].pos.sub(ball[j].pos).norm() < (ball[i].size+ball[j].size)*2){
 						//ここまではお互いの球が生きていて十分に近いかの判定。ここからは2つの球の色から吸収するのか反発するのかの計算
@@ -508,6 +593,9 @@ if(run==false)console.log("衝突判定三回目終了");
 
 	//スクリーンクリア
 	ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
+	// ctx.fillStyle="rgba(0,0,0, 0.1)";
+	// ctx.fillRect(0,0, 1000,1000);
+	
 
 	//背景の描画-------------------------------------------------
 
@@ -519,6 +607,36 @@ if(run==false)console.log("衝突判定三回目終了");
 	//球の描写1
 	for(i=0; i<ball.length; i++){
 		if(ball[i].isVisible) ball[i].draw(1, ball[0]);
+	}
+	
+	//星の描写
+	for(i=0; i<star.length; i++){
+		star[i].homeDraw();
+		if(star[i].isAlive==true){
+			star[i].twinkle();
+		}
+		if(star[i].condition!="invisible"){
+			star[i].draw()
+		}
+		if(star[i].isBlink==true){
+			ctx.beginPath();
+			ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius1, 0, PI2, true);
+			ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius2, 0, PI2, false);
+			a1 = (star[i].blinkRadius1- 40)/12;
+			ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius3, 0, PI2, true);
+			ctx.fillStyle = color[star[i].color+10];
+			ctx.fill();
+		}
+	}
+	
+	//変換器の描写
+	for(i=0; i<converter.length; i++){
+		if(converter[i].isAlive==true){
+			converter[i].draw(wall);
+		}
 	}
 	
 	//壁の描画
@@ -618,7 +736,26 @@ if(run==false)console.log("衝突判定三回目終了");
 		else if(leftDown) ball[0].strokeDottedLine(1);
 		else if(rightDown) ball[0].strokeDottedLine(2);
 	}
-	
+//test==================================================
+// ctx.beginPath()
+// ctx.moveTo(700, 447);
+// ctx.lineTo(700, 485);
+// ctx.lineTo(690, 497);
+// ctx.lineTo(720, 497);
+// ctx.lineTo(710, 485);
+// ctx.lineTo(710, 447);
+// ctx.closePath();
+// ctx.fillStyle = color[07];
+// ctx.fill();
+// ctx.beginPath();
+// ctx.moveTo(710, 447);
+// ctx.lineTo(730, 457);
+// ctx.lineTo(710, 467);
+// ctx.closePath();
+// ctx.fillStyle = color[00]
+// ctx.fill()
+
+//=======================================================
 console.log(ball[0]);
 console.log(ball[1]);
 console.log(ball[2]);
@@ -665,7 +802,8 @@ console.log(counter, "==========================================================
 	//test
 
 	//HTMLを更新
-	info.innerHTML = ball[0].pos.y+" "+ball[0].dot[16].rel.y+"PLAYER WEIGHT: " + ball[0].weight +
+	info.innerHTML = test[0]+ " || " + test[1]+ " || " + test[2]+ " || " + test[3]+
+	 "<br>"+ball[0].pos.y+" "+ball[0].dot[16].rel.y+"PLAYER WEIGHT: " + ball[0].weight +
 	 "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
 	 "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
 	 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C, V, X, B, Q, Z, N, M, 1～9<br>" +

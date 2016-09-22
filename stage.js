@@ -2,25 +2,46 @@
 var p = new Point();
 var v = new Point();
 
-var stage00 = function(ball, wall){
+var stage00 = function(ball, wall, star, converter){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
+	}
+	for(var i=0; i<star.length; i++){
+		star[i].isAlive = false;
+		star[i].condition = "invisible"
+	}
+	for(var i=0; i<converter.length; i++){
+		converter[i].isAlive = false;
 	}
 	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
 	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
 	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
+	wall[03].set( 700, 100,  50,  50, 0, 0, 3, 0);
+	//star
+	star[00].set(new Point(700, 400), 0)
+	star[01].set(new Point(400, 100), 1)
+	star[02].set(new Point(200, 200), 2)
+	//converter
+	converter[00].set(new Point(500, 200), 3);
 	nowStage = 0;
 };
 
-var stage01 = function(ball, wall){
+var stage01 = function(ball, wall, star, converter){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
+	}
+	for(var i=0; i<star.length; i++){
+		star[i].isAlive = false;
+		star[i].condition = "invisible"
+	}
+	for(var i=0; i<converter.length; i++){
+		converter[i].isAlive = false;
 	}
 	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
 	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
@@ -34,15 +55,26 @@ var stage01 = function(ball, wall){
 	wall[08].set( 720, 200,  30,  50, 0, 0, 3, 0);
 	wall[09].set( 720, 250,  60,  30, 0, 0, 3, 0);
 	wall[11].set( 755, 240,  20,  10, 0, 0, 2, 0);
+	//star
+	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
 	nowStage = 1;
 };
 
-var stage02 = function(ball, wall){
+var stage02 = function(ball, wall, star, converter){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
+	}
+	for(var i=0; i<star.length; i++){
+		star[i].isAlive = false;
+		star[i].condition = "invisible"
+	}
+	for(var i=0; i<converter.length; i++){
+		converter[i].isAlive = false;
 	}
 	//チュートリアル用ステージ
 	p.x = 100, p.y = 50;
@@ -80,16 +112,27 @@ var stage02 = function(ball, wall){
 	wall[15].set( 280, 280, 420,  30, 0, 0, 3, 0);
 	wall[16].set( 180, 180,  20, 120, 0, 0, 3, 0);
 	wall[17].set( 200, 280,  80,  20, 0, 0, 0, 0);
+	//star
+	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
 	f1 = false;
 	nowStage = 2;
 };
 
-var stage03 = function(ball, wall){
+var stage03 = function(ball, wall, star, converter){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
+	}
+	for(var i=0; i<star.length; i++){
+		star[i].isAlive = false;
+		star[i].condition = "invisible"
+	}
+	for(var i=0; i<converter.length; i++){
+		converter[i].isAlive = false;
 	}
 	
 
@@ -112,15 +155,26 @@ var stage03 = function(ball, wall){
 	wall[04].set( 400, 350, 200,  30,      0, 0, 3, 4, 6000,  4, 40,-40);
 	//wall[04].set( 500, 250,  30, 200,      0, 0, 3, 4, 6000,  4, NaN, NaN);
 	//wall[04].set( 415, 335, 200,  30,      0, 0, 3, 4, 6000,  4, NaN, NaN);
+	//star
+	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
 	nowStage = 3;
 };
 
-var stage04 = function(ball, wall){
+var stage04 = function(ball, wall, star, converter){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
+	}
+	for(var i=0; i<star.length; i++){
+		star[i].isAlive = false;
+		star[i].condition = "invisible"
+	}
+	for(var i=0; i<converter.length; i++){
+		converter[i].isAlive = false;
 	}
 
 	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
@@ -131,15 +185,26 @@ var stage04 = function(ball, wall){
 	//wall[03].set( 200, 350, 400,  30, 0, 0, 3, 0);
 	//wall[04].set( 400, 350, 200,  30, 0, 0, 2, 0);
 	//wall[04].set( 400, 470, 100,  30, 0, 0, 3, 0);
+	//star
+	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
 	nowStage = 4;
 };
 
-var stage05 = function(ball, wall){
+var stage05 = function(ball, wall, star, converter){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
+	}
+	for(var i=0; i<star.length; i++){
+		star[i].isAlive = false;
+		star[i].condition = "invisible"
+	}
+	for(var i=0; i<converter.length; i++){
+		converter[i].isAlive = false;
 	}
 	
 
@@ -151,6 +216,10 @@ var stage05 = function(ball, wall){
 	wall[05].set( 600, 350, 200,  30, 0, 0, 1, 0);
 	// wall[06].set( 200, 380, 400,  30, 0, 0, 3, 0);
 	//wall[07].set( 400, 380,  30, 117, 0, 0, 3, 0);
+	//star
+	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
 	nowStage = 5;
 };
 

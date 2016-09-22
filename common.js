@@ -16,6 +16,12 @@ Point.prototype.add = function(p){
 		q.y = this.y+ p.y;
 		return q;
 	}
+	else if(typeof(p)=="number"){
+		var q = new Point();
+		q.x = this.x+ p;
+		q.y = this.y+ p;
+		return q;
+	}
 }
 
 Point.prototype.sub = function(p){
@@ -23,6 +29,12 @@ Point.prototype.sub = function(p){
 		var q = new Point();
 		q.x = this.x- p.x;
 		q.y = this.y- p.y;
+		return q;
+	}
+	else if(typeof(p)=="number"){
+		var q = new Point();
+		q.x = this.x- p;
+		q.y = this.y- p;
 		return q;
 	}
 };
@@ -131,7 +143,12 @@ var lineTo = function(a){
 	else console.log("!ERROR function lineTo");
 }
 
-
+var gradation = function(p1, p2, c1, c2){
+	grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+	grad.addColorStop(0, c1);
+	grad.addColorStop(1, c2);
+	return grad;
+}
 
 
 

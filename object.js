@@ -55,6 +55,7 @@ Wall.prototype.set = function(tlx, tly, wid, hei, rad1, rad2, c, t, w, p, um, lm
 	
 	this.wid = wid;
 	this.hei = hei;
+	this.longLen = Math.max(wid, hei);
 	this.rad1 = rad1;
 	this.rad2 = rad2;
 	this.color = c;
@@ -195,21 +196,62 @@ Wall.prototype.draw1 = function(wall){
 		ctx.moveTo(this.center.x- 3/10* this.wid, this.center.y+ this.uMax);
 		ctx.lineTo(this.center.x- 3/10* this.wid, this.center.y+ this.lMax);
 		ctx.lineWidth = 6;
-		ctx.strokeStyle = color[14];
+		ctx.strokeStyle = color[4];
 		ctx.stroke();
 	}
 }
 
 //壁の描写その2
 Wall.prototype.draw2 = function(wall){
+	// test[0] =  wall[4].centerLen* sin(Math.abs(wall[4].centerRad+ wall[4].rad1%PI_2));
+	// test[1] =  wall[4].centerLen* cos(Math.abs(wall[4].centerRad+ wall[4].rad1%PI_2));
 	ctx.beginPath();
 	moveTo(this.tl);
 	lineTo(this.tr);
 	lineTo(this.br);
 	lineTo(this.bl);
 	ctx.closePath();
-	ctx.fillStyle = color[this.color];
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "black";
+	ctx.stroke();
+	ctx.fillStyle = gradation(this.center.sub(this.longLen/2), this.center.add(this.longLen/2), color[this.color], color[this.color+20]);
 	ctx.fill();
+	// ctx.beginPath();
+	// ctx.moveTo(this.bl.x+3, this.bl.y-3)
+	// ctx.lineTo(this.tl.x+3, this.tl.y+3);
+	// ctx.lineTo(this.tr.x-3, this.tr.y+3);
+	// ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+	// ctx.lineWidth = 6;
+	// ctx.stroke();
+	// ctx.beginPath();
+	// ctx.moveTo(this.tr.x-3, this.tr.y+3)
+	// ctx.lineTo(this.br.x-3, this.br.y-3);
+	// ctx.lineTo(this.bl.x+3, this.bl.y-3);
+	// ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+	// ctx.strokeStyle = "rgba(  0,   0,   0, 0.3)";
+	// ctx.stroke();
+	this.point = new Array();
+	this.point[0] = this.tl;
+	this.point[1] = this.tr;
+	this.point[2] = this.br;
+	this.point[3] = this.bl;
+	ctx.lineCap = "butt";
+	shadeWidth = new Array();
+	for(i=0; i<4; i++){
+		ctx.beginPath();
+		var rad1 = this.point[(i+1)%4].sub(this.point[i]).normalize();
+		var rad2 = this.point[(i+3)%4].sub(this.point[i]).normalize();
+		shadeWidth[i] = this.point[(i+1)%4].sub(this.point[i]).normalize().dot(angle(-PI_4));
+		// if(shadeWidth[i]>=0) ctx.strokeStyle = "rgba(255, 255, 255, " + 0.7*Math.abs(shadeWidth[i]) + ")";
+		// else ctx.strokeStyle = "rgba(  0,   0,   0, " + 0.7*Math.abs(shadeWidth[i]) + ")";
+		if(shadeWidth[i]>=0) ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+		else ctx.strokeStyle = "rgba(  0,   0,   0, 0.3)";
+		shadeWidth[i] = Math.min(Math.abs(shadeWidth[i]*5*1.4), 6);
+		ctx.lineWidth = shadeWidth[i];
+		ctx.moveTo(this.point[i].x+ shadeWidth[i]/2* rad2.x, this.point[i].y+ shadeWidth[i]/2* rad2.y);
+		ctx.lineTo(this.point[(i+1)%4].x+ shadeWidth[i]/2* rad2.x, this.point[(i+1)%4].y+ shadeWidth[i]/2* rad2.y);
+		ctx.stroke();
+	}
 	switch(this.type){
 		case 1:
 			if(this.wid > this.hei) var len = this.hei;
@@ -270,8 +312,14 @@ Wall.prototype.draw2 = function(wall){
 			ctx.fill();
 			ctx.beginPath();
 			ctx.arc(wid1, hei, len*0.34, 0, PI2, true);
-			ctx.arc(wid2, hei, len*0.34, 0, PI2, true);
 			ctx.fillStyle = color[this.color];
+			ctx.fillStyle = gradation(new Point(wid1, hei).sub(len*0.25), new Point(wid1, hei).add(len*0.25), color[this.color+10], color[this.color+20]);
+			ctx.fill();
+			ctx.fill();
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(wid2, hei, len*0.34, 0, PI2, true);
+			ctx.fillStyle = gradation(new Point(wid2, hei).sub(len*0.25), new Point(wid2, hei).add(len*0.25), color[this.color+10], color[this.color+20]);
 			ctx.fill();
 			ctx.fill();
 			ctx.fill();
@@ -297,9 +345,15 @@ Wall.prototype.draw2 = function(wall){
 			ctx.beginPath();
 			ctx.arc(this.center.x, this.center.y, len*0.36, 0, PI2, true);
 			ctx.fillStyle = color[this.color];
+			ctx.fillStyle = gradation(this.center.sub(len*0.23), this.center.add(len*0.23), color[this.color+10], color[this.color+20]);
 			ctx.fill();
 			ctx.fill();
 			ctx.fill();
+			// ctx.beginPath();
+			// ctx.arc(this.center.x, this.center.y, len*0.36, 0, PI2, true);
+			// ctx.arc(this.center.x, this.center.y, len*0.30, 0, PI2, false);
+			// ctx.fillStyle = gradation(this.center.sub(len*0.36), this.center.add(len*0.36), color[04], color[07]);
+			// ctx.fill();
 			ctx.beginPath();
 			ctx.moveTo(this.center.x+ len*0.28* cos(this.rad1+ PI_4), this.center.y+ len*0.28* sin(this.rad1+ PI_4));
 			ctx.lineTo(this.center.x- len*0.28* cos(this.rad1+ PI_4), this.center.y- len*0.28* sin(this.rad1+ PI_4));
