@@ -42,6 +42,7 @@ var BALL_MAX_COUNT = 512;
 var WALL_MAX_COUNT = 31;
 var STAR_MAX_COUNT = 3;
 var CONVERTER_MAX_COUNT = 10;
+var CONFETTI_MAX_COUNT = 100;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -141,6 +142,12 @@ window.onload = function(){
 	for(i=0; i<converter.length; i++){
 		converter[i] = new Converter;
 		converter[i].num = i;
+	}
+	
+	//紙吹雪初期化
+	var confetti = new Array(CONFETTI_MAX_COUNT);
+	for(i=0; i<confetti.length; i++){
+		confetti[i] = new Confetti;
 	}
 	
 	console.log(converter)
@@ -382,7 +389,18 @@ window.onload = function(){
 			}
 		}
 		
+		//紙吹雪の情報反映
+		for(i=0; i<confetti.length; i++){
+			if(confetti[i].isAlive) confetti[i].move();
+		}
 		//演出の情報反映
+		if(star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
+			for(i=0; i<confetti.length/2; i++){
+				confetti[i].fire(0, 500, 1);
+			}for(i=confetti.length/2; i<confetti.length; i++){
+				confetti[i].fire(800, 500, -1);
+			}
+		}
 		
 		//吸収判定をとる=====================================================================================
 		for(i=0; i<ball.length; i++){
@@ -609,6 +627,11 @@ if(run==false)console.log("衝突判定三回目終了");
 		if(ball[i].isVisible) ball[i].draw(1, ball[0]);
 	}
 	
+	//紙吹雪の描写
+	for(i=0; i<confetti.length; i++){
+		if(confetti[i].isAlive) confetti[i].draw();
+	}
+	
 	//星の描写
 	for(i=0; i<star.length; i++){
 		star[i].homeDraw();
@@ -760,6 +783,7 @@ console.log(ball[0]);
 console.log(ball[1]);
 console.log(ball[2]);
 console.log(wall[1]);
+console.log(confetti[0])
 console.log(counter, "===================================================================================================")
 
 
