@@ -42,7 +42,7 @@ var BALL_MAX_COUNT = 512;
 var WALL_MAX_COUNT = 31;
 var STAR_MAX_COUNT = 3;
 var CONVERTER_MAX_COUNT = 10;
-var CONFETTI_MAX_COUNT = 100;
+var CONFETTI_MAX_COUNT = 400;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -396,9 +396,9 @@ window.onload = function(){
 		//演出の情報反映
 		if(star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
 			for(i=0; i<confetti.length/2; i++){
-				confetti[i].fire(0, 500, 1);
+				confetti[i].fire(-100, 500, 1);
 			}for(i=confetti.length/2; i<confetti.length; i++){
-				confetti[i].fire(800, 500, -1);
+				confetti[i].fire(900, 500, -1);
 			}
 		}
 		

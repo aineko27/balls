@@ -41,16 +41,16 @@ Confetti.prototype.move = function(){
 }
 
 Confetti.prototype.fire = function(x, y, s){
-	this.pos.x = x;
-	this.pos.y = y;
-	this.vel.x = (1+ Math.random()* 20)* s;
-	this.vel.y = -20+ Math.random()* 10;
+	this.pos.x = x+ Math.random()*200- 100;
+	this.pos.y = y-50;
+	this.vel.x = (0+ Math.random()* 22)* s;
+	this.vel.y = -22+ Math.random()* 15;
 	this.hei = 9;
 	this.wid = 7;
 	this.rad1 = 0;
 	this.rad2 = PI_2;
-	this.radv1 = Math.random()* 0.3;
-	this.radv2 = Math.random()* 0.2;
-	this.color = Math.floor(Math.random()*2+1);
+	this.radv1 = Math.random()* 0.6- 0.3;
+	this.radv2 = Math.random()* 0.4- 0.2;
+	this.color = Math.floor(Math.random()*6+1);
 	this.isAlive = true;
 }
