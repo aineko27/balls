@@ -216,20 +216,6 @@ Wall.prototype.draw2 = function(wall){
 	ctx.stroke();
 	ctx.fillStyle = gradation(this.center.sub(this.longLen/2), this.center.add(this.longLen/2), color[this.color], color[this.color+20]);
 	ctx.fill();
-	// ctx.beginPath();
-	// ctx.moveTo(this.bl.x+3, this.bl.y-3)
-	// ctx.lineTo(this.tl.x+3, this.tl.y+3);
-	// ctx.lineTo(this.tr.x-3, this.tr.y+3);
-	// ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-	// ctx.lineWidth = 6;
-	// ctx.stroke();
-	// ctx.beginPath();
-	// ctx.moveTo(this.tr.x-3, this.tr.y+3)
-	// ctx.lineTo(this.br.x-3, this.br.y-3);
-	// ctx.lineTo(this.bl.x+3, this.bl.y-3);
-	// ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-	// ctx.strokeStyle = "rgba(  0,   0,   0, 0.3)";
-	// ctx.stroke();
 	this.point = new Array();
 	this.point[0] = this.tl;
 	this.point[1] = this.tr;
@@ -237,13 +223,12 @@ Wall.prototype.draw2 = function(wall){
 	this.point[3] = this.bl;
 	ctx.lineCap = "butt";
 	shadeWidth = new Array();
+	//この辺が影の描写。斜め45度と内積をとってその値で影の伸びる方向と大きさを推定している
 	for(i=0; i<4; i++){
 		ctx.beginPath();
 		var rad1 = this.point[(i+1)%4].sub(this.point[i]).normalize();
 		var rad2 = this.point[(i+3)%4].sub(this.point[i]).normalize();
 		shadeWidth[i] = this.point[(i+1)%4].sub(this.point[i]).normalize().dot(angle(-PI_4));
-		// if(shadeWidth[i]>=0) ctx.strokeStyle = "rgba(255, 255, 255, " + 0.7*Math.abs(shadeWidth[i]) + ")";
-		// else ctx.strokeStyle = "rgba(  0,   0,   0, " + 0.7*Math.abs(shadeWidth[i]) + ")";
 		if(shadeWidth[i]>=0) ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
 		else ctx.strokeStyle = "rgba(  0,   0,   0, 0.3)";
 		shadeWidth[i] = Math.min(Math.abs(shadeWidth[i]*5*1.4), 6);
@@ -252,6 +237,7 @@ Wall.prototype.draw2 = function(wall){
 		ctx.lineTo(this.point[(i+1)%4].x+ shadeWidth[i]/2* rad2.x, this.point[(i+1)%4].y+ shadeWidth[i]/2* rad2.y);
 		ctx.stroke();
 	}
+	//ここまで
 	switch(this.type){
 		case 1:
 			if(this.wid > this.hei) var len = this.hei;

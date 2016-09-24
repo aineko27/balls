@@ -49,7 +49,6 @@ Star.prototype.draw = function(){
 	ctx.closePath()
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = color[07];
-	ctx.lineCap = "round"
 	ctx.lineCap = "round";
 	ctx.stroke();
 	var grad = ctx.createLinearGradient(x-95/div, y-90/div, x+95/div, y+90/div);

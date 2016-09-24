@@ -43,7 +43,7 @@ var WALL_MAX_COUNT = 31;
 var STAR_MAX_COUNT = 3;
 var CONVERTER_MAX_COUNT = 10;
 var CONFETTI_MAX_COUNT = 300;
-var PAPERTAPE_MAX_COUNT = 15;
+var PAPERTAPE_MAX_COUNT = 8;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -149,6 +149,7 @@ window.onload = function(){
 	var confetti = new Array(CONFETTI_MAX_COUNT);
 	for(i=0; i<confetti.length; i++){
 		confetti[i] = new Confetti;
+		confetti[i].num = i;
 	}
 	
 	//紙テープ初期化
