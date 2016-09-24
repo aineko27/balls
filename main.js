@@ -394,11 +394,24 @@ window.onload = function(){
 			if(confetti[i].isAlive) confetti[i].move();
 		}
 		//演出の情報反映
-		if(star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
+		if(counter==1){//star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
+			var ransuu = new Array(4);
 			for(i=0; i<confetti.length/2; i++){
-				confetti[i].fire(-100, 500, 1);
+				if(i%10==0){
+					ransuu[0] = Math.random();
+					ransuu[1] = Math.random();
+					ransuu[2] = Math.random();
+					ransuu[3] = Math.random();
+				}
+				confetti[i].fire(-100, 500, 1, ransuu*(i%10));
 			}for(i=confetti.length/2; i<confetti.length; i++){
-				confetti[i].fire(900, 500, -1);
+				if(i%10==0){
+					ransuu[0] = Math.random();
+					ransuu[1] = Math.random();
+					ransuu[2] = Math.random();
+					ransuu[3] = Math.random();
+				}
+				confetti[i].fire(900, 500, -1, ransuu*(i%10));
 			}
 		}
 		

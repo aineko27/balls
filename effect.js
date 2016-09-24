@@ -56,3 +56,9 @@ Confetti.prototype.fire = function(x, y, s){
 	this.isAlive = true;
 	this.fallVel = 0.07+ Math.random()*0.09
 }
+
+var paperTape = function(){
+	this.pos1 = new Point();
+	this.pos2 = new Point();
+	
+}
