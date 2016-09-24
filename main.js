@@ -413,6 +413,7 @@ window.onload = function(){
 		
 		//演出の情報反映
 		if(counter==1){//star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
+
 			//紙吹雪の発射
 			for(i=0; i<confetti.length/2; i++){
 				confetti[i].fire(-100, 500, 1, i%7, i%13);
@@ -425,6 +426,33 @@ window.onload = function(){
 			}
 			for(i=Math.ceil(paperTape.length/2); i<paperTape.length; i++){
 				paperTape[i].fire(screenCanvas.width+100, screenCanvas.height, -1);
+			}
+			var ransuu = new Array(8);
+			for(i=0; i<confetti.length/2; i++){
+				// if(i%10==0){
+					// ransuu[0] = Math.random();
+					// ransuu[1] = Math.random();
+					// ransuu[2] = Math.random();
+					// ransuu[3] = Math.random();
+				// }
+				// ransuu[4] = ransuu[0]*(i%10+1)/10
+				// ransuu[5] = ransuu[1]*(i%10+1)/10
+				// ransuu[6] = ransuu[2]*(i%10+1)/10
+				// ransuu[7] = ransuu[3]*(i%10+1)/10
+				confetti[i].fire(-100, 500, 1, i%7, i%13);
+			}for(i=confetti.length/2; i<confetti.length; i++){
+				// if(i%10==0){
+					// ransuu[0] = Math.random();
+					// ransuu[1] = Math.random();
+					// ransuu[2] = Math.random();
+					// ransuu[3] = Math.random();
+				// }
+				// ransuu[4] = ransuu[0]*(i%10+1)/10
+				// ransuu[5] = ransuu[1]*(i%10+1)/10
+				// ransuu[6] = ransuu[2]*(i%10+1)/10
+				// ransuu[7] = ransuu[3]*(i%10+1)/10
+				confetti[i].fire(900, 500, -1, i%7, i%13);
+
 			}
 		}
 		

@@ -19,10 +19,6 @@ Confetti.prototype.draw = function(){
 	ctx.lineTo(this.pos.x- this.hei* cos(this.rad1), this.pos.y- this.wid* sin(this.rad1));
 	ctx.lineTo(this.pos.x- this.hei* cos(this.rad2), this.pos.y- this.wid* sin(this.rad2));
 	ctx.closePath();
-	// ctx.arc(this.pos.x+ this.hei* cos(this.rad1), this.pos.y+ this.wid* sin(this.rad1), 10, 0, PI2, true)
-	// ctx.arc(this.pos.x+ this.hei* cos(this.rad2), this.pos.y+ this.wid* sin(this.rad2), 10, 0, PI2, true)
-	// ctx.arc(this.pos.x- this.hei* cos(this.rad1), this.pos.y- this.wid* sin(this.rad1), 10, 0, PI2, true)
-	// ctx.arc(this.pos.x- this.hei* cos(this.rad2), this.pos.y- this.wid* sin(this.rad2), 10, 0, PI2, true)
 	test[0] = this.pos.x+ this.hei* cos(this.rad1)
 	test[1] = this.pos.x- this.hei* cos(this.rad1)
 	ctx.fillStyle = color[this.color];
@@ -67,12 +63,6 @@ var PaperTape = function(){
 }
 
 PaperTape.prototype.draw = function(){
-	// ctx.beginPath();
-	// ctx.moveTo(this.pos1.x, this.pos1.y);
-	// ctx.lineTo(this.pos2.x, this.pos2.y);
-	// ctx.strokeStyle = color[this.color];
-	// ctx.lineWidth = 5;
-	// ctx.stroke();
 	var section = new Array(1, 1, 1.1, 1.2, 1.3, 1.5, 1.8, 2.1, 2.3, 2.6, 3.0, 3.5, 4.0);
 	section = section.mul(1/section.sum())
 	
