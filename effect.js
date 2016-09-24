@@ -41,8 +41,8 @@ Confetti.prototype.move = function(){
 	this.rad2 = PI_2
 }
 
-Confetti.prototype.fire = function(x, y, s){
-	this.pos.x = x+ Math.random()*200- 100;
+Confetti.prototype.fire = function(x, y, s, r1, r2){
+	this.pos.x = x+ r2/13* 200- 100;
 	this.pos.y = y-0;
 	this.vel.x = (0+ Math.random()* 22)* s;
 	this.vel.y = -22+ Math.random()* 15;
@@ -51,10 +51,10 @@ Confetti.prototype.fire = function(x, y, s){
 	this.rad1 = 0;
 	this.rad2 = PI_2;
 	this.radv1 = Math.random()* 0.6- 0.3;
-	this.radv2 = Math.random()* 0.4- 0.2;
-	this.color = Math.floor(Math.random()*6+1);
+	this.radv2 = r1/7* 0.4- 0.2;
+	this.color = r1;
 	this.isAlive = true;
-	this.fallVel = 0.07+ Math.random()*0.09
+	this.fallVel = 0.07+ r2/13* 0.09
 }
 
 var paperTape = function(){
