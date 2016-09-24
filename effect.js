@@ -37,7 +37,7 @@ Confetti.prototype.move = function(){
 	this.rad1 += this.radv1;
 	this.rad2 += this.radv2;
 	this.vel.y += this.fallVel;
-	this.vel.x += sin(counter/7)*0.1*sin(this.rad1)*1.4;
+	this.vel.x += sin(counter%13)*0.1*sin(this.rad1)*1.4;
 	this.rad2 = PI_2
 }
 
@@ -57,8 +57,74 @@ Confetti.prototype.fire = function(x, y, s, r1, r2){
 	this.fallVel = 0.07+ r2/13* 0.09
 }
 
-var paperTape = function(){
+var PaperTape = function(){
 	this.pos1 = new Point();
 	this.pos2 = new Point();
+	this.vel1 = new Point();
+	this.vel2 = new Point();
+	this.isAlive = true;
+	this.color = 0;
+}
+
+PaperTape.prototype.draw = function(){
+	// ctx.beginPath();
+	// ctx.moveTo(this.pos1.x, this.pos1.y);
+	// ctx.lineTo(this.pos2.x, this.pos2.y);
+	// ctx.strokeStyle = color[this.color];
+	// ctx.lineWidth = 5;
+	// ctx.stroke();
+	var section = new Array(1, 1, 1.1, 1.2, 1.3, 1.5, 1.8, 2.1, 2.3, 2.6, 3.0, 3.5, 4.0);
+	section = section.mul(1/section.sum())
+	
+	var len = this.pos1.sub(this.pos2).norm();
+	var direction = this.pos2.sub(this.pos1);
+	var sum = 0;
+	var width = 20;
+	if(len==0) return;
+	direNorm = direction.normalize();
+	ctx.beginPath();
+	ctx.moveTo(this.pos1.x, this.pos1.y);
+	for(i=1; i<section.length; i++){
+		sum += section[i];
+		ctx.lineTo(this.pos1.x+ direction.x* sum- width* direNorm.y* (-1)**i, this.pos1.y+ direction.y* sum+ width* direNorm.x* (-1)**i, 7, 0, PI2, true);
+	}
+	ctx.strokeStyle = color[this.color];
+	ctx.stroke();
 	
 }
+
+PaperTape.prototype.move = function(){
+	this.pos1.x += this.vel1.x;
+	this.pos1.y += this.vel1.y;
+	this.pos2.x += this.vel2.x;
+	this.pos2.y += this.vel2.y;
+	this.vel1.x *= 0.97;
+	this.vel1.y *= 0.97;
+	this.vel2.x *= 0.97;
+	this.vel2.y *= 0.97;
+	this.vel1.y += 0.15;
+	this.vel2.y += 0.02;
+	
+}
+
+PaperTape.prototype.fire = function(x, y, s){
+	this.pos1.x = x;
+	this.pos1.y = y;
+	this.pos2.x = x;
+	this.pos2.y = y;
+	this.vel1.x = (15+ Math.random()* 8)* s;
+	this.vel1.y = -26+ Math.random()* 18;
+	this.color = Math.floor(Math.random()*3);
+}
+
+
+
+
+
+
+
+
+
+
+
+

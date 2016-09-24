@@ -42,7 +42,8 @@ var BALL_MAX_COUNT = 512;
 var WALL_MAX_COUNT = 31;
 var STAR_MAX_COUNT = 3;
 var CONVERTER_MAX_COUNT = 10;
-var CONFETTI_MAX_COUNT = 400;
+var CONFETTI_MAX_COUNT = 300;
+var PAPERTAPE_MAX_COUNT = 15;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -148,6 +149,12 @@ window.onload = function(){
 	var confetti = new Array(CONFETTI_MAX_COUNT);
 	for(i=0; i<confetti.length; i++){
 		confetti[i] = new Confetti;
+	}
+	
+	//紙テープ初期化
+	var paperTape = new Array(PAPERTAPE_MAX_COUNT);
+	for(i=0; i<paperTape.length; i++){
+		paperTape[i] = new PaperTape;
 	}
 	
 	console.log(converter)
@@ -391,35 +398,33 @@ window.onload = function(){
 		
 		//紙吹雪の情報反映
 		for(i=0; i<confetti.length; i++){
-			if(confetti[i].isAlive) confetti[i].move();
+			if(confetti[i].isAlive){
+				confetti[i].move();
+				if(confetti[i].pos.y>screenCanvas.height+10) confetti[i].isAlive = false;
+			}
 		}
+		
+		//紙テープの情報反映
+		for(i=0; i<paperTape.length; i++){
+			if(paperTape[i].isAlive){
+				paperTape[i].move();
+			}
+		}
+		
 		//演出の情報反映
 		if(counter==1){//star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
-			var ransuu = new Array(8);
+			//紙吹雪の発射
 			for(i=0; i<confetti.length/2; i++){
-				// if(i%10==0){
-					// ransuu[0] = Math.random();
-					// ransuu[1] = Math.random();
-					// ransuu[2] = Math.random();
-					// ransuu[3] = Math.random();
-				// }
-				// ransuu[4] = ransuu[0]*(i%10+1)/10
-				// ransuu[5] = ransuu[1]*(i%10+1)/10
-				// ransuu[6] = ransuu[2]*(i%10+1)/10
-				// ransuu[7] = ransuu[3]*(i%10+1)/10
 				confetti[i].fire(-100, 500, 1, i%7, i%13);
-			}for(i=confetti.length/2; i<confetti.length; i++){
-				// if(i%10==0){
-					// ransuu[0] = Math.random();
-					// ransuu[1] = Math.random();
-					// ransuu[2] = Math.random();
-					// ransuu[3] = Math.random();
-				// }
-				// ransuu[4] = ransuu[0]*(i%10+1)/10
-				// ransuu[5] = ransuu[1]*(i%10+1)/10
-				// ransuu[6] = ransuu[2]*(i%10+1)/10
-				// ransuu[7] = ransuu[3]*(i%10+1)/10
-				confetti[i].fire(900, 500, -1, i%7, i%13);
+			}for(i=Math.ceil(confetti.length/2); i<confetti.length; i++){
+				confetti[i].fire(screenCanvas.width+100, screenCanvas.height, -1, i%7, i%13);
+			}
+			//紙テープの発射
+			for(i=0; i<paperTape.length/2; i++){
+				paperTape[i].fire(-100, screenCanvas.height, 1);
+			}
+			for(i=Math.ceil(paperTape.length/2); i<paperTape.length; i++){
+				paperTape[i].fire(screenCanvas.width+100, screenCanvas.height, -1);
 			}
 		}
 		
@@ -653,6 +658,11 @@ if(run==false)console.log("衝突判定三回目終了");
 		if(confetti[i].isAlive) confetti[i].draw();
 	}
 	
+	//紙テープの描写
+	for(i=0; i<paperTape.length; i++){
+		if(paperTape[i].isAlive) paperTape[i].draw();
+	}
+	
 	//星の描写
 	for(i=0; i<star.length; i++){
 		star[i].homeDraw();
@@ -804,7 +814,7 @@ console.log(ball[0]);
 console.log(ball[1]);
 console.log(ball[2]);
 console.log(wall[1]);
-console.log(confetti[0])
+console.log(paperTape)
 console.log(counter, "===================================================================================================")
 
 

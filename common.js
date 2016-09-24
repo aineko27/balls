@@ -108,6 +108,23 @@ Point.prototype.rot = function(center, rad){
 	else console.log("!ERROR Point.rot");
 }
 
+//配列の処理を行う
+Array.prototype.sum = function(){
+	var sum = 0;
+	for(var i=0; i<this.length; i++){
+		sum += this[i];
+	}
+	return sum;
+}
+
+Array.prototype.mul = function(a){
+	var arr = new Array(this.length);
+	for(var i=0; i<this.length; i++){
+		arr[i] = this[i]* a;
+	}
+	return arr;
+}
+//その他適当な関数
 var mod = function(a, b){
 	if(!b) return a-dotLen*(Math.floor(a/dotLen));
 	else if(typeof(a)=="number" && typeof(b)=="number") return a-b*(Math.floor(a/b));
