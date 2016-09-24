@@ -9,6 +9,7 @@ var Confetti = function(){
 	this.rad2 = 0;
 	this.radv1 = 0;
 	this.radv2 = 0;
+	this.fallVel = 0;
 }
 
 Confetti.prototype.draw = function(){
@@ -35,14 +36,14 @@ Confetti.prototype.move = function(){
 	this.vel.y *= 0.97;
 	this.rad1 += this.radv1;
 	this.rad2 += this.radv2;
-	this.vel.y += 0.1;
-	this.vel.x += sin(counter/7)*0.1
+	this.vel.y += this.fallVel;
+	this.vel.x += sin(counter/7)*0.1*sin(this.rad1)*1.4;
 	this.rad2 = PI_2
 }
 
 Confetti.prototype.fire = function(x, y, s){
 	this.pos.x = x+ Math.random()*200- 100;
-	this.pos.y = y-50;
+	this.pos.y = y-0;
 	this.vel.x = (0+ Math.random()* 22)* s;
 	this.vel.y = -22+ Math.random()* 15;
 	this.hei = 9;
@@ -53,4 +54,5 @@ Confetti.prototype.fire = function(x, y, s){
 	this.radv2 = Math.random()* 0.4- 0.2;
 	this.color = Math.floor(Math.random()*6+1);
 	this.isAlive = true;
+	this.fallVel = 0.07+ Math.random()*0.09
 }
