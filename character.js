@@ -169,7 +169,7 @@ Character.prototype.draw = function(f, b){
 	}
 	if(f == 1) ctx.fillStype = color[4];
 	// else ctx.fillStyle = color[this.color];
-	else ctx.fillStyle = gradation(this.pos.sub(this.size*0.8), this.pos.add(this.size*0.8), color[this.color], color[this.color+20])
+	else ctx.fillStyle = gradation1(this.pos.sub(this.size*0.8), this.pos.add(this.size*0.8), color[this.color], color[this.color+20])
 	ctx.fill();
 	ctx.restore();
 }

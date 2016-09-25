@@ -108,7 +108,7 @@ Point.prototype.rot = function(center, rad){
 	else console.log("!ERROR Point.rot");
 }
 
-//配列の処理を行う
+//配列の処理を行う==================================================================================================
 Array.prototype.sum = function(){
 	var sum = 0;
 	for(var i=0; i<this.length; i++){
@@ -124,7 +124,8 @@ Array.prototype.mul = function(a){
 	}
 	return arr;
 }
-//その他適当な関数
+
+//その他適当な関数=================================================================================================
 var mod = function(a, b){
 	if(!b) return a-dotLen*(Math.floor(a/dotLen));
 	else if(typeof(a)=="number" && typeof(b)=="number") return a-b*(Math.floor(a/b));
@@ -160,11 +161,26 @@ var lineTo = function(a){
 	else console.log("!ERROR function lineTo");
 }
 
-var gradation = function(p1, p2, c1, c2){
+var gradation1 = function(p1, p2, c1, c2){
 	grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
 	grad.addColorStop(0, c1);
 	grad.addColorStop(1, c2);
 	return grad;
+}
+
+var gradation2 = function(p, r1, r2, c1, c2){
+	console.log(p, r1, r2)
+	grad = ctx.createRadialGradient(p.x, p.y, r1, p.x, p.y, r2);
+	grad.addColorStop(0, c1);
+	grad.addColorStop(1, c2);
+	return grad;
+}
+
+var drawDot = function(p){
+	ctx.beginPath();
+	ctx.arc(p.x, p.y, 2, 0, PI2, true);
+	ctx.fillStyle = "black";
+	ctx.fill();
 }
 
 
