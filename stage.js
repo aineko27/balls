@@ -17,7 +17,7 @@ var stage00 = function(ball, wall, star, converter){
 		converter[i].isAlive = false;
 	}
 	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
-	/* wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
+	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
 	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
 	wall[03].set( 700, 100,  50,  50, 0, 0, 3, 0);
 	//star
@@ -25,7 +25,7 @@ var stage00 = function(ball, wall, star, converter){
 	star[01].set(new Point(400, 100), 1)
 	star[02].set(new Point(200, 200), 2)
 	//converter
-	converter[00].set(new Point(500, 200), 3); */
+	converter[00].set(new Point(500, 200), 3);
 	nowStage = 0;
 };
 
