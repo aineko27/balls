@@ -31,13 +31,11 @@ Confetti.prototype.fire = function(x, y, s, r1, r2){
 
 Confetti.prototype.draw = function(){
 	ctx.beginPath();
-	ctx.moveTo(this.pos.x+ this.hei* cos(this.rad1), this.pos.y+ this.wid* sin(this.rad1));
-	ctx.lineTo(this.pos.x+ this.hei* cos(this.rad2), this.pos.y+ this.wid* sin(this.rad2));
-	ctx.lineTo(this.pos.x- this.hei* cos(this.rad1), this.pos.y- this.wid* sin(this.rad1));
-	ctx.lineTo(this.pos.x- this.hei* cos(this.rad2), this.pos.y- this.wid* sin(this.rad2));
+	ctx.moveTo(this.pos.x*sr+ this.hei* cos(this.rad1)*sr, this.pos.y*sr+ this.wid* sin(this.rad1)*sr);
+	ctx.lineTo(this.pos.x*sr+ this.hei* cos(this.rad2)*sr, this.pos.y*sr+ this.wid* sin(this.rad2)*sr);
+	ctx.lineTo(this.pos.x*sr- this.hei* cos(this.rad1)*sr, this.pos.y*sr- this.wid* sin(this.rad1)*sr);
+	ctx.lineTo(this.pos.x*sr- this.hei* cos(this.rad2)*sr, this.pos.y*sr- this.wid* sin(this.rad2)*sr);
 	ctx.closePath();
-	test[0] = this.pos.x+ this.hei* cos(this.rad1)
-	test[1] = this.pos.x- this.hei* cos(this.rad1)
 	ctx.fillStyle = color[this.color];
 	ctx.fill();
 }
@@ -101,7 +99,6 @@ PaperTape.prototype.draw = function(){
 	sum1 = 0;
 	sum2 = section[0]
 	for(i=0; i<section.length-1; i++){
-		// wid = dirNorm.mul(8/section[i]**0.2)
 		sum1 += section[i];
 		sum2 += section[i+1];
 		if(i==0)ctx.moveTo(p1.x+ dir.x* sum1+ wid.y,        p1.y+ dir.y* sum1- wid.x);
@@ -110,17 +107,10 @@ PaperTape.prototype.draw = function(){
 						  p1.x+ dir.x* sum2- wid.y* (-1)**i,        p1.y+ dir.y* sum2+ wid.x* (-1)**i);
 	}
 	ctx.lineWidth = 1
-	// ctx.strokeStyle = "red"
-	// ctx.stroke();
-	// ctx.beginPath()
 	for(i=section.length-2; i>-1; i--){
-		// wid = dirNorm.mul(8/section[i]**0.2)
-		// hei = dirNorm.mul(12*(1+section[i]**2)/1);
-		// if(i!=0)hei = dirNorm.mul(12*(section[i]- section[i-1])/1);
 		ctx.bezierCurveTo(p1.x+ dir.x* sum2- wid.y* (-1)**i- wid.x* section[i]*10+ hei.x, p1.y+ dir.y* sum2+ wid.x* (-1)**i- wid.y* section[i]*10+ hei.y,
 		                  p1.x+ dir.x* sum1+ wid.y* (-1)**i+ wid.x* section[i]*10+ hei.x, p1.y+ dir.y* sum1- wid.x* (-1)**i+ wid.y* section[i]*10+ hei.y,
 						  p1.x+ dir.x* sum1+ wid.y* (-1)**i+ hei.x,        p1.y+ dir.y* sum1- wid.x* (-1)**i+ hei.y);
-		if(i==0)test[1] = new Point(p1.x+ dir.x* sum1+ wid.y,        p1.y+ dir.y* sum1- wid.x)
 		sum1 -= section[i];
 		sum2 -= section[i+1];
 	}

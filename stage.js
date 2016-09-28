@@ -16,9 +16,9 @@ var stage00 = function(ball, wall, star, converter){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
-	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
-	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
-	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
+	wall[00].set(   0, scrHei-15, scrWid, 20, 0, 0, 3, 0);
+	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
 	wall[03].set( 700, 100,  50,  50, 0, 0, 3, 0);
 	//star
 	star[00].set(new Point(700, 400), 0)
@@ -43,12 +43,12 @@ var stage01 = function(ball, wall, star, converter){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
-	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
-	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
-	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
+	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
+	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
 	wall[03].set( 400,   0,  50, 450, 0, 0, 3, 0);
-	wall[01].set(-300,   0, 320, 497, 0, 0, 3, 0);
-	wall[02].set( 780,   0, 300, 437, 0, 0, 3, 0);
+	wall[01].set(-20,   0, 320, scrHei-15, 0, 0, 3, 0);
+	wall[02].set( 780,   0, 20, 437, 0, 0, 3, 0);
 	wall[04].set( 780, 437,  20,  60, 0, 0, 3, 0);
 	wall[06].set( 600, 160, 150,  40, 0, 0, 3, 0);
 	wall[07].set( 600,   0,  25, 160, 0, 0, 1, 0);
@@ -56,9 +56,9 @@ var stage01 = function(ball, wall, star, converter){
 	wall[09].set( 720, 250,  60,  30, 0, 0, 3, 0);
 	wall[11].set( 755, 240,  20,  10, 0, 0, 2, 0);
 	//star
-	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
-	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
-	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
+	star[00].set(new Point(Math.random()*600+100, Math.random()*20+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*20+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2)
 	nowStage = 1;
 };
 
@@ -69,6 +69,7 @@ var stage02 = function(ball, wall, star, converter){
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
 	}
+	console.log(star.length)
 	for(var i=0; i<star.length; i++){
 		star[i].isAlive = false;
 		star[i].condition = "invisible"
@@ -94,9 +95,9 @@ var stage02 = function(ball, wall, star, converter){
 	p.x = 220, p.y = 420;
 	ball[6].set(p, 22, v, 2);
 
-	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
-	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
-	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
+	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
+	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
 	wall[03].set(   0, 140, 220,  10, 0, 0, 3, 0);
 	wall[04].set(   0, 150, 760,  30, 0, 0, 3, 0);
 	wall[05].set( 200,   0, 150,  80, 0, 0, 3, 0);
@@ -113,9 +114,9 @@ var stage02 = function(ball, wall, star, converter){
 	wall[16].set( 180, 180,  20, 120, 0, 0, 3, 0);
 	wall[17].set( 200, 280,  80,  20, 0, 0, 0, 0);
 	//star
-	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
-	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
-	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
+	star[00].set(new Point(Math.random()*600+100, Math.random()*20+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*20+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2)
 	f1 = false;
 	nowStage = 2;
 };
@@ -136,9 +137,9 @@ var stage03 = function(ball, wall, star, converter){
 	}
 	
 
-	wall[00].set(   0, 497, 800, 316,      0, 0, 3, 0, NaN);
-	wall[01].set(-300,-300, 300, 812,      0, 0, 3, 0, NaN);
-	wall[02].set( 800,-300, 300, 812,      0, 0, 3, 0, NaN);
+	wall[00].set(   0, scrHei-15, scrWid, 316,      0, 0, 3, 0, NaN);
+	wall[01].set(-20,-20, 20, scrHei+20,      0, 0, 3, 0, NaN);
+	wall[02].set( scrWid,-20, 20, scrHei+20,      0, 0, 3, 0, NaN);
 	//wall[03].set( 200, 350, 200,  30,      0, 0, 3, 2, 600,  4, 10,  0);
 	wall[04].set( 400, 350, 200,  30,      0, 0, 2, 0, NaN);
 	wall[05].set( 600, 350, 150,  30,      0, 0, 1, 0, NaN);
@@ -156,9 +157,9 @@ var stage03 = function(ball, wall, star, converter){
 	//wall[04].set( 500, 250,  30, 200,      0, 0, 3, 4, 6000,  4, NaN, NaN);
 	//wall[04].set( 415, 335, 200,  30,      0, 0, 3, 4, 6000,  4, NaN, NaN);
 	//star
-	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
-	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
-	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
+	star[00].set(new Point(Math.random()*600+100, Math.random()*20+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*20+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2)
 	nowStage = 3;
 };
 
@@ -177,18 +178,18 @@ var stage04 = function(ball, wall, star, converter){
 		converter[i].isAlive = false;
 	}
 
-	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
-	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
-	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
+	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
+	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
 	wall[03].set(   0, 150, 380, 100, 0, 0, 3, 0);
 	wall[04].set( 415, 150, 600, 100, 0, 0, 3, 0);
 	//wall[03].set( 200, 350, 400,  30, 0, 0, 3, 0);
 	//wall[04].set( 400, 350, 200,  30, 0, 0, 2, 0);
 	//wall[04].set( 400, 470, 100,  30, 0, 0, 3, 0);
 	//star
-	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
-	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
-	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
+	star[00].set(new Point(Math.random()*600+100, Math.random()*20+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*20+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2)
 	nowStage = 4;
 };
 
@@ -208,18 +209,18 @@ var stage05 = function(ball, wall, star, converter){
 	}
 	
 
-	wall[00].set(   0, 497, 800, 316, 0, 0, 3, 0);
-	wall[01].set(-300,-300, 300, 812, 0, 0, 3, 0);
-	wall[02].set( 800,-300, 300, 812, 0, 0, 3, 0);
+	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
+	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
 	wall[03].set( 200, 350, 200,  30, 0, 0, 3, 0);
 	wall[04].set( 400, 350, 200,  30, 0, 0, 2, 0);
 	wall[05].set( 600, 350, 200,  30, 0, 0, 1, 0);
 	// wall[06].set( 200, 380, 400,  30, 0, 0, 3, 0);
 	//wall[07].set( 400, 380,  30, 117, 0, 0, 3, 0);
 	//star
-	star[00].set(new Point(Math.random()*600+100, Math.random()*300+100), 0)
-	star[01].set(new Point(Math.random()*600+100, Math.random()*300+100), 1)
-	star[02].set(new Point(Math.random()*600+100, Math.random()*300+100), 2)
+	star[00].set(new Point(Math.random()*600+100, Math.random()*20+100), 0)
+	star[01].set(new Point(Math.random()*600+100, Math.random()*20+100), 1)
+	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2)
 	nowStage = 5;
 };
 

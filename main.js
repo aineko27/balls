@@ -16,6 +16,7 @@ var rightDown = false;
 var leftUp = false;
 var rightUp = false;
 var pauseFlag = false;
+var clearFlag = false;
 var jumpFlag1;
 var jumpFlag2;
 var jumpFrame = 0;
@@ -23,6 +24,7 @@ var creatFlag = false;
 var nowStage = 0;
 var debugFlag = "save";
 var saveCode ="\n";
+var sizeRate = 1;
 
 var lCounter = 0;
 var test = new Array();
@@ -93,11 +95,14 @@ window.onload = function(){
 
 	//スクリーンの初期化
 	screenCanvas = document.getElementById("screen");
-	screenCanvas.width = 800;
-	screenCanvas.height = 512;
+	screenCanvas.width = window.innerWidth;
+	screenCanvas.height = window.innerHeight;
+	scrWid = 1600;
+	scrHei = 700;
+	scrHei2 = 200;
 	var canvasCenter = new Point();
-	canvasCenter.x = screenCanvas.width/2;
-	canvasCenter.y = screenCanvas.height/2;
+	canvasCenter.x = scrWid/2;
+	canvasCenter.y = scrHei/2;
 
 
 	//2dコンテキスト
@@ -166,8 +171,8 @@ window.onload = function(){
 	console.log(converter)
 
 	//自機初期化
-	p.x = screenCanvas.width/2;
-	p.y = screenCanvas.height/2-　15;
+	p.x = scrWid/2;
+	p.y = scrHei/2-　15;
 	ball[0].set(p, 15, P0, 0);
 	
 	//初期ステージ読み込み
@@ -175,15 +180,27 @@ window.onload = function(){
 //レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 //loadCode();
 (function(){
+	
 	//カウンターの値をインクリメントする
 	counter++;
+	screenCanvas.width = window.innerWidth;
+	screenCanvas.height = window.innerHeight;
+	
 	//デバッグ用に押されているキーコードを保存する
 	if(keyCode1[32] && !keyCode2[32]) pauseFlag = !pauseFlag;
 	saveCode += '"' + counter + '"'
+	
 	for(i=0; i<keyCode1.length; i++){
 		if(keyCode1[i] == true) saveCode += '+",' + i + '"';
 	}
+	
 	saveCode += '+"' + '\\n"+' + "\n";
+	
+	test[0] = window.innerWidth;
+	test[1] = window.innerHeight;
+	test[2] = window.innerWidth/ (scrWid);
+	test[3] = window.innerHeight/ (scrHei+ scrHei2);
+	
 	if(!pauseFlag){
 
 		//入力による変更-------------------------------------------------------------------------------------------
@@ -237,7 +254,7 @@ window.onload = function(){
 		//ステージごとのフラグ管理
 		//ステージ1について
 		if(nowStage == 1){
-			if(ball[0].pos.x > 800) stage02(ball, wall);
+			if(ball[0].pos.x > scrWid) stage02(ball, wall, star, converter);
 			for(i=0; i<ball.length; i++){
 				if(ball[i].pos.x > 755 && ball[i].pos.y>220 && ball[i].pos.y < 260) wall[4].isAlive = false;
 			}
@@ -320,8 +337,6 @@ window.onload = function(){
 					ball[i].arc = 0;
 					for(j=0; j<ball[i].contact.length; j++){
 						ball[i].contactInitialize(j);
-					}
-					for(j=0; j<ball[i].bezier.length; j++){
 						ball[i].bezierInitialize(j);
 					}
 					//周りの点の情報を更新
@@ -366,7 +381,7 @@ window.onload = function(){
 					star[i].condition = "moving"
 				}
 			}
-			if(star[i].condition=="moving"){
+			else if(star[i].condition=="moving"){
 				//所定の位置まで星が移動するようにする
 				star[i].pos.x = (star[i].homePos.x+ 2*star[i].pos.x)/3;
 				star[i].pos.y = (star[i].homePos.y+ 2*star[i].pos.y)/3;
@@ -376,7 +391,8 @@ window.onload = function(){
 					star[i].homeFlame = counter;
 				}
 			}
-			if(star[i].condition=="scaling"){
+			else if(star[i].condition=="scaling"){
+				//星が拡大縮小するようになる
 				star[i].div = 5.5 - 1*sin((counter- star[i].homeFlame)/15*PI2)
 				if(counter- star[i].homeFlame> 23){
 					star[i].condition = "home"
@@ -391,7 +407,7 @@ window.onload = function(){
 		//変換器の情報反映
 		for(i=0; i<converter.length; i++){
 			if(converter[i].isAlive==true){
-				console.log(converter[i].color)
+				//その時の変換器の色によってランプの数を変化させる
 				if(converter[i].color==3) converter[i].rampCnt = 0;
 				converter[i].color = 3;
 				for(j=0; j<ball.length; j++){
@@ -406,7 +422,7 @@ window.onload = function(){
 		for(i=0; i<confetti.length; i++){
 			if(confetti[i].isAlive){
 				confetti[i].move();
-				if(confetti[i].pos.y>screenCanvas.height+10) confetti[i].isAlive = false;
+				if(confetti[i].pos.y>scrHei+10) confetti[i].isAlive = false;
 			}
 		}
 		
@@ -418,28 +434,28 @@ window.onload = function(){
 		}
 		
 		//演出の情報反映
-		if(star[0].isAlive==false&&star[1].isAlive==false&&star[2].isAlive==false&&!confetti[0].isAlive){
+		if((star[0].isAlive==false)&&(star[1].isAlive==false)&&(star[2].isAlive==false)&&(clearFlag==false)){
 
 			//紙吹雪の発射
 			for(i=0; i<confetti.length/2; i++){
-				confetti[i].fire(-100, 500, 1, i%7, i%13);
+				confetti[i].fire(-100, scrHei, 1, i%7, i%13);
 			}for(i=Math.ceil(confetti.length/2); i<confetti.length; i++){
-				confetti[i].fire(screenCanvas.width+100, screenCanvas.height, -1, i%7, i%13);
+				confetti[i].fire(scrWid+100, scrHei, -1, i%7, i%13);
 			}
 			//紙テープの発射
 			for(i=0; i<paperTape.length/2; i++){
-				paperTape[i].fire(-100, screenCanvas.height, 1);
+				paperTape[i].fire(-100, scrHei, 1);
 			}
 			for(i=Math.ceil(paperTape.length/2); i<paperTape.length; i++){
-				paperTape[i].fire(screenCanvas.width+100, screenCanvas.height, -1);
+				paperTape[i].fire(scrWid+100, scrHei, -1);
 			}
-			var ransuu = new Array(8);
 			for(i=0; i<confetti.length/2; i++){
-				confetti[i].fire(-100, 500, 1, i%7, i%13);
+				confetti[i].fire(-100, scrHei, 1, i%7, i%13);
 			}for(i=confetti.length/2; i<confetti.length; i++){
-				confetti[i].fire(900, 500, -1, i%7, i%13);
+				confetti[i].fire(scrWid+100, scrHei, -1, i%7, i%13);
 
 			}
+			clearFlag = true;
 		}
 		
 		//吸収判定をとる=====================================================================================
@@ -488,7 +504,6 @@ window.onload = function(){
 				}
 			}
 		}
-if(run==false)console.log("衝突判定一回目終了");
 		//衝突判定二回目(次に歪円を除いた場合の判定を取る)
 		for(i=0; i<ball.length; i++){
 			if(ball[i].isAlive){
@@ -531,7 +546,6 @@ if(run==false)console.log("衝突判定一回目終了");
 				ball[i].contactCnt01Temp = ball[i].contactCnt01;
 			}
 		}
-if(run==false)console.log("衝突判定二回目終了");
 		//衝突判定三回目(歪円の場合の判定を取る)==============================================================
 		for(i=0; i<ball.length; i++){
 			if(ball[i].isAlive){
@@ -548,15 +562,12 @@ if(run==false)console.log("衝突判定二回目終了");
 						if(wall[j].isAlive && ball[i].color != wall[j].color) wall[j].detectCollision02(ball[i], ball, wall);
 					}
 					ball[i].checkContact(ball, wall);;
-					// var num = ball[i].contactCnt01 + ball[i].contactCnt02;
-					// if(num>ball[i].contactCnt01 && ball[i].contactCnt01>0){
 					if(ball[i].contactCnt01 > 0 && ball[i].contactCnt02 > 0){
 						ball[i].detectDistortion02(ball);
 					}
 				}
 			}
 		}
-if(run==false)console.log("衝突判定三回目終了");
 		//当り判定終わり=====================================================================================
 
 		//とられた接点から衝突の計算を行う
@@ -574,11 +585,6 @@ if(run==false)console.log("衝突判定三回目終了");
 				}
 				if(ball[i].contactCnt01Temp < 1 && ball[i].contactCnt01==1) ball[i].positionCorrection();
 				ball[i].bound(ball, wall);
-				// if(ball[i].isDistort && ball[i].isDistorted){
-					// for(j=0; j<dotLen; j++){
-						// ball[i].dot[j].abs = ball[i].dot[j].rel.add(ball[i].pos)
-					// }
-				// }
 				ball[i].calcuDotInfo(ball[i].pos)
 			}
 		}
@@ -642,19 +648,20 @@ if(run==false)console.log("衝突判定三回目終了");
 	//画面の外遠くまで行ったかサイズがマイナスになったらボールを死んだことにする
 	for(i=0; i<ball.length; i++){
 		if(ball[i].isVisible){
-			if(ball[i].pos.sub(canvasCenter).norm() > screenCanvas.width
+			if(ball[i].pos.sub(canvasCenter).norm() > scrWid
 			|| ball[i].weight < 0) ball[i].initialize();
 		}
 	}
 	//画面の描画を行う-------------------------------------------------------------------------------------------------
-
-
+	//画面サイズを現在のウィンドウサイズに合わせる
+	sizeRate = Math.min(window.innerWidth/ (scrWid), window.innerHeight/ (scrHei+ scrHei2))
+	sr = sizeRate;
+	// if(counter==1)ctx.scale(sr, sr)
+	test[3] = sr
+		
 	//スクリーンクリア
 	ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
-	// ctx.fillStyle="rgba(0,0,0, 0.1)";
-	// ctx.fillRect(0,0, 1000,1000);
 	
-
 	//背景の描画-------------------------------------------------
 
 	//背景の描画
@@ -721,7 +728,7 @@ if(run==false)console.log("衝突判定三回目終了");
 			//球の中心の描写
 			if(ball[i].shootedFrame > counter-2) continue;
 			ctx.beginPath()
-			ctx.arc(ball[i].pos.x, ball[i].pos.y, 2, 0, PI2, true);
+			ctx.arc(ball[i].pos.x*sr, ball[i].pos.y*sr, 2*sr, 0, PI2, true);
 			ctx.fillStyle = color[03];
 			ctx.fill();
 			//球の接点の中点の描写
@@ -767,23 +774,23 @@ if(run==false)console.log("衝突判定三回目終了");
 			var p2 = new Point(m.x+13*t, m.y+12*t).rot(m, rad);
 			var p3 = new Point(m.x, m.y+8*t).rot(m, rad);
 			var p4 = new Point(m.x-13*t, m.y+12*t).rot(m, rad);
-			ctx.moveTo(p1.x, p1.y);
-			ctx.lineTo(p2.x, p2.y);
-			ctx.lineTo(p3.x, p3.y);
-			ctx.lineTo(p4.x, p4.y);
+			ctx.moveTo(p1.x*sr, p1.y*sr);
+			ctx.lineTo(p2.x*sr, p2.y*sr);
+			ctx.lineTo(p3.x*sr, p3.y*sr);
+			ctx.lineTo(p4.x*sr, p4.y*sr);
 			ctx.closePath();
-			ctx.arc(m.x, m.y, 6, 0, PI2, true);
+			ctx.arc(m.x*sr, m.y*sr, 6*sr, 0, PI2, true);
 			ctx.closePath();
 			ctx.fill();
 		}
 		else{
 			ctx.beginPath();
-			ctx.moveTo(m2.x, m2.y - 14);
-			ctx.lineTo(m2.x + 14, m2.y);
-			ctx.lineTo(m2.x, m2.y + 14);
-			ctx.lineTo(m2.x - 14, m2.y);
+			ctx.moveTo(m2.x*sr, m2.y*sr - 14*sr);
+			ctx.lineTo(m2.x*sr + 14*sr, m2.y*sr);
+			ctx.lineTo(m2.x*sr, m2.y*sr + 14*sr);
+			ctx.lineTo(m2.x*sr - 14*sr, m2.y*sr);
 			ctx.closePath();
-			ctx.arc(m2.x, m2.y, 9, 0, PI2, true);
+			ctx.arc(m2.x*sr, m2.y*sr, 9*sr, 0, PI2, true);
 			ctx.closePath();
 			ctx.fillStyle = color[00];
 			ctx.fill();
@@ -791,7 +798,7 @@ if(run==false)console.log("衝突判定三回目終了");
 	}
 	
 	ctx.beginPath();
-	ctx.arc(m2.x, m2.y, 4, 0, PI2, true);
+	ctx.arc(m2.x*sr, m2.y*sr, 4*sr, 0, PI2, true);
 	ctx.closePath();
 	ctx.fill();
 
@@ -804,30 +811,28 @@ if(run==false)console.log("衝突判定三回目終了");
 		else if(leftDown) ball[0].strokeDottedLine(1);
 		else if(rightDown) ball[0].strokeDottedLine(2);
 	}
-//test==================================================
-// ctx.beginPath()
-// ctx.moveTo(700, 447);
-// ctx.lineTo(700, 485);
-// ctx.lineTo(690, 497);
-// ctx.lineTo(720, 497);
-// ctx.lineTo(710, 485);
-// ctx.lineTo(710, 447);
-// ctx.closePath();
-// ctx.fillStyle = color[07];
-// ctx.fill();
-// ctx.beginPath();
-// ctx.moveTo(710, 447);
-// ctx.lineTo(730, 457);
-// ctx.lineTo(710, 467);
-// ctx.closePath();
-// ctx.fillStyle = color[00]
-// ctx.fill()
+	
+	//ステータス画面の描写を行う=======================================================================================
+	// ctx.clearRect(0, (scrHei+5)*sr, screenCanvas.width, screenCanvas.height)
+	// ctx.clearRect((scrWid+15)*sr, 0, screenCanvas.width, screenCanvas.height)
+	ctx.beginPath();
+	ctx.moveTo(0, (scrHei+ scrHei2)*sr);
+	ctx.lineTo(scrWid*sr, (scrHei+ scrHei2)*sr);
+	ctx.lineWidth = 3;
+	ctx.strokeStyle = "black"
+	ctx.stroke();
+	ctx.beginPath();
+	ctx.strokeStyle = "rgba(255, 120, 255, 0.3)";
+	ctx.lineWidth = 18;
+	ctx.moveTo(ctx.lineWidth*sr, scrHei*sr+ ctx.lineWidth*sr);
+	ctx.lineTo(scrWid*sr- ctx.lineWidth*sr, scrHei*sr+ ctx.lineWidth*sr);
+	ctx.lineTo(scrWid*sr- ctx.lineWidth*sr, scrHei*sr+ scrHei2*sr- ctx.lineWidth*sr);
+	ctx.lineTo(ctx.lineWidth*sr, scrHei*sr+ scrHei2*sr- ctx.lineWidth*sr);
+	ctx.closePath();
+	ctx.stroke();
+	
 
-//=======================================================
 console.log(ball[0]);
-console.log(ball[1]);
-console.log(ball[2]);
-console.log(wall[1]);
 console.log(paperTape)
 console.log(counter, "===================================================================================================")
 
@@ -850,13 +855,13 @@ console.log(counter, "==========================================================
 	//スペースバーが押されたらポーズ/ポーズ解除　する
 	if(pauseFlag && ball[0].isAlive){
 		ctx.beginPath();
-		ctx.arc(mouse.x, mouse.y, 6, 0, PI2, true);
+		ctx.arc(mouse.x*sr, mouse.y*sr, 6*sr, 0, PI2, true);
 		ctx.fillStyle = "rgba(  0,   0, 000, 0.5)";
 		ctx.fill();
 		
 		ctx.fillStyle = color[06];
 		ctx.font = "60px 'MSゴシック'"
-		ctx.fillText("PAUSE", screenCanvas.width/ 2- 94, screenCanvas.height/ 3);
+		ctx.fillText("PAUSE", scrWid/ 2- 94, scrHei/ 3);
 	}
 	
 	//自機が死んだら描写をストップしてリトライを促す
@@ -864,8 +869,8 @@ console.log(counter, "==========================================================
 		ctx.fillStyle = color[06];
 		run = false;
 		ctx.font = "60px 'MSゴシック'"
-		ctx.fillText("GAME OVER", screenCanvas.width/ 2- 165, screenCanvas.height/ 3);
-		ctx.fillText('PRESS "F5" TO RETRY', screenCanvas.width/ 2- 295, screenCanvas.height/ 3*2);
+		ctx.fillText("GAME OVER", scrWid/ 2- 165, scrHei/ 3);
+		ctx.fillText('PRESS "F5" TO RETRY', scrWid/ 2- 295, scrHei/ 3*2);
 	}
 	
 	//test

@@ -147,29 +147,29 @@ Character.prototype.draw = function(f, b){
 	if(this.isDistort || this.isDistorted){
 		//歪円だった場合
 		var dot = this.dot
-		ctx.moveTo(dot[0].abs.x, dot[0].abs.y);
+		ctx.moveTo(dot[0].abs.x*sr, dot[0].abs.y*sr);
 		for(i=1; i<dot.length; i++){
-			ctx.lineTo(dot[i].abs.x, dot[i].abs.y);
+			ctx.lineTo(dot[i].abs.x*sr, dot[i].abs.y*sr);
 		}
 		ctx.closePath();
 	}
-	else ctx.arc(this.pos.x, this.pos.y, this.size, 0, PI2, true);
+	else ctx.arc(this.pos.x*sr, this.pos.y*sr, this.size*sr, 0, PI2, true);
 	
 	if(f==2 && this.shootedFrame > counter-2){
 		ctx.save();
 		ctx.clip();
 		if(b.isDistort || b.isDistorted){
-			ctx.moveTo(b.dot[0].abs.x, b.dot[0].abs.y);
+			ctx.moveTo(b.dot[0].abs.x*sr, b.dot[0].abs.y*sr);
 			for(i=0; i<b.dot.length; i++){
-				ctx.lineTo(b.dot[i].abs.x, b.dot[i].abs.y)
+				ctx.lineTo(b.dot[i].abs.x*sr, b.dot[i].abs.y*sr)
 			}
 			ctx.closePath();
 		}
-		else ctx.arc(b.pos.x, b.pos.y, b.size, 0, PI2, false);
+		else ctx.arc(b.pos.x*sr, b.pos.y*sr, b.size*sr, 0, PI2, false);
 	}
 	if(f == 1) ctx.fillStype = color[4];
 	// else ctx.fillStyle = color[this.color];
-	else ctx.fillStyle = gradation1(this.pos.sub(this.size*0.8), this.pos.add(this.size*0.8), color[this.color], color[this.color+20])
+	else ctx.fillStyle = gradation1(this.pos.mul(sr).sub(this.size*0.8*sr), this.pos.mul(sr).add(this.size*0.8*sr), color[this.color], color[this.color+20])
 	ctx.fill();
 	ctx.restore();
 }
@@ -274,7 +274,7 @@ Character.prototype.bound = function(ball, wall){
 			var velhy = this.vel.y- velvy;
 			//壁の種類によって場合分け
 			if(obje.type == 0 || obje.type == 1){
-				if(new Point(velvx, velvy).dot(rad) < 0 && this.shootedFrame==counter) {test[0]++;return;}
+				if(new Point(velvx, velvy).dot(rad) < 0 && this.shootedFrame==counter) return;
 				velvx *= -e;
 				velvy *= -e;
 			}
@@ -372,17 +372,16 @@ Character.prototype.strokeDottedLine = function(c){
 	var len2 = length+ len1- space +2;
 	ctx.beginPath();
 	for(var i=1; i<dotted/2-1; i++){
-		ctx.moveTo(this.pos.x+ (len2- space*2*i)* cos(radian), this.pos.y+ (len2- space*2*i)* sin(radian));
-		ctx.lineTo(this.pos.x+ (len2- space*(2*i+1))* cos(radian), this.pos.y+ (len2- space*(2*i+1))* sin(radian));
+		ctx.moveTo(this.pos.x*sr+ (len2- space*2*i)* cos(radian)*sr, this.pos.y*sr+ (len2- space*2*i)* sin(radian)*sr);
+		ctx.lineTo(this.pos.x*sr+ (len2- space*(2*i+1))* cos(radian)*sr, this.pos.y*sr+ (len2- space*(2*i+1))* sin(radian)*sr);
 	}
 	if(dotted%2 == 0 && dotted > 2){
-		ctx.moveTo(this.pos.x+ (len2- space*2*i)* cos(radian), this.pos.y+ (len2- space*2*i)* sin(radian));
-		ctx.lineTo(this.pos.x+ len1* cos(radian), this.pos.y+ len1* sin(radian));
+		ctx.moveTo(this.pos.x*sr+ (len2- space*2*i)* cos(radian)*sr, this.pos.y*sr+ (len2- space*2*i)* sin(radian)*sr);
+		ctx.lineTo(this.pos.x*sr+ len1* cos(radian)*sr, this.pos.y*sr+ len1* sin(radian)*sr);
 	}
 	ctx.strokeStyle = color[c];
 	ctx.lineCap = "butt";
-	ctx.lineWidth = 2+ Math.max(Math.min(sqrt(this.size), 8), 3)+ length/260;
-	test[0] = sqrt(this.size);
+	ctx.lineWidth = 2*sr+ Math.max(Math.min(sqrt(this.size), 8), 3)*sr+ length/260*sr;
 	ctx.closePath();
 	ctx.stroke();
 };

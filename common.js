@@ -169,7 +169,7 @@ var gradation1 = function(p1, p2, c1, c2){
 }
 
 var gradation2 = function(p, r1, r2, c1, c2){
-	console.log(p, r1, r2)
+
 	grad = ctx.createRadialGradient(p.x, p.y, r1, p.x, p.y, r2);
 	grad.addColorStop(0, c1);
 	grad.addColorStop(1, c2);
