@@ -16,9 +16,9 @@ var stage00 = function(ball, wall, star, converter){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
-	wall[00].set(   0, scrHei-15, scrWid, 20, 0, 0, 3, 0);
-	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
-	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[00].set(  20, scrHei1-15, scrWid1-20, 20, 0, 0, 3, 0);
+	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
+	wall[02].set( scrWid1,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	wall[03].set( 700, 100,  50,  50, 0, 0, 3, 0);
 	//star
 	star[00].set(new Point(700, 400), 0)
@@ -43,11 +43,11 @@ var stage01 = function(ball, wall, star, converter){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
-	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
-	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
-	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[00].set(  20, scrHei1-15, scrWid1-20, 20, 0, 0, 3, 0);
+	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
+	wall[02].set( scrWid1,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	wall[03].set( 400,   0,  50, 450, 0, 0, 3, 0);
-	wall[01].set(-20,   0, 320, scrHei-15, 0, 0, 3, 0);
+	// wall[01].set(-20,   0, 320, scrHei1-15, 0, 0, 3, 0);
 	wall[02].set( 780,   0, 20, 437, 0, 0, 3, 0);
 	wall[04].set( 780, 437,  20,  60, 0, 0, 3, 0);
 	wall[06].set( 600, 160, 150,  40, 0, 0, 3, 0);
@@ -95,9 +95,9 @@ var stage02 = function(ball, wall, star, converter){
 	p.x = 220, p.y = 420;
 	ball[6].set(p, 22, v, 2);
 
-	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
-	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
-	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[00].set(  20, scrHei1-15, scrWid1-20, 20, 0, 0, 3, 0);
+	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
+	wall[02].set( scrWid1,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	wall[03].set(   0, 140, 220,  10, 0, 0, 3, 0);
 	wall[04].set(   0, 150, 760,  30, 0, 0, 3, 0);
 	wall[05].set( 200,   0, 150,  80, 0, 0, 3, 0);
@@ -137,9 +137,9 @@ var stage03 = function(ball, wall, star, converter){
 	}
 	
 
-	wall[00].set(   0, scrHei-15, scrWid, 316,      0, 0, 3, 0, NaN);
-	wall[01].set(-20,-20, 20, scrHei+20,      0, 0, 3, 0, NaN);
-	wall[02].set( scrWid,-20, 20, scrHei+20,      0, 0, 3, 0, NaN);
+	wall[00].set(  20, scrHei1-15, scrWid1-20, 20, 0, 0, 3, 0);
+	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
+	wall[02].set( scrWid1,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	//wall[03].set( 200, 350, 200,  30,      0, 0, 3, 2, 600,  4, 10,  0);
 	wall[04].set( 400, 350, 200,  30,      0, 0, 2, 0, NaN);
 	wall[05].set( 600, 350, 150,  30,      0, 0, 1, 0, NaN);
@@ -178,9 +178,9 @@ var stage04 = function(ball, wall, star, converter){
 		converter[i].isAlive = false;
 	}
 
-	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
-	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
-	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[00].set(  20, scrHei1-15, scrWid1-20, 20, 0, 0, 3, 0);
+	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
+	wall[02].set( scrWid1,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	wall[03].set(   0, 150, 380, 100, 0, 0, 3, 0);
 	wall[04].set( 415, 150, 600, 100, 0, 0, 3, 0);
 	//wall[03].set( 200, 350, 400,  30, 0, 0, 3, 0);
@@ -209,9 +209,9 @@ var stage05 = function(ball, wall, star, converter){
 	}
 	
 
-	wall[00].set(   0, scrHei-15, scrWid, 316, 0, 0, 3, 0);
-	wall[01].set(-20,-20, 20, scrHei+20, 0, 0, 3, 0);
-	wall[02].set( scrWid,-20, 20, scrHei+20, 0, 0, 3, 0);
+	wall[00].set(  20, scrHei1-15, scrWid1-20, 20, 0, 0, 3, 0);
+	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
+	wall[02].set( scrWid1,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	wall[03].set( 200, 350, 200,  30, 0, 0, 3, 0);
 	wall[04].set( 400, 350, 200,  30, 0, 0, 2, 0);
 	wall[05].set( 600, 350, 200,  30, 0, 0, 1, 0);

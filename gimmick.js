@@ -18,8 +18,8 @@ Star.prototype.set = function(p, c){
 	//座標と色をセット
 	this.pos.x = p.x;
 	this.pos.y = p.y;
-	this.homePos.x = 100/*scrWid-300*/ + this.num*50;
-	this.homePos.y = scrHei + 60;
+	this.homePos.x = 100/*scrWid1-300*/ + this.num*50;
+	this.homePos.y = scrHei1 + 60;
 	this.isAlive = true;
 	this.condition = "visible";
 	this.color = c;
@@ -161,6 +161,7 @@ var Converter = function(){
 	this.num = 0;
 	this.pair = 0;
 	this.rampCnt = 0;
+	this.div = 0;
 }
 
 Converter.prototype.set = function(p, pair){
@@ -169,6 +170,7 @@ Converter.prototype.set = function(p, pair){
 	this.color = 3;
 	this.pair = pair;
 	this.rampCnt = 0;
+	this.div = 1.0;
 }
 
 Converter.prototype.draw = function(wall){
@@ -282,23 +284,100 @@ Converter.prototype.attract = function(b, wall){
 }
 
 Converter.prototype.draw2 = function(wall){
+	if(this.color==3) this.div = 1+ sin(counter/30)*0.1
+	else this.div = (this.div*30+ 1.2)/31;
 	ctx.beginPath();
-	ctx.arc(this.pos.x*sr, this.pos.y*sr, 30*sr, 0, PI2, true);
-	ctx.arc(this.pos.x*sr, this.pos.y*sr, 25*sr, 0, PI2, false);
+	ctx.arc(this.pos.x*sr, this.pos.y*sr, 32*sr/this.div, 0, PI2, true);
+	ctx.arc(this.pos.x*sr, this.pos.y*sr, 25*sr/this.div, 0, PI2, false);
 	ctx.fillStyle = color[this.color];
 	ctx.fill();
 	ctx.beginPath();
-	ctx.moveTo(this.pos.x*sr-30*sr, this.pos.y*sr);
-	ctx.lineTo(this.pos.x*sr+30*sr, this.pos.y*sr);
-	ctx.moveTo(this.pos.x*sr, this.pos.y*sr-30*sr);
-	ctx.lineTo(this.pos.x*sr, this.pos.y*sr+30*sr);
+	ctx.moveTo(this.pos.x*sr-33*sr/this.div, this.pos.y*sr);
+	ctx.lineTo(this.pos.x*sr+33*sr/this.div, this.pos.y*sr);
+	ctx.moveTo(this.pos.x*sr, this.pos.y*sr-33*sr/this.div);
+	ctx.lineTo(this.pos.x*sr, this.pos.y*sr+33*sr/this.div);
 	ctx.strokeStyle = color[04];
 	ctx.lineWidth = 15*sr;
 	ctx.stroke();
-	for(i=0; i<4; i++){
-		
+	if(this.color!=3){
+		var rad = (counter%560)*PI2/560;
+		ctx.beginPath();
+		for(i=0; i<5; i++){
+			ctx.arc(this.pos.x*sr, this.pos.y*sr, (40+ counter%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
+			ctx.moveTo(this.pos.x*sr+ (40+ counter%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr, this.pos.y*sr+ (40+ counter%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr)
+		}
+		ctx.lineWidth = (1- (40+ counter%120/2)/100)*11;
+		ctx.strokeStyle = color[this.color+30]+ (1- (40+ counter%120/2)/100)+ ")";
+		ctx.stroke();
+		ctx.beginPath();
+		for(i=0; i<5; i++){
+			ctx.arc(this.pos.x*sr, this.pos.y*sr, (40+ (counter+40)%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
+			ctx.moveTo(this.pos.x*sr+ (40+ (counter+40)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr, this.pos.y*sr+ (40+ (counter+40)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr)
+			}
+		ctx.lineWidth = (1- (40+ (counter+40)%120/2)/100)*11;
+		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (counter+40)%120/2)/100)+ ")";
+		ctx.stroke();
+		ctx.beginPath();
+		for(i=0; i<5; i++){
+			ctx.arc(this.pos.x*sr, this.pos.y*sr, (40+ (counter+80)%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
+			ctx.moveTo(this.pos.x*sr+ (40+ (counter+80)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr, this.pos.y*sr+ (40+ (counter+80)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr)
+		}
+		ctx.lineWidth = (1- (40+ (counter+80)%120/2)/100)*11;
+		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (counter+80)%120/2)/100)+ ")";
+		ctx.stroke();
 	}
+	
+	//ここからは本体から延びる奴の描写
+	obje = wall[this.pair]
+	ctx.beginPath();
+	ctx.moveTo(this.pos.x*sr, this.pos.y*sr);
+	ctx.lineTo(obje.center.x*sr, this.pos.y*sr);
+	ctx.lineTo(obje.center.x*sr, obje.center.y*sr);
+	ctx.lineCap = "butt";
+	ctx.lineWidth = "16";
+	ctx.strokeStyle = color[13];
+	ctx.stroke();
+	ctx.beginPath();
+	var num = (obje.center.x- this.pos.x)/20;
+	for(i=0; i<Math.abs(num)-1/2; i++){
+		ctx.arc(obje.center.x*sr- i*20*Math.sign(num)*sr, this.pos.y*sr, 6*sr, 0, PI2, true);
+	}
+	ctx.fillStyle = color[04];
+	ctx.fill();
+	ctx.beginPath();
+	num = (obje.center.y- this.pos.y)/20;
+	for(i=1; i<Math.abs(num)-1/2; i++){
+		ctx.arc(obje.center.x*sr, this.pos.y*sr+ i*20*Math.sign(num)*sr, 6, 0, PI2, true);
+	}
+	ctx.fill();
+	//===========================
+	ctx.beginPath();
+	ctx.moveTo(this.pos.x*sr, this.pos.y*sr);
+	ctx.lineTo(obje.center.x*sr, this.pos.y*sr);
+	ctx.lineTo(obje.center.x*sr, obje.center.y*sr);
+	ctx.lineCap = "butt";
+	ctx.lineWidth = "16";
+	ctx.strokeStyle = color[13];
+	ctx.stroke();
+	ctx.beginPath();
+	var num1 = Math.floor(Math.abs((this.pos.x- obje.center.x)/20));
+	for(i=0; i<Math.min(Math.abs(num1)-1/2, this.rampCnt); i++){
+		ctx.arc(obje.center.x*sr- (num1-i)*20*Math.sign(num1)*sr, this.pos.y*sr, 6*sr, 0, PI2, true);
+	}
+	ctx.fillStyle = color[this.color];
+	ctx.fill();
+	if(this.rampCnt<num1) return;
+	ctx.beginPath();
+	var num2 = (Math.abs(this.pos.y- obje.center.y)/20);
+	for(i=0; i<Math.min(Math.abs(num2)-1/2, this.rampCnt- num1); i++){
+		ctx.arc(obje.center.x*sr, this.pos.y*sr- i*20*Math.sign(num2)*sr, 6*sr, 0, PI2, true);
+	}
+	ctx.fill();
+	if(this.rampCnt>num1+num2) obje.color = this.color;
 }
+
+
+
 
 
 

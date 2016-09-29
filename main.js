@@ -76,9 +76,9 @@ color[24] = "rgba(255, 255, 255, 1.00)";//濃白
 color[25] = "rgba(255, 140,   0, 0.80)";//濃オレンジ
 color[26] = "rgba(200,   0, 100, 0.80)";//濃暗赤
 color[27] = "rgba(000, 000, 000, 1.00)";//濃黒
-color[30] = "rgba(  0, 255,   0, "
-color[31] = "rgba(  0,   0, 255, "
-color[32] = "rgba(255,   0,   0, "
+color[30] = "rgba(  0, 255,   0, "      //緑
+color[31] = "rgba(  0,   0, 255, "      //青
+color[32] = "rgba(255,   0,   0, "      //赤
 
 
 
@@ -97,12 +97,14 @@ window.onload = function(){
 	screenCanvas = document.getElementById("screen");
 	screenCanvas.width = window.innerWidth;
 	screenCanvas.height = window.innerHeight;
-	scrWid = 1600;
-	scrHei = 700;
+	scrWid0 = 30;
+	scrWid1 = 1600;
+	scrHei0 = 0;
+	scrHei1 = 700;
 	scrHei2 = 200;
 	var canvasCenter = new Point();
-	canvasCenter.x = scrWid/2;
-	canvasCenter.y = scrHei/2;
+	canvasCenter.x = scrWid1/2;
+	canvasCenter.y = scrHei1/2;
 
 
 	//2dコンテキスト
@@ -171,8 +173,8 @@ window.onload = function(){
 	console.log(converter)
 
 	//自機初期化
-	p.x = scrWid/2;
-	p.y = scrHei/2-　15;
+	p.x = scrWid1/2;
+	p.y = scrHei1/2-　15;
 	ball[0].set(p, 15, P0, 0);
 	
 	//初期ステージ読み込み
@@ -196,10 +198,6 @@ window.onload = function(){
 	
 	saveCode += '+"' + '\\n"+' + "\n";
 	
-	test[0] = window.innerWidth;
-	test[1] = window.innerHeight;
-	test[2] = window.innerWidth/ (scrWid);
-	test[3] = window.innerHeight/ (scrHei+ scrHei2);
 	
 	if(!pauseFlag){
 
@@ -254,7 +252,7 @@ window.onload = function(){
 		//ステージごとのフラグ管理
 		//ステージ1について
 		if(nowStage == 1){
-			if(ball[0].pos.x > scrWid) stage02(ball, wall, star, converter);
+			if(ball[0].pos.x > scrWid1) stage02(ball, wall, star, converter);
 			for(i=0; i<ball.length; i++){
 				if(ball[i].pos.x > 755 && ball[i].pos.y>220 && ball[i].pos.y < 260) wall[4].isAlive = false;
 			}
@@ -422,7 +420,7 @@ window.onload = function(){
 		for(i=0; i<confetti.length; i++){
 			if(confetti[i].isAlive){
 				confetti[i].move();
-				if(confetti[i].pos.y>scrHei+10) confetti[i].isAlive = false;
+				if(confetti[i].pos.y>scrHei1+10) confetti[i].isAlive = false;
 			}
 		}
 		
@@ -438,21 +436,21 @@ window.onload = function(){
 
 			//紙吹雪の発射
 			for(i=0; i<confetti.length/2; i++){
-				confetti[i].fire(-100, scrHei, 1, i%7, i%13);
+				confetti[i].fire(-100, scrHei1, 1, i%7, i%13);
 			}for(i=Math.ceil(confetti.length/2); i<confetti.length; i++){
-				confetti[i].fire(scrWid+100, scrHei, -1, i%7, i%13);
+				confetti[i].fire(scrWid1+100, scrHei1, -1, i%7, i%13);
 			}
 			//紙テープの発射
 			for(i=0; i<paperTape.length/2; i++){
-				paperTape[i].fire(-100, scrHei, 1);
+				paperTape[i].fire(-100, scrHei1, 1);
 			}
 			for(i=Math.ceil(paperTape.length/2); i<paperTape.length; i++){
-				paperTape[i].fire(scrWid+100, scrHei, -1);
+				paperTape[i].fire(scrWid1+100, scrHei1, -1);
 			}
 			for(i=0; i<confetti.length/2; i++){
-				confetti[i].fire(-100, scrHei, 1, i%7, i%13);
+				confetti[i].fire(-100, scrHei1, 1, i%7, i%13);
 			}for(i=confetti.length/2; i<confetti.length; i++){
-				confetti[i].fire(scrWid+100, scrHei, -1, i%7, i%13);
+				confetti[i].fire(scrWid1+100, scrHei1, -1, i%7, i%13);
 
 			}
 			clearFlag = true;
@@ -648,16 +646,15 @@ window.onload = function(){
 	//画面の外遠くまで行ったかサイズがマイナスになったらボールを死んだことにする
 	for(i=0; i<ball.length; i++){
 		if(ball[i].isVisible){
-			if(ball[i].pos.sub(canvasCenter).norm() > scrWid
+			if(ball[i].pos.sub(canvasCenter).norm() > scrWid1
 			|| ball[i].weight < 0) ball[i].initialize();
 		}
 	}
 	//画面の描画を行う-------------------------------------------------------------------------------------------------
 	//画面サイズを現在のウィンドウサイズに合わせる
-	sizeRate = Math.min(window.innerWidth/ (scrWid), window.innerHeight/ (scrHei+ scrHei2))
+	sizeRate = Math.min(window.innerWidth/ (scrWid1), window.innerHeight/ (scrHei1+ scrHei2))
 	sr = sizeRate;
 	// if(counter==1)ctx.scale(sr, sr)
-	test[3] = sr
 		
 	//スクリーンクリア
 	ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
@@ -686,34 +683,33 @@ window.onload = function(){
 	
 	//星の描写
 	for(i=0; i<star.length; i++){
-		star[i].homeDraw();
-		if(star[i].isAlive==true){
-			star[i].twinkle();
-		}
-		if(star[i].condition!="invisible"){
-			star[i].draw()
-		}
-		if(star[i].isBlink==true){
-			ctx.beginPath();
-			ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius1, 0, PI2, true);
-			ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius2, 0, PI2, false);
-			a1 = (star[i].blinkRadius1- 40)/12;
-			ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
-			ctx.fill();
-			ctx.beginPath();
-			ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius3, 0, PI2, true);
-			ctx.fillStyle = color[star[i].color+10];
-			ctx.fill();
-		}
+		// star[i].homeDraw();
+		// if(star[i].isAlive==true){
+			// star[i].twinkle();
+		// }
+		// if(star[i].condition!="invisible"){
+			// star[i].draw()
+		// }
+		// if(star[i].isBlink==true){
+			// ctx.beginPath();
+			// ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius1, 0, PI2, true);
+			// ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius2, 0, PI2, false);
+			// a1 = (star[i].blinkRadius1- 40)/12;
+			// ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
+			// ctx.fill();
+			// ctx.beginPath();
+			// ctx.arc(star[i].pos.x, star[i].pos.y, star[i].blinkRadius3, 0, PI2, true);
+			// ctx.fillStyle = color[star[i].color+10];
+			// ctx.fill();
+		// }
 	}
 	
 	//変換器の描写
 	for(i=0; i<converter.length; i++){
 		if(converter[i].isAlive==true){
-			converter[i].draw(wall);
+			converter[i].draw2(wall);
 		}
 	}
-	
 	//壁の描画
 	for(i=0; i<wall.length; i++){
 		if(wall[i].isAlive) wall[i].draw2(wall);
@@ -813,23 +809,48 @@ window.onload = function(){
 	}
 	
 	//ステータス画面の描写を行う=======================================================================================
-	// ctx.clearRect(0, (scrHei+5)*sr, screenCanvas.width, screenCanvas.height)
-	// ctx.clearRect((scrWid+15)*sr, 0, screenCanvas.width, screenCanvas.height)
-	ctx.beginPath();
-	ctx.moveTo(0, (scrHei+ scrHei2)*sr);
-	ctx.lineTo(scrWid*sr, (scrHei+ scrHei2)*sr);
-	ctx.lineWidth = 3;
-	ctx.strokeStyle = "black"
-	ctx.stroke();
+	//まずは画面のクリア
+	ctx.clearRect(0, (scrHei1+5)*sr, screenCanvas.width, screenCanvas.height)
+	ctx.clearRect((scrWid1+15)*sr, 0, screenCanvas.width, screenCanvas.height)
+	// ctx.beginPath();
+	// ctx.moveTo(0, (scrHei1+ scrHei2)*sr);
+	// ctx.lineTo(scrWid1*sr, (scrHei1+ scrHei2)*sr);
+	// ctx.lineWidth = 3;
+	// ctx.strokeStyle = "black"
+	// ctx.stroke();
+	//ステータス画面を枠で囲む
 	ctx.beginPath();
 	ctx.strokeStyle = "rgba(255, 120, 255, 0.3)";
 	ctx.lineWidth = 18;
-	ctx.moveTo(ctx.lineWidth*sr, scrHei*sr+ ctx.lineWidth*sr);
-	ctx.lineTo(scrWid*sr- ctx.lineWidth*sr, scrHei*sr+ ctx.lineWidth*sr);
-	ctx.lineTo(scrWid*sr- ctx.lineWidth*sr, scrHei*sr+ scrHei2*sr- ctx.lineWidth*sr);
-	ctx.lineTo(ctx.lineWidth*sr, scrHei*sr+ scrHei2*sr- ctx.lineWidth*sr);
+	ctx.moveTo(ctx.lineWidth*sr, scrHei1*sr+ ctx.lineWidth*sr);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr, scrHei1*sr+ ctx.lineWidth*sr);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr);
+	ctx.lineTo(ctx.lineWidth*sr, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr);
 	ctx.closePath();
 	ctx.stroke();
+	
+	//星の描写
+	for(i=0; i<star.length; i++){
+		star[i].homeDraw();
+		if(star[i].isAlive==true){
+			star[i].twinkle();
+		}
+		if(star[i].condition!="invisible"){
+			star[i].draw()
+		}
+		if(star[i].isBlink==true){
+			ctx.beginPath();
+			ctx.arc(star[i].pos.x*sr, star[i].pos.y*sr, star[i].blinkRadius1*sr, 0, PI2, true);
+			ctx.arc(star[i].pos.x*sr, star[i].pos.y*sr, star[i].blinkRadius2*sr, 0, PI2, false);
+			a1 = (star[i].blinkRadius1- 40)/12;
+			ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(star[i].pos.x*sr, star[i].pos.y*sr, star[i].blinkRadius3*sr, 0, PI2, true);
+			ctx.fillStyle = color[star[i].color+10];
+			ctx.fill();
+		}
+	}
 	
 
 console.log(ball[0]);
@@ -861,7 +882,7 @@ console.log(counter, "==========================================================
 		
 		ctx.fillStyle = color[06];
 		ctx.font = "60px 'MSゴシック'"
-		ctx.fillText("PAUSE", scrWid/ 2- 94, scrHei/ 3);
+		ctx.fillText("PAUSE", scrWid1/ 2- 94, scrHei1/ 3);
 	}
 	
 	//自機が死んだら描写をストップしてリトライを促す
@@ -869,8 +890,8 @@ console.log(counter, "==========================================================
 		ctx.fillStyle = color[06];
 		run = false;
 		ctx.font = "60px 'MSゴシック'"
-		ctx.fillText("GAME OVER", scrWid/ 2- 165, scrHei/ 3);
-		ctx.fillText('PRESS "F5" TO RETRY', scrWid/ 2- 295, scrHei/ 3*2);
+		ctx.fillText("GAME OVER", scrWid1/ 2- 165, scrHei1/ 3);
+		ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
 	}
 	
 	//test
