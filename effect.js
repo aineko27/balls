@@ -31,10 +31,10 @@ Confetti.prototype.fire = function(x, y, s, r1, r2){
 
 Confetti.prototype.draw = function(){
 	ctx.beginPath();
-	ctx.moveTo(this.pos.x*sr+ this.hei* cos(this.rad1)*sr, this.pos.y*sr+ this.wid* sin(this.rad1)*sr);
-	ctx.lineTo(this.pos.x*sr+ this.hei* cos(this.rad2)*sr, this.pos.y*sr+ this.wid* sin(this.rad2)*sr);
-	ctx.lineTo(this.pos.x*sr- this.hei* cos(this.rad1)*sr, this.pos.y*sr- this.wid* sin(this.rad1)*sr);
-	ctx.lineTo(this.pos.x*sr- this.hei* cos(this.rad2)*sr, this.pos.y*sr- this.wid* sin(this.rad2)*sr);
+	ctx.moveTo(this.pos.x*sr+ this.hei* cos(this.rad1)*sr+ scrWid0, this.pos.y*sr+ this.wid* sin(this.rad1)*sr+ scrHei0);
+	ctx.lineTo(this.pos.x*sr+ this.hei* cos(this.rad2)*sr+ scrWid0, this.pos.y*sr+ this.wid* sin(this.rad2)*sr+ scrHei0);
+	ctx.lineTo(this.pos.x*sr- this.hei* cos(this.rad1)*sr+ scrWid0, this.pos.y*sr- this.wid* sin(this.rad1)*sr+ scrHei0);
+	ctx.lineTo(this.pos.x*sr- this.hei* cos(this.rad2)*sr+ scrWid0, this.pos.y*sr- this.wid* sin(this.rad2)*sr+ scrHei0);
 	ctx.closePath();
 	ctx.fillStyle = color[this.color];
 	ctx.fill();

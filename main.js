@@ -97,7 +97,7 @@ window.onload = function(){
 	screenCanvas = document.getElementById("screen");
 	screenCanvas.width = window.innerWidth;
 	screenCanvas.height = window.innerHeight;
-	scrWid0 = 30;
+	scrWid0 = 10;
 	scrWid1 = 1600;
 	scrHei0 = 0;
 	scrHei1 = 700;
@@ -654,10 +654,13 @@ window.onload = function(){
 	//画面サイズを現在のウィンドウサイズに合わせる
 	sizeRate = Math.min(window.innerWidth/ (scrWid1), window.innerHeight/ (scrHei1+ scrHei2))
 	sr = sizeRate;
-	// if(counter==1)ctx.scale(sr, sr)
+	scrWid0 = (window.innerWidth- scrWid1*sr)/2;
+	scrHei0 = (window.innerHeight- (scrHei1+ scrHei2)*sr)/2;
 		
 	//スクリーンクリア
-	ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
+	ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height)
+	// ctx.fillStyle = "gray";
+	// ctx.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
 	
 	//背景の描画-------------------------------------------------
 
@@ -724,7 +727,7 @@ window.onload = function(){
 			//球の中心の描写
 			if(ball[i].shootedFrame > counter-2) continue;
 			ctx.beginPath()
-			ctx.arc(ball[i].pos.x*sr, ball[i].pos.y*sr, 2*sr, 0, PI2, true);
+			ctx.arc(ball[i].pos.x*sr+ scrWid0, ball[i].pos.y*sr+ scrHei0, 2*sr, 0, PI2, true);
 			ctx.fillStyle = color[03];
 			ctx.fill();
 			//球の接点の中点の描写
@@ -732,7 +735,7 @@ window.onload = function(){
 			if(ball[i].contactCnt01+ball[i].contactCnt02 < 2) continue;
 			for(j=0; j<ball[i].contactCnt01+ ball[i].contactCnt02; j++){
 				ctx.beginPath();
-				ctx.arc(ball[i].bezier[j].midPos.x, ball[i].bezier[j].midPos.y, 2, 0, PI2, true);
+				ctx.arc(ball[i].bezier[j].midPos.x+ scrWid0, ball[i].bezier[j].midPos.y+ scrHei0, 2, 0, PI2, true);
 				ctx.fillStyle = color[3];
 				ctx.fill()
 			}
@@ -770,23 +773,23 @@ window.onload = function(){
 			var p2 = new Point(m.x+13*t, m.y+12*t).rot(m, rad);
 			var p3 = new Point(m.x, m.y+8*t).rot(m, rad);
 			var p4 = new Point(m.x-13*t, m.y+12*t).rot(m, rad);
-			ctx.moveTo(p1.x*sr, p1.y*sr);
-			ctx.lineTo(p2.x*sr, p2.y*sr);
-			ctx.lineTo(p3.x*sr, p3.y*sr);
-			ctx.lineTo(p4.x*sr, p4.y*sr);
+			ctx.moveTo(p1.x*sr+ scrWid0, p1.y*sr+ scrHei0);
+			ctx.lineTo(p2.x*sr+ scrWid0, p2.y*sr+ scrHei0);
+			ctx.lineTo(p3.x*sr+ scrWid0, p3.y*sr+ scrHei0);
+			ctx.lineTo(p4.x*sr+ scrWid0, p4.y*sr+ scrHei0);
 			ctx.closePath();
-			ctx.arc(m.x*sr, m.y*sr, 6*sr, 0, PI2, true);
+			ctx.arc(m.x*sr+ scrWid0, m.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 			ctx.closePath();
 			ctx.fill();
 		}
 		else{
 			ctx.beginPath();
-			ctx.moveTo(m2.x*sr, m2.y*sr - 14*sr);
-			ctx.lineTo(m2.x*sr + 14*sr, m2.y*sr);
-			ctx.lineTo(m2.x*sr, m2.y*sr + 14*sr);
-			ctx.lineTo(m2.x*sr - 14*sr, m2.y*sr);
+			ctx.moveTo(m2.x*sr+ scrWid0, m2.y*sr - 14*sr+ scrHei0);
+			ctx.lineTo(m2.x*sr+ scrWid0 + 14*sr, m2.y*sr+ scrHei0);
+			ctx.lineTo(m2.x*sr+ scrWid0, m2.y*sr + 14*sr+ scrHei0);
+			ctx.lineTo(m2.x*sr+ scrWid0 - 14*sr, m2.y*sr+ scrHei0);
 			ctx.closePath();
-			ctx.arc(m2.x*sr, m2.y*sr, 9*sr, 0, PI2, true);
+			ctx.arc(m2.x*sr+ scrWid0, m2.y*sr+ scrHei0, 9*sr, 0, PI2, true);
 			ctx.closePath();
 			ctx.fillStyle = color[00];
 			ctx.fill();
@@ -794,7 +797,7 @@ window.onload = function(){
 	}
 	
 	ctx.beginPath();
-	ctx.arc(m2.x*sr, m2.y*sr, 4*sr, 0, PI2, true);
+	ctx.arc(m2.x*sr+ scrWid0, m2.y*sr+ scrHei0, 4*sr, 0, PI2, true);
 	ctx.closePath();
 	ctx.fill();
 
@@ -810,8 +813,8 @@ window.onload = function(){
 	
 	//ステータス画面の描写を行う=======================================================================================
 	//まずは画面のクリア
-	ctx.clearRect(0, (scrHei1+5)*sr, screenCanvas.width, screenCanvas.height)
-	ctx.clearRect((scrWid1+15)*sr, 0, screenCanvas.width, screenCanvas.height)
+	ctx.clearRect(0+ scrWid0, (scrHei1+5)*sr+ scrHei0, screenCanvas.width, screenCanvas.height)
+	ctx.clearRect((scrWid1+15)*sr+ scrWid0, 0+ scrWid0, screenCanvas.width, screenCanvas.height)
 	// ctx.beginPath();
 	// ctx.moveTo(0, (scrHei1+ scrHei2)*sr);
 	// ctx.lineTo(scrWid1*sr, (scrHei1+ scrHei2)*sr);
@@ -822,10 +825,10 @@ window.onload = function(){
 	ctx.beginPath();
 	ctx.strokeStyle = "rgba(255, 120, 255, 0.3)";
 	ctx.lineWidth = 18;
-	ctx.moveTo(ctx.lineWidth*sr, scrHei1*sr+ ctx.lineWidth*sr);
-	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr, scrHei1*sr+ ctx.lineWidth*sr);
-	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr);
-	ctx.lineTo(ctx.lineWidth*sr, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr);
+	ctx.moveTo(ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
 	ctx.closePath();
 	ctx.stroke();
 	
@@ -840,13 +843,13 @@ window.onload = function(){
 		}
 		if(star[i].isBlink==true){
 			ctx.beginPath();
-			ctx.arc(star[i].pos.x*sr, star[i].pos.y*sr, star[i].blinkRadius1*sr, 0, PI2, true);
-			ctx.arc(star[i].pos.x*sr, star[i].pos.y*sr, star[i].blinkRadius2*sr, 0, PI2, false);
+			ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius1*sr, 0, PI2, true);
+			ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius2*sr, 0, PI2, false);
 			a1 = (star[i].blinkRadius1- 40)/12;
 			ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
 			ctx.fill();
 			ctx.beginPath();
-			ctx.arc(star[i].pos.x*sr, star[i].pos.y*sr, star[i].blinkRadius3*sr, 0, PI2, true);
+			ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius3*sr, 0, PI2, true);
 			ctx.fillStyle = color[star[i].color+10];
 			ctx.fill();
 		}
@@ -876,7 +879,7 @@ console.log(counter, "==========================================================
 	//スペースバーが押されたらポーズ/ポーズ解除　する
 	if(pauseFlag && ball[0].isAlive){
 		ctx.beginPath();
-		ctx.arc(mouse.x*sr, mouse.y*sr, 6*sr, 0, PI2, true);
+		ctx.arc(mouse.x*sr+ scrWid0, mouse.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 		ctx.fillStyle = "rgba(  0,   0, 000, 0.5)";
 		ctx.fill();
 		

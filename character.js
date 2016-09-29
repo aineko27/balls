@@ -147,29 +147,29 @@ Character.prototype.draw = function(f, b){
 	if(this.isDistort || this.isDistorted){
 		//歪円だった場合
 		var dot = this.dot
-		ctx.moveTo(dot[0].abs.x*sr, dot[0].abs.y*sr);
+		ctx.moveTo(dot[0].abs.x*sr+ scrWid0, dot[0].abs.y*sr+ scrHei0);
 		for(i=1; i<dot.length; i++){
-			ctx.lineTo(dot[i].abs.x*sr, dot[i].abs.y*sr);
+			ctx.lineTo(dot[i].abs.x*sr+ scrWid0, dot[i].abs.y*sr+ scrHei0);
 		}
 		ctx.closePath();
 	}
-	else ctx.arc(this.pos.x*sr, this.pos.y*sr, this.size*sr, 0, PI2, true);
+	else ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, this.size*sr, 0, PI2, true);
 	
 	if(f==2 && this.shootedFrame > counter-2){
 		ctx.save();
 		ctx.clip();
 		if(b.isDistort || b.isDistorted){
-			ctx.moveTo(b.dot[0].abs.x*sr, b.dot[0].abs.y*sr);
+			ctx.moveTo(b.dot[0].abs.x*sr+ scrWid0, b.dot[0].abs.y*sr+ scrHei0);
 			for(i=0; i<b.dot.length; i++){
-				ctx.lineTo(b.dot[i].abs.x*sr, b.dot[i].abs.y*sr)
+				ctx.lineTo(b.dot[i].abs.x*sr+ scrWid0, b.dot[i].abs.y*sr+ scrHei0)
 			}
 			ctx.closePath();
 		}
-		else ctx.arc(b.pos.x*sr, b.pos.y*sr, b.size*sr, 0, PI2, false);
+		else ctx.arc(b.pos.x*sr+ scrWid0, b.pos.y*sr+ scrHei0, b.size*sr, 0, PI2, false);
 	}
 	if(f == 1) ctx.fillStype = color[4];
 	// else ctx.fillStyle = color[this.color];
-	else ctx.fillStyle = gradation1(this.pos.mul(sr).sub(this.size*0.8*sr), this.pos.mul(sr).add(this.size*0.8*sr), color[this.color], color[this.color+20])
+	else ctx.fillStyle = gradation1(this.pos.mul(sr).sub(this.size*0.8*sr).add(new Point(scrWid0, scrHei0)), this.pos.mul(sr).add(this.size*0.8*sr).add(new Point(scrWid0, scrHei0)), color[this.color], color[this.color+20])
 	ctx.fill();
 	ctx.restore();
 }
@@ -372,12 +372,12 @@ Character.prototype.strokeDottedLine = function(c){
 	var len2 = length+ len1- space +2;
 	ctx.beginPath();
 	for(var i=1; i<dotted/2-1; i++){
-		ctx.moveTo(this.pos.x*sr+ (len2- space*2*i)* cos(radian)*sr, this.pos.y*sr+ (len2- space*2*i)* sin(radian)*sr);
-		ctx.lineTo(this.pos.x*sr+ (len2- space*(2*i+1))* cos(radian)*sr, this.pos.y*sr+ (len2- space*(2*i+1))* sin(radian)*sr);
+		ctx.moveTo(this.pos.x*sr+ (len2- space*2*i)* cos(radian)*sr+ scrWid0, this.pos.y*sr+ (len2- space*2*i)* sin(radian)*sr+ scrHei0);
+		ctx.lineTo(this.pos.x*sr+ (len2- space*(2*i+1))* cos(radian)*sr+ scrWid0, this.pos.y*sr+ (len2- space*(2*i+1))* sin(radian)*sr+ scrHei0);
 	}
 	if(dotted%2 == 0 && dotted > 2){
-		ctx.moveTo(this.pos.x*sr+ (len2- space*2*i)* cos(radian)*sr, this.pos.y*sr+ (len2- space*2*i)* sin(radian)*sr);
-		ctx.lineTo(this.pos.x*sr+ len1* cos(radian)*sr, this.pos.y*sr+ len1* sin(radian)*sr);
+		ctx.moveTo(this.pos.x*sr+ (len2- space*2*i)* cos(radian)*sr+ scrWid0, this.pos.y*sr+ (len2- space*2*i)* sin(radian)*sr+ scrHei0);
+		ctx.lineTo(this.pos.x*sr+ len1* cos(radian)*sr+ scrWid0, this.pos.y*sr+ len1* sin(radian)*sr+ scrHei0);
 	}
 	ctx.strokeStyle = color[c];
 	ctx.lineCap = "butt";
