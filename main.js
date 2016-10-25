@@ -115,6 +115,9 @@ window.onload = function(){
 	window.addEventListener("contextmenu", function(e){
 		e.preventDefault();
 	}, false);
+window.onscroll = function( e ) {
+scrollTo( windowScrollX, windowScrollY );
+};
 
 	//イベントの登録
 	window.addEventListener("mousemove", mouseMove, true);
@@ -405,6 +408,7 @@ window.onload = function(){
 		//変換器の情報反映
 		for(i=0; i<converter.length; i++){
 			if(converter[i].isAlive==true){
+				converter[i].counter++;
 				//その時の変換器の色によってランプの数を変化させる
 				if(converter[i].color==3) converter[i].rampCnt = 0;
 				converter[i].color = 3;
@@ -825,10 +829,10 @@ window.onload = function(){
 	ctx.beginPath();
 	ctx.strokeStyle = "rgba(255, 120, 255, 0.3)";
 	ctx.lineWidth = 18;
-	ctx.moveTo(ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
-	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
-	ctx.lineTo(scrWid1*sr- ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
-	ctx.lineTo(ctx.lineWidth*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
+	ctx.moveTo(ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
 	ctx.closePath();
 	ctx.stroke();
 	
@@ -854,6 +858,12 @@ window.onload = function(){
 			ctx.fill();
 		}
 	}
+	//test
+	ctx.fillStyle = color[07]
+	ctx.font = "25px 'MSゴシック'"
+	ctx.fillText("*Debug:   "+test[0]+" || "+test[1]+" || "+test[2]+" || "+test[3], (50+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
+	ctx.fillText("*Weight: "+(ball[0].weight)+"  Size: "+(ball[0].size), (600+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
+	ctx.fillText("*Mouse:   "+(mouse.x*sr+ scrWid0)+" || "+(mouse.y*sr+ scrHei0), (850+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
 	
 
 console.log(ball[0]);
@@ -880,32 +890,55 @@ console.log(counter, "==========================================================
 	if(pauseFlag && ball[0].isAlive){
 		ctx.beginPath();
 		ctx.arc(mouse.x*sr+ scrWid0, mouse.y*sr+ scrHei0, 6*sr, 0, PI2, true);
-		ctx.fillStyle = "rgba(  0,   0, 000, 0.5)";
-		ctx.fill();
+		// ctx.fillStyle = "rgba(  0,   0, 000, 0.5)";
+		// ctx.fill();
 		
+		// ctx.fillStyle = color[06];
+		// ctx.font = "60px 'MSゴシック'"
+		// ctx.fillText("PAUSE", scrWid1/ 2- 94, scrHei1/ 3);
+	}
+	//スペースバーが押されたらポーズ/ポーズ解除　する
+	if(pauseFlag && ball[0].isAlive){
+		ctx.fillStyle = "rgba( 90,  90,  90, 0.4)";
+		ctx.fillRect(0*sr+ scrWid0, 0*sr+ scrHei0, scrWid1*sr, (scrHei1+scrHei2)*sr);
+		ctx.fillStyle = "rgba(  0, 255,   0, 0.7)";
+		ctx.fillRect(300*sr+ scrWid0, 50*sr+ scrHei0, 1000*sr, 700*sr);
+		ctx.beginPath();
+		ctx.lineWidth = 18;
+		ctx.lineCap = "butt";
+		ctx.moveTo(300*sr+ scrWid0+ ctx.lineWidth*0.95/2*sr, 50*sr+ scrHei0+ ctx.lineWidth*0.95/2*sr);
+		ctx.lineTo(1300*sr+ scrWid0- ctx.lineWidth*0.95/2*sr, 50*sr+ scrHei0+ ctx.lineWidth*0.95/2*sr);
+		ctx.lineTo(1300*sr+ scrWid0- ctx.lineWidth*0.95/2*sr, 750*sr+ scrHei0- ctx.lineWidth*0.95/2*sr);
+		ctx.lineTo(300*sr+ scrWid0+ ctx.lineWidth*0.95/2*sr, 750*sr+ scrHei0- ctx.lineWidth*0.95/2*sr);
+		ctx.closePath();
+		ctx.strokeStyle = "brown";
+		ctx.stroke();
 		ctx.fillStyle = color[06];
-		ctx.font = "60px 'MSゴシック'"
-		ctx.fillText("PAUSE", scrWid1/ 2- 94, scrHei1/ 3);
+		ctx.fillStyle = "white";
+		ctx.font = (180*sr)+ "px 'MSゴシック'";
+		ctx.textAlign = "center";
+		ctx.fillText("PAUSE", (scrWid1/2)*sr+ scrWid0, scrHei1/3*sr+ scrHei0);
+		ctx.fillStyle = "white";
+		ctx.fillRect(675*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
 	}
 	
 	//自機が死んだら描写をストップしてリトライを促す
 	if(!ball[0].isAlive){
 		ctx.fillStyle = color[06];
-		run = false;
+		// run = false;
 		ctx.font = "60px 'MSゴシック'"
 		ctx.fillText("GAME OVER", scrWid1/ 2- 165, scrHei1/ 3);
 		ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
 	}
 	
-	//test
-
+	
 	//HTMLを更新
-	info.innerHTML = test[0]+ " || " + test[1]+ " || " + test[2]+ " || " + test[3]+
-	 "<br>"+ball[0].pos.y+" "+ball[0].dot[16].rel.y+"PLAYER WEIGHT: " + ball[0].weight +
-	 "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
-	 "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
-	 "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C, V, X, B, Q, Z, N, M, 1～9<br>" +
-	 mouse.x +" "+ mouse.y;
+	// info.innerHTML = test[0]+ " || " + test[1]+ " || " + test[2]+ " || " + test[3]+
+	 // "<br>"+ball[0].pos.y+" "+ball[0].dot[16].rel.y+"PLAYER WEIGHT: " + ball[0].weight +
+	 // "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
+	 // "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
+	 // "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C, V, X, B, Q, Z, N, M, 1～9<br>" +
+	 // mouse.x +" "+ mouse.y;
 
 
 

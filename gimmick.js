@@ -162,6 +162,7 @@ var Converter = function(){
 	this.pair = 0;
 	this.rampCnt = 0;
 	this.div = 0;
+	this.counter = 0;
 }
 
 Converter.prototype.set = function(p, pair){
@@ -171,6 +172,7 @@ Converter.prototype.set = function(p, pair){
 	this.pair = pair;
 	this.rampCnt = 0;
 	this.div = 1.0;
+	this.counter = 0;
 }
 
 Converter.prototype.draw = function(wall){
@@ -284,7 +286,7 @@ Converter.prototype.attract = function(b, wall){
 }
 
 Converter.prototype.draw2 = function(wall){
-	if(this.color==3) this.div = 1+ sin(counter/30)*0.1
+	if(this.color==3) this.div = 1+ sin(this.counter/30)*0.1
 	else this.div = (this.div*30+ 1.2)/31;
 	ctx.beginPath();
 	ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, 32*sr/this.div, 0, PI2, true);
@@ -300,30 +302,30 @@ Converter.prototype.draw2 = function(wall){
 	ctx.lineWidth = 15*sr;
 	ctx.stroke();
 	if(this.color!=3){
-		var rad = (counter%560)*PI2/560;
+		var rad = (this.counter%560)*PI2/560;
 		ctx.beginPath();
 		for(i=0; i<5; i++){
-			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, (40+ counter%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
-			ctx.moveTo(this.pos.x*sr+ (40+ counter%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ counter%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
+			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, (40+ this.counter%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
+			ctx.moveTo(this.pos.x*sr+ (40+ this.counter%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ this.counter%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
 		}
-		ctx.lineWidth = (1- (40+ counter%120/2)/100)*11;
-		ctx.strokeStyle = color[this.color+30]+ (1- (40+ counter%120/2)/100)+ ")";
+		ctx.lineWidth = (1- (40+ this.counter%120/2)/100)*11;
+		ctx.strokeStyle = color[this.color+30]+ (1- (40+ this.counter%120/2)/100)+ ")";
 		ctx.stroke();
 		ctx.beginPath();
 		for(i=0; i<5; i++){
-			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, (40+ (counter+40)%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
-			ctx.moveTo(this.pos.x*sr+ (40+ (counter+40)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ (counter+40)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
+			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, (40+ (this.counter+40)%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
+			ctx.moveTo(this.pos.x*sr+ (40+ (this.counter+40)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ (this.counter+40)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
 			}
-		ctx.lineWidth = (1- (40+ (counter+40)%120/2)/100)*11;
-		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (counter+40)%120/2)/100)+ ")";
+		ctx.lineWidth = (1- (40+ (this.counter+40)%120/2)/100)*11;
+		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (this.counter+40)%120/2)/100)+ ")";
 		ctx.stroke();
 		ctx.beginPath();
 		for(i=0; i<5; i++){
-			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr, (40+ (counter+80)%120/2)*sr+ scrHei0, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
-			ctx.moveTo(this.pos.x*sr+ (40+ (counter+80)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ (counter+80)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
+			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr, (40+ (this.counter+80)%120/2)*sr+ scrHei0, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
+			ctx.moveTo(this.pos.x*sr+ (40+ (this.counter+80)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ (this.counter+80)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
 		}
-		ctx.lineWidth = (1- (40+ (counter+80)%120/2)/100)*11;
-		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (counter+80)%120/2)/100)+ ")";
+		ctx.lineWidth = (1- (40+ (this.counter+80)%120/2)/100)*11;
+		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (this.counter+80)%120/2)/100)+ ")";
 		ctx.stroke();
 	}
 	
