@@ -1,4 +1,4 @@
-﻿// -global ------------------------------------------------------------------------------------------------------------------------
+﻿//global===============================================================================
 
 var screenCanvas;
 var run = true;
@@ -29,7 +29,7 @@ var sizeRate = 1;
 var lCounter = 0;
 var test = new Array();
 
-// -const ----------------------------------=========------------------------------------------------------
+//const=================================================================================
 
 var cos = Math.cos;
 var sin = Math.sin;
@@ -82,7 +82,7 @@ color[32] = "rgba(255,   0,   0, "      //赤
 
 
 
-// -main -------------------------------===----------------------------------------------------------------
+//==main========================================================================
 
 //ページ読み込み時に起動するfunciton
 window.onload = function(){
@@ -102,9 +102,7 @@ window.onload = function(){
 	scrHei0 = 0;
 	scrHei1 = 700;
 	scrHei2 = 200;
-	var canvasCenter = new Point();
-	canvasCenter.x = scrWid1/2;
-	canvasCenter.y = scrHei1/2;
+	var canvasCenter = new Point(scrWid1/2, scrHei1/2);
 
 
 	//2dコンテキスト
@@ -115,9 +113,9 @@ window.onload = function(){
 	window.addEventListener("contextmenu", function(e){
 		e.preventDefault();
 	}, false);
-window.onscroll = function( e ) {
-scrollTo( windowScrollX, windowScrollY );
-};
+	window.onscroll = function( e ) {
+	scrollTo( windowScrollX, windowScrollY );
+	};
 
 	//イベントの登録
 	window.addEventListener("mousemove", mouseMove, true);
@@ -133,7 +131,7 @@ scrollTo( windowScrollX, windowScrollY );
 
 	//球初期化
 	var ball = new Array(BALL_MAX_COUNT);
-	for(i=0; i<ball.length; i++){
+	for(var i=0; i<ball.length; i++){
 		ball[i] = new Character;
 		ball[i].num = i;
 	};
@@ -141,35 +139,35 @@ scrollTo( windowScrollX, windowScrollY );
 
 	//壁初期化
 	var wall = new Array(WALL_MAX_COUNT);
-	for(i=0; i<wall.length; i++){
+	for(var i=0; i<wall.length; i++){
 		wall[i] = new Wall;
 		wall[i].num = i;
 	};
 	
 	//星初期化
 	var star = new Array(STAR_MAX_COUNT);
-	for(i=0; i<star.length; i++){
+	for(var i=0; i<star.length; i++){
 		star[i] = new Star;
 		star[i].num = i;
 	}
 
 	//変換器初期化
 	var converter = new Array(CONVERTER_MAX_COUNT);
-	for(i=0; i<converter.length; i++){
+	for(var i=0; i<converter.length; i++){
 		converter[i] = new Converter;
 		converter[i].num = i;
 	}
 	
 	//紙吹雪初期化
 	var confetti = new Array(CONFETTI_MAX_COUNT);
-	for(i=0; i<confetti.length; i++){
+	for(var i=0; i<confetti.length; i++){
 		confetti[i] = new Confetti;
 		confetti[i].num = i;
 	}
 	
 	//紙テープ初期化
 	var paperTape = new Array(PAPERTAPE_MAX_COUNT);
-	for(i=0; i<paperTape.length; i++){
+	for(var i=0; i<paperTape.length; i++){
 		paperTape[i] = new PaperTape;
 	}
 	
@@ -862,8 +860,8 @@ scrollTo( windowScrollX, windowScrollY );
 	ctx.fillStyle = color[07]
 	ctx.font = "25px 'MSゴシック'"
 	ctx.fillText("*Debug:   "+test[0]+" || "+test[1]+" || "+test[2]+" || "+test[3], (50+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
-	ctx.fillText("*Weight: "+(ball[0].weight)+"  Size: "+(ball[0].size), (600+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
-	ctx.fillText("*Mouse:   "+(mouse.x*sr+ scrWid0)+" || "+(mouse.y*sr+ scrHei0), (850+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
+	// ctx.fillText("*Weight: "+(ball[0].weight)+"  Size: "+(ball[0].size), (600+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
+	// ctx.fillText("*Mouse:   "+(mouse.x*sr+ scrWid0)+" || "+(mouse.y*sr+ scrHei0), (850+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
 	
 
 console.log(ball[0]);
@@ -919,7 +917,21 @@ console.log(counter, "==========================================================
 		ctx.textAlign = "center";
 		ctx.fillText("PAUSE", (scrWid1/2)*sr+ scrWid0, scrHei1/3*sr+ scrHei0);
 		ctx.fillStyle = "white";
+		ctx.fillRect(375*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
 		ctx.fillRect(675*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
+		ctx.fillRect(975*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
+		ctx.fillStyle = "brown";
+		ctx.font = (75*sr)+ "px 'MSゴシック'";
+		ctx.fillText("BACK", 500*sr+ scrWid0, 445*sr+ scrHei0);
+		ctx.fillText("TITLE", 800*sr+ scrWid0, 445*sr+ scrHei0);
+		ctx.fillText("RETRY", 1100*sr+ scrWid0, 445*sr+ scrHei0);
+		ctx.font = (45*sr)+ "px 'MSゴシック'";
+		ctx.fillText("STAGE:X", 500*sr+ scrWid0, 600*sr+ scrHei0);
+		ctx.fillStyle = "white";
+		// setBox(850, 550, 1200, 620, "HOW TO PLAY", "black", 45, "white");
+		ctx.fillRect(850*sr+ scrWid0, 550*sr+ scrHei0, 350*sr, 70*sr);
+		ctx.fillStyle = "brown";
+		ctx.fillText("HOW TO PLAY", 1025*sr+ scrWid0, 600*sr+ scrHei0);
 	}
 	
 	//自機が死んだら描写をストップしてリトライを促す

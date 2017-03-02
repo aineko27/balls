@@ -147,18 +147,24 @@ var atan2 = function(a, b){
 	
 }
 
-var moveTo = function(a){
+var moveTo = function(a, b){
 	if(typeof(a.x)=="number"){
 		ctx.moveTo(a.x, a.y);
 	}
-	else console.log("!ERROR function moveTo");
+	else if(typeof(a)=="number" && typeof(b)=="number"){
+		ctx.moveTo(a, b);
+	}
+	else console.log("ERROR common/moveTo")
 }
 
-var lineTo = function(a){
+var lineTo = function(a, b){
 	if(typeof(a.x)=="number"){
 		ctx.lineTo(a.x, a.y);
 	}
-	else console.log("!ERROR function lineTo");
+	else if(typeof(a)=="number" && typeof(b)=="number"){
+		ctx.moveTo(a, b);
+	}
+	else console.log("!ERROR common/lineTo");
 }
 
 var gradation1 = function(p1, p2, c1, c2){
