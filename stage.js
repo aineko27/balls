@@ -1,4 +1,4 @@
-//stage
+﻿//stage
 var p = new Point();
 var v = new Point();
 

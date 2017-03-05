@@ -11,10 +11,10 @@ var keyCode2 = new Array();
 var length;
 var radian;
 var radNum = 0;
-var leftDown = false;
-var rightDown = false;
-var leftUp = false;
-var rightUp = false;
+var leftDown1 = false;
+var rightDown1 = false;
+var leftUp1 = false;
+var rightUp1 = false;
 var pauseFlag = false;
 var clearFlag = false;
 var jumpFlag1;
@@ -79,6 +79,8 @@ color[27] = "rgba(000, 000, 000, 1.00)";//濃黒
 color[30] = "rgba(  0, 255,   0, "      //緑
 color[31] = "rgba(  0,   0, 255, "      //青
 color[32] = "rgba(255,   0,   0, "      //赤
+color[33] = "rgba( 90,  90,  90, 0.4)";
+color["brown"] = "brown";
 
 
 
@@ -171,7 +173,6 @@ window.onload = function(){
 		paperTape[i] = new PaperTape;
 	}
 	
-	console.log(converter)
 
 	//自機初期化
 	p.x = scrWid1/2;
@@ -275,25 +276,25 @@ window.onload = function(){
 			}
 		}
 		//クリック時の反応について
-		if(leftDown && leftUp && ball[0].isAlive){
+		if(leftDown1 && leftUp1 && ball[0].isAlive){
 			for(i=1; i<ball.length; i++){
 				if(!ball[i].isVisible){
 					ball[i].shoot(ball[0], 1);
 					break;
 				}
 			}
-			leftDown = false;
-			leftUp = false;
+			leftDown1 = false;
+			leftUp1 = false;
 		}
-		if(rightDown && rightUp && ball[0].isAlive){
+		if(rightDown1 && rightUp1 && ball[0].isAlive){
 			for(i=1; i<ball.length; i++){
 				if(!ball[i].isVisible){
 					ball[i].shoot(ball[0], 2);
 					break;
 				}
 			}
-			rightDown = false;
-			rightUp = false;
+			rightDown1 = false;
+			rightUp1 = false;
 		}
 		//ジャンプするか否かについて
 		if(jumpFlag1 && jumpFrame+3<counter){
@@ -764,10 +765,10 @@ window.onload = function(){
 	if(!pauseFlag) m2 = new Point(mouse.x, mouse.y);
 
 
-	if(leftDown) ctx.fillStyle = color[01];
-	else if(rightDown) ctx.fillStyle = color[02];
+	if(leftDown1) ctx.fillStyle = color[01];
+	else if(rightDown1) ctx.fillStyle = color[02];
 	if(length>0){
-		if(leftDown != rightDown){
+		if(leftDown1 != rightDown1 && !pauseFlag){
 			var rad = radian+ PI_2;
 			var t = 0.9+ length/1440;
 			ctx.beginPath();
@@ -804,13 +805,13 @@ window.onload = function(){
 	ctx.fill();
 
 	// 点線の描画
-	if(ball[0].isAlive){
-		if(leftDown && rightDown){
-			leftDown = false;
-			rightDown = false;
+	if(ball[0].isAlive && !pauseFlag){
+		if(leftDown1 && rightDown1){
+			leftDown1 = false;
+			rightDown1 = false;
 		}
-		else if(leftDown) ball[0].strokeDottedLine(1);
-		else if(rightDown) ball[0].strokeDottedLine(2);
+		else if(leftDown1) ball[0].strokeDottedLine(1);
+		else if(rightDown1) ball[0].strokeDottedLine(2);
 	}
 	
 	//ステータス画面の描写を行う=======================================================================================
@@ -834,6 +835,7 @@ window.onload = function(){
 	ctx.closePath();
 	ctx.stroke();
 	
+	
 	//星の描写
 	for(i=0; i<star.length; i++){
 		star[i].homeDraw();
@@ -856,6 +858,22 @@ window.onload = function(){
 			ctx.fill();
 		}
 	}
+	
+	if(pauseFlag && ball[0].isAlive){
+		setBox(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
+		setBox(300, 50, 1300, 750, "", 04, 0, 00);
+		setFramework(300, 50, 1300, 750, 18, "brown");
+		setString(scrWid1/2, scrHei1/3, "PAUSE", 180, "px 'MSゴシック'", 04);
+		setBox(375, 350, 625, 480, "BACK", "brown", 75, 04);
+		setBox(675, 350, 925, 480, "TITLE", "brown", 75, 04);
+		setBox(975, 350, 1225, 480, "RETRY", "brown", 75, 04);
+		ctx.font = (45*sr)+ "px 'MSゴシック'";
+		ctx.fillText("STAGE:X", 500*sr+ scrWid0, 600*sr+ scrHei0);
+		setBox(850, 550, 1200, 620, "HOW TO PLAY", "brown", 45, 04);
+	}
+	if(pauseFlag==true){
+		drawDot(mouse)
+	}
 	//test
 	ctx.fillStyle = color[07]
 	ctx.font = "25px 'MSゴシック'"
@@ -876,6 +894,12 @@ console.log(counter, "==========================================================
 	for(i=0; i<keyCode1.length; i++){
 		keyCode2[i] = keyCode1[i];
 	}
+	//前フレームにマウスを押していたかの情報
+	leftDown2 = leftDown1;
+	leftUp2 = leftUp1;
+	rightDown2 = rightDown1;
+	rightUp2 = rightUp1;
+	
 	//物体との接触判定のフラグを初期化しておく
 	for(i=0; i<ball.length; i++){
 		if(ball[i].isAlive){
@@ -895,44 +919,6 @@ console.log(counter, "==========================================================
 		// ctx.font = "60px 'MSゴシック'"
 		// ctx.fillText("PAUSE", scrWid1/ 2- 94, scrHei1/ 3);
 	}
-	//スペースバーが押されたらポーズ/ポーズ解除　する
-	if(pauseFlag && ball[0].isAlive){
-		ctx.fillStyle = "rgba( 90,  90,  90, 0.4)";
-		ctx.fillRect(0*sr+ scrWid0, 0*sr+ scrHei0, scrWid1*sr, (scrHei1+scrHei2)*sr);
-		ctx.fillStyle = "rgba(  0, 255,   0, 0.7)";
-		ctx.fillRect(300*sr+ scrWid0, 50*sr+ scrHei0, 1000*sr, 700*sr);
-		ctx.beginPath();
-		ctx.lineWidth = 18;
-		ctx.lineCap = "butt";
-		ctx.moveTo(300*sr+ scrWid0+ ctx.lineWidth*0.95/2*sr, 50*sr+ scrHei0+ ctx.lineWidth*0.95/2*sr);
-		ctx.lineTo(1300*sr+ scrWid0- ctx.lineWidth*0.95/2*sr, 50*sr+ scrHei0+ ctx.lineWidth*0.95/2*sr);
-		ctx.lineTo(1300*sr+ scrWid0- ctx.lineWidth*0.95/2*sr, 750*sr+ scrHei0- ctx.lineWidth*0.95/2*sr);
-		ctx.lineTo(300*sr+ scrWid0+ ctx.lineWidth*0.95/2*sr, 750*sr+ scrHei0- ctx.lineWidth*0.95/2*sr);
-		ctx.closePath();
-		ctx.strokeStyle = "brown";
-		ctx.stroke();
-		ctx.fillStyle = color[06];
-		ctx.fillStyle = "white";
-		ctx.font = (180*sr)+ "px 'MSゴシック'";
-		ctx.textAlign = "center";
-		ctx.fillText("PAUSE", (scrWid1/2)*sr+ scrWid0, scrHei1/3*sr+ scrHei0);
-		ctx.fillStyle = "white";
-		ctx.fillRect(375*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
-		ctx.fillRect(675*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
-		ctx.fillRect(975*sr+ scrWid0, 350*sr+ scrHei0, 250*sr, 130*sr);
-		ctx.fillStyle = "brown";
-		ctx.font = (75*sr)+ "px 'MSゴシック'";
-		ctx.fillText("BACK", 500*sr+ scrWid0, 445*sr+ scrHei0);
-		ctx.fillText("TITLE", 800*sr+ scrWid0, 445*sr+ scrHei0);
-		ctx.fillText("RETRY", 1100*sr+ scrWid0, 445*sr+ scrHei0);
-		ctx.font = (45*sr)+ "px 'MSゴシック'";
-		ctx.fillText("STAGE:X", 500*sr+ scrWid0, 600*sr+ scrHei0);
-		ctx.fillStyle = "white";
-		// setBox(850, 550, 1200, 620, "HOW TO PLAY", "black", 45, "white");
-		ctx.fillRect(850*sr+ scrWid0, 550*sr+ scrHei0, 350*sr, 70*sr);
-		ctx.fillStyle = "brown";
-		ctx.fillText("HOW TO PLAY", 1025*sr+ scrWid0, 600*sr+ scrHei0);
-	}
 	
 	//自機が死んだら描写をストップしてリトライを促す
 	if(!ball[0].isAlive){
@@ -943,14 +929,6 @@ console.log(counter, "==========================================================
 		ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
 	}
 	
-	
-	//HTMLを更新
-	// info.innerHTML = test[0]+ " || " + test[1]+ " || " + test[2]+ " || " + test[3]+
-	 // "<br>"+ball[0].pos.y+" "+ball[0].dot[16].rel.y+"PLAYER WEIGHT: " + ball[0].weight +
-	 // "<br>PLAYER SIZE &nbsp;&nbsp;&nbsp;&nbsp;:" + ball[0].size +
-	 // "<br>移動　WASD <br>青玉発射 左クリック　赤玉発射　右クリック" +
-	 // "<br>発射角度調整　SHIFT<br>デバッグ用TFGH, L, C, V, X, B, Q, Z, N, M, 1～9<br>" +
-	 // mouse.x +" "+ mouse.y;
 
 
 
@@ -982,24 +960,24 @@ var keyUp = function(e){
 };
 
 var mouseDown = function(e){
-	if(e.button == 0 && !pauseFlag){
-		leftDown  = true;
-		leftUp = false;
+	if(e.button == 0){
+		leftDown1  = true;
+		leftUp1 = false;
 	}
-	else if(e.button == 2 && !pauseFlag){
-		rightDown = true;
-		rightUp = false;
+	else if(e.button == 2){
+		rightDown1 = true;
+		rightUp1 = false;
 	}
 };
 
 var mouseUp = function(e){
 	if(e.button == 0){
-		leftUp  = true;
-		//leftDown = false;
+		leftUp1  = true;
+		leftDown1 = false;
 	}
 	else if(e.button == 2){
-		rightUp = true;
-		//rightDown = false;
+		rightUp1 = true;
+		rightDown1 = false;
 	}
 };
 window.onblur = function (){

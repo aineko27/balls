@@ -184,11 +184,19 @@ var gradation2 = function(p, r1, r2, c1, c2){
 
 var drawDot = function(p){
 	ctx.beginPath();
-	ctx.arc(p.x, p.y, 2, 0, PI2, true);
+	ctx.arc(p.x*sr+ scrWid0, p.y*sr+ scrHei0, 5, 0, PI2, true);
 	ctx.fillStyle = "black";
 	ctx.fill();
 }
 
+var checkSide = function(p, s, t){
+	if(p.sub(s).dot(t.sub(s))>0){
+		return "right";
+	}
+	else{
+		return "left";
+	}
+}
 
 
 
