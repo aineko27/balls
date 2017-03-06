@@ -52,10 +52,13 @@ var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
 			switch(str){
 				case "BACK":
 					pauseFlag = false;
+					leftDown1 = false;
 					break;
 				
 				case "RETRY":
 					stage00(ball, wall, star, converter);
+					pauseFlag = false;
+					leftDown1 = false;
 					break
 			}
 		}

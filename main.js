@@ -84,6 +84,14 @@ color["brown"] = "brown";
 
 
 
+	//球初期化
+	// var ball = new Array(BALL_MAX_COUNT);
+	// for(var i=0; i<ball.length; i++){
+		// ball[i] = new Character;
+		// ball[i].num = i;
+	// };
+	// dotLen = ball[0].dot.length;
+
 //==main========================================================================
 
 //ページ読み込み時に起動するfunciton
@@ -131,8 +139,8 @@ window.onload = function(){
 	info = document.getElementById("info");
 
 
-	//球初期化
-	var ball = new Array(BALL_MAX_COUNT);
+	// 球初期化
+	ball = new Array(BALL_MAX_COUNT);
 	for(var i=0; i<ball.length; i++){
 		ball[i] = new Character;
 		ball[i].num = i;
@@ -140,35 +148,35 @@ window.onload = function(){
 	dotLen = ball[0].dot.length;
 
 	//壁初期化
-	var wall = new Array(WALL_MAX_COUNT);
+	wall = new Array(WALL_MAX_COUNT);
 	for(var i=0; i<wall.length; i++){
 		wall[i] = new Wall;
 		wall[i].num = i;
 	};
 	
 	//星初期化
-	var star = new Array(STAR_MAX_COUNT);
+	star = new Array(STAR_MAX_COUNT);
 	for(var i=0; i<star.length; i++){
 		star[i] = new Star;
 		star[i].num = i;
 	}
 
 	//変換器初期化
-	var converter = new Array(CONVERTER_MAX_COUNT);
+	converter = new Array(CONVERTER_MAX_COUNT);
 	for(var i=0; i<converter.length; i++){
 		converter[i] = new Converter;
 		converter[i].num = i;
 	}
 	
 	//紙吹雪初期化
-	var confetti = new Array(CONFETTI_MAX_COUNT);
+	confetti = new Array(CONFETTI_MAX_COUNT);
 	for(var i=0; i<confetti.length; i++){
 		confetti[i] = new Confetti;
 		confetti[i].num = i;
 	}
 	
 	//紙テープ初期化
-	var paperTape = new Array(PAPERTAPE_MAX_COUNT);
+	paperTape = new Array(PAPERTAPE_MAX_COUNT);
 	for(var i=0; i<paperTape.length; i++){
 		paperTape[i] = new PaperTape;
 	}
@@ -276,7 +284,9 @@ window.onload = function(){
 			}
 		}
 		//クリック時の反応について
-		if(leftDown1 && leftUp1 && ball[0].isAlive){
+		console.log(leftDown1, leftUp1)
+		if(!leftDown1 && leftUp1 && ball[0].isAlive){
+			// run=false
 			for(i=1; i<ball.length; i++){
 				if(!ball[i].isVisible){
 					ball[i].shoot(ball[0], 1);
@@ -286,7 +296,7 @@ window.onload = function(){
 			leftDown1 = false;
 			leftUp1 = false;
 		}
-		if(rightDown1 && rightUp1 && ball[0].isAlive){
+		if(!rightDown1 && rightUp1 && ball[0].isAlive){
 			for(i=1; i<ball.length; i++){
 				if(!ball[i].isVisible){
 					ball[i].shoot(ball[0], 2);

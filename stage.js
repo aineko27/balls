@@ -16,6 +16,8 @@ var stage00 = function(ball, wall, star, converter){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
+	ball[0].set(new Point(scrWid1/2, scrHei1/2- 15), 15, new Point(), 0)
+	
 	wall[00].set(  20, scrHei1-15, scrWid1-40, 20, 0, 0, 3, 0);
 	wall[01].set(0,-20, 20, scrHei1+25, 0, 0, 3, 0);
 	wall[02].set( scrWid1-20,-20, 20, scrHei1+25, 0, 0, 3, 0);

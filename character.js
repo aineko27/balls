@@ -18,7 +18,7 @@ var Character = function(){
 	this.explosionFrame = 0;
 	this.shootedFrame = 0;
 	this.contact = new Array(12);
-	for(i=0; i<this.contact.length; i++){
+	for(var i=0; i<this.contact.length; i++){
 		this.contact[i] = {};
 		this.contact[i].num = "NaN";
 		this.contact[i].pos = new Point();
@@ -32,14 +32,14 @@ var Character = function(){
 		this.contact[i].pairVel = new Point();
 	}
 	this.dot = new Array(64);
-	for(i=0; i<this.dot.length; i++){
+	for(var i=0; i<this.dot.length; i++){
 		this.dot[i] = {};
 		this.dot[i].abs = new Point();
 		this.dot[i].rel = new Point();
 		this.dot[i].rad = 0;
 	}
 	this.infoWithWall = new Array(WALL_MAX_COUNT);
-	for(i=0; i<this.infoWithWall.length; i++){
+	for(var i=0; i<this.infoWithWall.length; i++){
 		this.infoWithWall[i] = {};
 		this.infoWithWall[i].pos = new Point();
 		this.infoWithWall[i].rad = 0;
@@ -47,7 +47,7 @@ var Character = function(){
 		this.infoWithWall[i].side = 0;
 	}
 	this.bezier = new Array(12);
-	for(i=0; i<this.bezier.length; i++){
+	for(var i=0; i<this.bezier.length; i++){
 		this.bezier[i] = {}
 		this.bezier[i].radGap = 0;
 		this.bezier[i].dotNum = 0;
