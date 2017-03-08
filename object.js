@@ -23,7 +23,7 @@ var Wall = function(){
 	this.vecvy = 0;
 	this.contact = new Array(12);
 	this.contactCnt01 = 0;
-	for(i=0; i < this.contact.length; i++){
+	for(var i=0; i < this.contact.length; i++){
 		this.contact[i] = {};
 		this.contact[i].pos = new Point();
 		this.contact[i].excess = 0;
@@ -107,7 +107,7 @@ Wall.prototype.initialize = function(){
 	this.vecvx = 0;
 	this.vecvy = 0;
 	this.contactCnt = 0;
-	for(i=0; i<this.contact.length; i++){
+	for(var i=0; i<this.contact.length; i++){
 		this.contactInitialize(i);
 	}
 }
@@ -144,6 +144,19 @@ Wall.prototype.contactCopy = function(i, j){
 	this.contact[i].pairVel.y = this.contact[j].pairVel.y;
 }
 
+var updateWall = function(){
+	for(var i=0; i<wall.length; i++){
+		if(wall[i].isAlive){
+			//壁の速度を位置情報に変換
+			wall[i].move(ball, wall);
+			for(var j=0; j<wall[i].contactCnt01; j++){
+				wall[i].contactInitialize(j);
+			}
+		}
+		wall[i].contactCnt01 = 0;
+	}
+}
+
 //壁の描写その1
 Wall.prototype.draw1 = function(wall){
 	switch(this.type){
@@ -159,14 +172,14 @@ Wall.prototype.draw1 = function(wall){
 			ctx.stroke();
 			ctx.beginPath();
 			var num = (obje.center.x- this.center.x)/20;
-			for(i=0; i<Math.abs(num)-1/2; i++){
+			for(var i=0; i<Math.abs(num)-1/2; i++){
 				ctx.arc(obje.center.x*sr- i*20*Math.sign(num)*sr+ scrWid0, this.center.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 			}
 			ctx.fillStyle = color[10+this.color];
 			ctx.fill();
 			ctx.beginPath();
 			num = (obje.center.y- this.center.y)/20;
-			for(i=1; i<Math.abs(num)-1/2; i++){
+			for(var i=1; i<Math.abs(num)-1/2; i++){
 				ctx.arc(obje.center.x*sr+ scrWid0, this.center.y*sr+ i*20*Math.sign(num)*sr+ scrHei0, 6, 0, PI2, true);
 			}
 			ctx.fill();
@@ -222,7 +235,7 @@ Wall.prototype.draw2 = function(wall){
 	ctx.lineCap = "butt";
 	shadeWidth = new Array();
 	//この辺が影の描写。斜め45度と内積をとってその値で影の伸びる方向と大きさを推定している
-	for(i=0; i<4; i++){
+	for(var i=0; i<4; i++){
 		ctx.beginPath();
 		var rad1 = this.point[(i+1)%4].sub(this.point[i]).normalize();
 		var rad2 = this.point[(i+3)%4].sub(this.point[i]).normalize();
@@ -445,8 +458,8 @@ Wall.prototype.action = function(ball, wall){
 				wall[this.pair].color = this.color;
 				return;
 			}
-			for(i=0; i<this.contactCnt01-1; i++){
-				for(j=i+1; j<this.contactCnt01; j++){
+			for(var i=0; i<this.contactCnt01-1; i++){
+				for(var j=i+1; j<this.contactCnt01; j++){
 					if(this.contact[i].color != this.contact[j].colr){
 						this.color = 3;
 						ball[this.pair].color = this.color;
@@ -459,7 +472,7 @@ Wall.prototype.action = function(ball, wall){
 			return;
 		
 		case 2:
-			for(i=0; i<this.contactCnt01; i++){
+			for(var i=0; i<this.contactCnt01; i++){
 				var b = this.contact[i];
 				if(b.side > 0 && b.side < 4){
 					if(b.pairVel.y < 0.15){
@@ -488,7 +501,7 @@ Wall.prototype.action = function(ball, wall){
 			var obje = wall[this.pair];
 			if(this.num > obje.num) return;
 			var weight = this.weight + obje.weight;
-			for(i=0; i<this.contactCnt01; i++){
+			for(var i=0; i<this.contactCnt01; i++){
 				var b = this.contact[i];
 				if(b.side == 2 || b.side == 8){
 					if(b.side == 2 && b.pairVel.y < 0) b.pairVel.y *= -0.1;
@@ -505,7 +518,7 @@ Wall.prototype.action = function(ball, wall){
 					this.vel.y = (this.vel.y* (weight- e*b.weight) + velvy* b.weight*(1+e))/ (weight+b.weight);
 				}
 			}
-			for(i=0; i<obje.contactCnt01; i++){
+			for(var i=0; i<obje.contactCnt01; i++){
 				var b = obje.contact[i];
 				if(b.side == 2 || b.side == 8){
 					if(b.side == 2 && b.pairVel.y < 0) b.pairVel.y *= -0.1;
@@ -531,7 +544,7 @@ Wall.prototype.action = function(ball, wall){
 			// return;
 			
 		case 4:
-			for(i=0; i<this.contactCnt01; i++){
+			for(var i=0; i<this.contactCnt01; i++){
 				var b = this.contact[i];
 				var rad1;
 				if(b.side%2 == 0 && b.side > 1){
@@ -703,7 +716,7 @@ Wall.prototype.detectCollision02 = function(b, ball, wall){
 	// for(var i=0; i<b.contactCnt01; i++){
 		
 	// }
-	for(i=0; i<b.contactCnt01; i++){
+	for(var i=0; i<b.contactCnt01; i++){
 		if(b.contact[i].num.slice(0,-3) == this.num && b.contact[i].num.slice(-3,-2) == "w") return; 
 	}
 	if(!b.infoWithWall[this.num].canCollide) return;

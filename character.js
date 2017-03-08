@@ -85,10 +85,10 @@ Character.prototype.initialize = function(){
 	this.isDistorted = false;
 	this.size = 0;
 	this.weight = 0;
-	for(i=0; i<this.contact.length; i++){
+	for(var i=0; i<this.contact.length; i++){
 		this.contactInitialize(i);
 	}
-	for(i=0; i<this.bezier.length; i++){
+	for(var i=0; i<this.bezier.length; i++){
 		this.bezierInitialize(i);
 	}
 }
@@ -140,6 +140,51 @@ Character.prototype.bezierInitialize = function(i){
 	this.bezier[i].midArc = 0;
 }
 
+var updateBall = function(){
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isVisible){
+			//重力を反映
+			ball[i].fall();
+			//もし変形しているのであれば摩擦で減速する
+			if(ball[i].isDistorted){
+				var f = Math.min(Math.max(1.86- ball[i].arc/ball[i].size*3, 0.65), 0.98)
+				ball[i].vel = ball[i].vel.mul(f)
+			}
+			//速度を位置情報に変換
+			ball[i].move();
+			if(ball[i].isAlive){
+				//衝突カウンターと接点、歪フラグを初期化
+				ball[i].contactCnt01 = 0;
+				ball[i].contactCnt02 = 0;
+				ball[i].isDistort = false;
+				ball[i].arc = 0;
+				for(var j=0; j<ball[i].contact.length; j++){
+					ball[i].contactInitialize(j);
+					ball[i].bezierInitialize(j);
+				}
+				//周りの点の情報を更新
+				if(!ball[i].isDistorted){
+					for(var j=0; j<dotLen; j++){
+						ball[i].dot[j].rel = angle(j* PI2/ dotLen).mul(ball[i].size);
+						ball[i].dot[j].abs = ball[i].pos.add(ball[i].dot[j].rel);
+						ball[i].dot[j].rad = atan2(ball[i].dot[j].rel);
+					}
+				}
+				else{
+					for(var j=0; j<dotLen; j++){
+						ball[i].dot[j].abs = ball[i].pos.add(ball[i].dot[j].rel);
+						ball[i].dot[j].rad = atan2(ball[i].dot[j].rel);
+					}
+				}
+				//歪円当り判定チャンスをtrueにしておく
+				for(var j=0; j<ball[i].infoWithWall.length; j++){
+					ball[i].infoWithWall[j].canCollide = true;
+				}
+			}
+		}
+	}
+}
+
 //球を描写する関数
 Character.prototype.draw = function(f, b){
 	//ボールの色に描写を合わせる
@@ -148,7 +193,7 @@ Character.prototype.draw = function(f, b){
 		//歪円だった場合
 		var dot = this.dot
 		ctx.moveTo(dot[0].abs.x*sr+ scrWid0, dot[0].abs.y*sr+ scrHei0);
-		for(i=1; i<dot.length; i++){
+		for(var i=1; i<dot.length; i++){
 			ctx.lineTo(dot[i].abs.x*sr+ scrWid0, dot[i].abs.y*sr+ scrHei0);
 		}
 		ctx.closePath();
@@ -160,7 +205,7 @@ Character.prototype.draw = function(f, b){
 		ctx.clip();
 		if(b.isDistort || b.isDistorted){
 			ctx.moveTo(b.dot[0].abs.x*sr+ scrWid0, b.dot[0].abs.y*sr+ scrHei0);
-			for(i=0; i<b.dot.length; i++){
+			for(var i=0; i<b.dot.length; i++){
 				ctx.lineTo(b.dot[i].abs.x*sr+ scrWid0, b.dot[i].abs.y*sr+ scrHei0)
 			}
 			ctx.closePath();
@@ -194,6 +239,43 @@ Character.prototype.explosion = function(ball, wall){
 	}
 }
 
+var checkAbsorption = function(){
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isAlive){
+			//まずは星との吸収判定をとる
+			for(var j=0; j<star.length; j++){
+				if(star[j].isAlive==true){
+					star[j].detectCollision(ball[i]);
+				}
+			}
+			for(var j=i+1; j<ball.length; j++){
+				if(ball[j].isAlive && ball[i].pos.sub(ball[j].pos).norm() < (ball[i].size+ball[j].size)*2){
+					//ここまではお互いの球が生きていて十分に近いかの判定。ここからは2つの球の色から吸収するのか反発するのかの計算
+					if(ball[i].color == ball[j].color || ((i == 0) && (ball[i].size > ball[j].size))){
+						//この場合は吸収判定になる
+						if(!ball[i].isDistorted && !ball[j].isDistorted){
+							//ここはどちらも正円だった場合の当り判定
+							ball[i].detectAbsorption01(ball[j]);
+						}
+						else if(ball[i].isDistorted && !ball[j].isDistorted){
+							//ここは若い番号が歪円、遅い番号が正円だった場合
+							ball[i].detectAbsorption02(ball[j], true);
+						}
+						else if(!ball[i].isDistorted && ball[j].isDistorted){
+							//ここは若い番号が正円、遅い番号が歪円だった場合
+							ball[j].detectAbsorption02(ball[i], false);
+						}
+						else{
+							//ここはどちらも歪円だった場合
+							ball[i].detectAbsorption03(ball[j])
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 //球同士の吸収を処理する関数
 Character.prototype.absorb = function(b){
 	//もし自機と撃ったばかりの球が遠ざかるようになっていたら、吸収を無視する
@@ -214,7 +296,7 @@ Character.prototype.absorb = function(b){
 	this.weight = weight;
 	this.size = sqrt(weight);
 	//球の各dotの座標を移動する
-	for(i=0; i<this.dot.length; i++){
+	for(var i=0; i<this.dot.length; i++){
 		this.dot[i].abs = this.pos.add(this.dot[i].rel);
 	}
 	//遅い番号の生存フラグを偽にし、諸々の情報をリセットする
@@ -248,7 +330,7 @@ Character.prototype.move = function(){
 //球の位置情報を補正する関数
 Character.prototype.positionCorrection = function(ball, wall, n, m){
 	//めり込んだ分の補正を行う
-	for(i=0; i<6+this.contactCnt02; i++){
+	for(var i=0; i<6+this.contactCnt02; i++){
 		if(i<6 && i>=this.contactCnt01) continue;
 		var rad = this.contact[i].rad+ PI;
 		var excess = this.contact[i].excess;
@@ -260,7 +342,7 @@ Character.prototype.positionCorrection = function(ball, wall, n, m){
 //球のバウンドを処理する関数
 Character.prototype.bound = function(ball, wall){
 	var con = this.contact;
-	for(i=0; i<6+this.contactCnt02; i++){
+	for(var i=0; i<6+this.contactCnt02; i++){
 		if(i>=this.contactCnt01 && i<6) continue;
 		var rad = this.contact[i].rad;
 		//相手が球か壁かで場合分けをする
@@ -385,6 +467,50 @@ Character.prototype.strokeDottedLine = function(c){
 	ctx.closePath();
 	ctx.stroke();
 };
+
+
+var checkJump = function(){
+	if(jumpFlag1 && jumpFrame+3<counter){
+		var max = 0;
+		var rad;
+		for(var i=0; i<ball[0].contactCnt01; i++){
+			rad = mod(ball[0].contact[i].tangent, PI2);
+			max = Math.max(-cos(rad), max);
+		}
+		for(var i=6; i<6+ball[0].contactCnt02; i++){
+			rad = mod(ball[0].contact[i].tangent, PI2);
+			max = Math.max(-cos(rad), max);
+		}
+		if(max>0.3){
+			ball[0].vel.y = -7*max;
+			jumpFlag2 = false;
+			jumpFrame = counter;
+		}
+	}
+}
+
+var checkShoot = function(){
+	if(!leftDown1 && leftUp1 && ball[0].isAlive){
+		for(var i=1; i<ball.length; i++){
+			if(!ball[i].isVisible){
+				ball[i].shoot(ball[0], 1);
+				break;
+			}
+		}
+		leftDown1 = false;
+		leftUp1 = false;
+	}
+	if(!rightDown1 && rightUp1 && ball[0].isAlive){
+		for(var i=1; i<ball.length; i++){
+			if(!ball[i].isVisible){
+				ball[i].shoot(ball[0], 2);
+				break;
+			}
+		}
+		rightDown1 = false;
+		rightUp1 = false;
+	}
+}
 
 //マウスを放した時に新しい球を発射する関数
 Character.prototype.shoot = function(b, c){
@@ -515,7 +641,7 @@ Character.prototype.detectCollision01 = function(b){
 //正円と歪円で衝突判定を取る関数
 Character.prototype.detectCollision02 = function(b, f){
 	if(!f && this.contact[0].num.slice(0,-2) == b.num+"b") return;
-	for(i=0; i<this.contactCnt01; i++){
+	for(var i=0; i<this.contactCnt01; i++){
 		if(this.contact[i].num.slice(0,-3) == b.num && this.contact[i].num.slice(-3,-2) != "w") return; 
 	}
 	//まずは正円に一番近い歪円上の点を求める。
@@ -559,7 +685,7 @@ Character.prototype.detectCollision02 = function(b, f){
 
 //歪円と歪円で衝突判定を取る関数
 Character.prototype.detectCollision03 = function(b){
-	for(i=0; i<this.contactCnt01; i++){
+	for(var i=0; i<this.contactCnt01; i++){
 		if(this.contact[i].num.slice(0,-3) == b.num && this.contact[i].num.slice(-3,-2) != "w") return; 
 	}
 	var dotNum1 = this.calcuDotnum(b);
@@ -678,10 +804,10 @@ Character.prototype.checkContact = function(ball, wall){
 	var num1 = this.contactCnt01;
 	var num2 = this.contactCnt02;
 	var con = this.contact;
-	for(i=0; i<num1-1; i++){
-		for(j=i+1; j<num1; j++){
+	for(var i=0; i<num1-1; i++){
+		for(var j=i+1; j<num1; j++){
 			if(con[i].pos.sub(con[j].pos).norm() < this.size* 0.01){
-				for(k=j; k<num1; k++){
+				for(var k=j; k<num1; k++){
 					this.contactCopy(k, k+1);
 				}
 				num1--;
@@ -689,19 +815,19 @@ Character.prototype.checkContact = function(ball, wall){
 			}
 		}
 	}
-	for(i=6; i<6+num2; i++){
-		for(j=0; j<num1; j++){
+	for(var i=6; i<6+num2; i++){
+		for(var j=0; j<num1; j++){
 			if(con[i].pos.sub(con[j].pos).norm() < this.size* 0.01){
-				for(k=i; k<6+num2; k++){
+				for(var k=i; k<6+num2; k++){
 					this.contactCopy(k, k+1);
 				}
 				num2--;
 				this.contactCnt02--;
 			}
 		}
-		for(j=i+1; j<6+num2; j++){
+		for(var j=i+1; j<6+num2; j++){
 			if(con[i].pos.sub(con[j].pos).norm() < this.size* 0.01){
-				for(k=j; k<6+num2; k++){
+				for(var k=j; k<6+num2; k++){
 					this.contactCopy(k, k+1);
 				}
 				num2--;
@@ -716,9 +842,9 @@ Character.prototype.checkContact = function(ball, wall){
 			//相手の方も消してあげないといけない
 			if(con[mod(j+1)].num.slice(-3,-2) != "w"){
 				var b = ball[con[mod(j+1, 2)].num.slice(0, -3)];
-				for(k=0; k<11; k++){
+				for(var k=0; k<11; k++){
 					if(b.contact[k].num.slice(0, -3) == this.num+"c"){
-						for(l=k; l<11; l++){
+						for(var l=k; l<11; l++){
 							b.contactCopy(l, l+1);
 						}
 						b.contactCnt01--;
@@ -728,9 +854,9 @@ Character.prototype.checkContact = function(ball, wall){
 			}
 			else{
 				var obje = wall[con[(j+1)%2].num.slice(0,-3)];
-				for(k=0; k<11; k++){
+				for(var k=0; k<11; k++){
 					if(obje.contact[k].num.slice(0, -2) == this.num+"c"){
-						for(l=k; l<11; l++){
+						for(var l=k; l<11; l++){
 							obje.contactCopy(l, l+1);
 						}
 						obje.contactCnt01--;
@@ -752,7 +878,7 @@ Character.prototype.checkDistortion = function(ball, wall){
 	var con = this.contact;
 	var dot = this.dot;
 	var bez = this.bezier;
-	for(i=0; i<num; i++){
+	for(var i=0; i<num; i++){
 		con[i].length = con[i].pos.sub(this.pos).norm();
 		con[i].excess = this.size- con[i].length;
 	}
@@ -760,8 +886,8 @@ Character.prototype.checkDistortion = function(ball, wall){
 	var arc;
 	var max = 0;
 	var maxi=0, maxj=0;
-	for(i=0; i<num-1; i++){
-		for(j=i+1; j<num; j++){
+	for(var i=0; i<num-1; i++){
+		for(var j=i+1; j<num; j++){
 			radGap = mod(con[i].rad- con[j].rad, PI2);
 			radGap = Math.min(radGap, PI2- radGap);
 			arc = 4/3* this.weight/ (con[i].length+con[j].length)/2* tan(radGap/4);
@@ -780,7 +906,7 @@ Character.prototype.checkDistortion = function(ball, wall){
 		var mini;
 		var min = this.size*3;
 		var len = 0;
-		for(i=0; i<num; i++){
+		for(var i=0; i<num; i++){
 			len = con[i].pos.sub(this.pos).norm();
 			if(len < min){
 				min = len;
@@ -788,16 +914,16 @@ Character.prototype.checkDistortion = function(ball, wall){
 			}
 		}
 		if(num==undefined || mini==undefined){run=false; console.log("num, mini is undefined")};
-		for(i=0; i<num; i++){
+		for(var i=0; i<num; i++){
 			if(con[i].num.slice(-3,-2)=="w") mini = i;
 		}
-		for(i=0; i<num; i++){
+		for(var i=0; i<num; i++){
 			if(i==mini) continue;
 			if(con[i].num.slice(-3,-2)=="w"){
 				var obje = wall[con[i].num.slice(0,-3)]
-				for(j=0; j<12; j++){
+				for(var j=0; j<12; j++){
 					if(obje.contact[j].num.slice(0,-3)+"a" == this.num+"a" && obje.contact[j].num.slice(-3,-2) != "w"){
-						for(k=j; k<11; k++){
+						for(var k=j; k<11; k++){
 							obje.contactCopy(k, k+1);
 						}
 						obje.contactCnt01--;
@@ -807,17 +933,17 @@ Character.prototype.checkDistortion = function(ball, wall){
 			}
 			else{
 				var B = ball[con[i].num.slice(0,-3)]
-				for(j=0; j<12; j++){
+				for(var j=0; j<12; j++){
 					if(B.contact[j].num.slice(0,-3)+"a" == this.num+"a" && B.contact[j].num.slice(-3,-2) != "w"){
 						if(j<6){
-							for(k=j; k<5; k++){	
+							for(var k=j; k<5; k++){	
 								B.contactCopy(k, k+1);
 							}
 							B.contactCnt01--;
 							break;
 						}
 						else{
-							for(k=6+j; k<12; k++){
+							for(var k=6+j; k<12; k++){
 								B.contactCopy(k, k+1);
 							}
 							B.contactCnt02--;
@@ -839,7 +965,7 @@ Character.prototype.checkDistortion = function(ball, wall){
 		this.calcuBezier(bez[1], con[maxj], con[maxi], mod(bez[0].dotNum- bez[1].dotNum), dot);
 		//各dotのrelとradを求める
 		var power = new Point();
-		for(i=0; i<num; i++){
+		for(var i=0; i<num; i++){
 			if(i==maxi || i==maxj){
 				if(con[i].excess/this.size < 0.01){
 					power.x += (con[i].excess* this.size+ 0.000001)* cos(con[i].tangent+ PI_2);
@@ -860,13 +986,13 @@ Character.prototype.checkDistortion = function(ball, wall){
 		b.y =-(con[maxj].pos.x- con[maxi].pos.x);
 		b = b.normalize();
 		a = b.mul(this.pos.sub(a).dot(b)).add(a);
-		for(i=this.contactCnt01-1; i>=0; i--){
+		for(var i=this.contactCnt01-1; i>=0; i--){
 			if(i==maxi || i==maxj) continue;
 			//各dotのrelとradを求める
 			this.calcuDotInfo(a);
 			//次にiの接点方向に伸びる直線と歪の曲線との交点を調べる
 			var rad = atan2(con[i].pos.sub(a));
-			for(j=0; j<dotLen; j++){
+			for(var j=0; j<dotLen; j++){
 				if(mod(rad, PI2) < mod(dot[j].rad- dot[0].rad, PI2)) break;
 			}
 			var gapVolume = mod(j-1);
@@ -878,17 +1004,17 @@ Character.prototype.checkDistortion = function(ball, wall){
 				//もし消すべき接点の相手がボールだった場合、相手のボールの接点も消しといてあげないといけない
 				if(con[i].num.slice(-3,-2) != "w"){
 					var B = ball[con[i].num.slice(0,-3)]
-					for(j=0; j<12; j++){
+					for(var j=0; j<12; j++){
 						if(B.contact[j].num.slice(0,-3)+"a" == this.num+"a" && B.contact[j].num.slice(-3,-2) != "w"){
 							if(j<6){
-								for(k=j; k<5; k++){	
+								for(var k=j; k<5; k++){	
 									B.contactCopy(k, k+1);
 								}
 								B.contactCnt01--;
 								break;
 							}
 							else{
-								for(k=6+j; k<12; k++){
+								for(var k=6+j; k<12; k++){
 									B.contactCopy(k, k+1);
 								}
 								B.contactCnt02--;
@@ -900,9 +1026,9 @@ Character.prototype.checkDistortion = function(ball, wall){
 				//相手が壁でも同じことをする
 				else{
 					var obje = wall[con[i].num.slice(0,-3)]
-					for(j=0; j<12; j++){
+					for(var j=0; j<12; j++){
 						if(obje.contact[j].num.slice(0,-3)+"a" == this.num+"a" && obje.contact[j].num.slice(-3,-2) != "w"){
-							for(k=j; k<11; k++){
+							for(var k=j; k<11; k++){
 								obje.contactCopy(k, k+1);
 							}
 							obje.contactCnt01--;
@@ -910,7 +1036,7 @@ Character.prototype.checkDistortion = function(ball, wall){
 						}
 					}
 				}
-				for(j=i; j<num; j++){
+				for(var j=i; j<num; j++){
 					this.contactCopy(j, j+1);
 				}
 				this.contactCnt01--;
@@ -927,10 +1053,10 @@ Character.prototype.checkDistortion = function(ball, wall){
 		}
 	}
 	this.pos = this.pos.add(power.div(this.size));
-	// for(i=0; i<wall.length; i++){
+	// for(var i=0; i<wall.length; i++){
 		// this.infoWithWall[i].canCollide = true;
 	// }
-	for(i=0; i<this.contactCnt01; i++){
+	for(var i=0; i<this.contactCnt01; i++){
 		if(con[i].num.slice(-3,-2) =="w"){
 			this.infoWithWall[con[i].num.slice(0,-3)].canCollide = false;
 		}
@@ -947,7 +1073,7 @@ Character.prototype.detectDistortion01 = function(ball, wall){
 	var bez = this.bezier;
 	var excessC = 0;
 	//まずは各接点についてexcessが一定値を超えているとカウントをインクリメントする。
-	for(i=0; i<num; i++){
+	for(var i=0; i<num; i++){
 		if(con[i].excess >= this.size*0.15) excessC++;
 	}
 	//カウントが一定数を超えていたらめり込みによって破裂する
@@ -965,8 +1091,8 @@ Character.prototype.detectDistortion01 = function(ball, wall){
 	
 	//この時点で接点が三つ以上あったら改めて歪を計算する必要がある
 	//まず各接点を中心からの角度が小さい順に並び返す
-	for(i=0; i<num-1; i++){
-		for(j=i+1; j<num; j++){
+	for(var i=0; i<num-1; i++){
+		for(var j=i+1; j<num; j++){
 			if(mod(con[i].rad, PI2) > mod(con[j].rad, PI2)){
 				this.contactCopy(11, i);
 				this.contactCopy(i, j);
@@ -975,15 +1101,15 @@ Character.prototype.detectDistortion01 = function(ball, wall){
 		}
 	}
 	//それぞれの接点間の角度を計算する。後曲線の変わり目がどこにあるのか計算する
-	for(i=0; i<num; i++){
+	for(var i=0; i<num; i++){
 		con[i].length = this.pos.sub(con[i].pos).norm();
 		con[i].excess = this.size- con[i].length;
 	}
 	//ベジエ曲線でゆがみを表現していく。ついでに曲線状の各点の座標を計算していく
-	for(i=0; i<num; i++){
+	for(var i=0; i<num; i++){
 		this.calcuDistortion(bez[i], con[i], con[mod(i+1,num)]);
 	}
-	for(i=0; i<num; i++){
+	for(var i=0; i<num; i++){
 		var gap = mod(bez[mod(i+1, num)].dotNum- bez[i].dotNum);
 		this.calcuBezier(bez[i], con[i], con[mod(i+1, num)], gap, dot, i); 
 	}
@@ -1005,10 +1131,10 @@ Character.prototype.detectDistortion02 = function(ball){
 	var power = new Point();
 	//まず新しくできた各接点がどの既存の接点間にあるのかを調べる。接点はcon[conNum]とcon[conNum+1]の間にある
 	if(num1<2) return; 
-	for(i=6; i<6+num2; i++){
+	for(var i=6; i<6+num2; i++){
 		con[i].rad = mod(con[i].rad, PI2);
 		con[0].rad = mod(con[0].rad, PI2);
-		for(j=0; j<num1; j++){
+		for(var j=0; j<num1; j++){
 			con[(j+1)%num1].rad = mod(con[(j+1)%num1].rad, PI2);
 			if(mod(con[i].rad- con[j].rad, PI2) < mod(con[mod(j+1, num1)].rad- con[j].rad, PI2)){
 				conNum = j;
@@ -1037,10 +1163,10 @@ Character.prototype.detectDistortion02 = function(ball){
 		
 		conNum = mod(conNum-1, num1);
 		//接点がどのdotの間にあるのか調べる。jがdot_numberになる
-		for(j=0; j<dot.length; j++){
+		for(var j=0; j<dot.length; j++){
 			dot[j].rad = atan2(dot[j].rel);
 		}
-		for(j=0; j<dot.length; j++){
+		for(var j=0; j<dot.length; j++){
 			if(mod(con[i].rad- dot[0].rad, PI2) < mod(dot[j].rad- dot[0].rad, PI2)) break;
 		}
 		var gapVolume = mod(j-1);
@@ -1061,7 +1187,7 @@ Character.prototype.detectDistortion02 = function(ball){
 		}
 		var s = (len4-this.size)/ (len3-this.size);
 		s = Math.max(Math.min(s, 1), -1);
-		for(j=0; j<dotNum+1; j++){
+		for(var j=0; j<dotNum+1; j++){
 			var num = mod(bez[conNum].dotNum+j);
 			dot[num].abs = dot[num].abs.mul(s).add(dotTemp[num].abs.mul(1-s));
 			dot[num].rel = dot[num].abs.sub(this.pos);

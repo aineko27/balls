@@ -126,6 +126,15 @@ Array.prototype.mul = function(a){
 }
 
 //その他適当な関数=================================================================================================
+var initialize = function(func, maxCount){
+	arr = new Array(maxCount);
+	for(var i=0; i<arr.length; i++){
+		arr[i] = new func;
+		arr[i].num = i;
+	}
+	return arr;
+}
+
 var mod = function(a, b){
 	if(!b) return a-dotLen*(Math.floor(a/dotLen));
 	else if(typeof(a)=="number" && typeof(b)=="number") return a-b*(Math.floor(a/b));

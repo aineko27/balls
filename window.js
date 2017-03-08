@@ -10,8 +10,6 @@
 	this.type = 0;
 }
 
-
-
 box.prototype.set = function(tlx, tly, brx, bry, str, fc, fs, bc, type){
 	this.tl = new Point(tlx, tly);
 	this.tr = new Point(brx, tly);
@@ -54,9 +52,15 @@ var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
 					pauseFlag = false;
 					leftDown1 = false;
 					break;
+					
+				case "TITLE":
+					titleScreen();
+					pauseFlag = false;
+					leftDown = false;
+					break;
 				
 				case "RETRY":
-					stage00(ball, wall, star, converter);
+					stage[nowStage]();
 					pauseFlag = false;
 					leftDown1 = false;
 					break

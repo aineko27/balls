@@ -79,6 +79,38 @@ Star.prototype.homeDraw = function(){
 	ctx.stroke();
 }
 
+var updateStar = function(){
+	for(var i=0; i<star.length; i++){
+		if(star[i].condition=="rotation"){
+			//星がその場で回転するようにする。一回転したら止まる
+			star[i].rad += PI/6;
+			if(star[i].rad >= PI2){
+				star[i].condition = "moving"
+			}
+		}
+		else if(star[i].condition=="moving"){
+			//所定の位置まで星が移動するようにする
+			star[i].pos = star[i].homePos.add(star[i].pos.mul(2)).div(3);
+			if(star[i].pos.sub(star[i].homePos).norm()<0.1){
+				star[i].pos = star[i].homePos.add(P0);
+				star[i].condition = "scaling"
+				star[i].homeFlame = counter;
+			}
+		}
+		else if(star[i].condition=="scaling"){
+			//星が拡大縮小するようになる
+			star[i].div = 5.5 - 1*sin((counter- star[i].homeFlame)/15*PI2)
+			if(counter- star[i].homeFlame> 23){
+				star[i].condition = "home"
+				star[i].div = 5.5
+			}
+		}
+		if(star[i].isBlink==true){
+			star[i].blink();
+		}
+	}
+}
+
 Star.prototype.detectCollision = function(ball){
 	if(this.color==ball.color && this.pos.sub(ball.pos).norm()<ball.size+15){
 		this.isAlive = false;
@@ -223,14 +255,14 @@ Converter.prototype.draw = function(wall){
 	ctx.stroke();
 	ctx.beginPath();
 	var num = (obje.center.x- this.pos.x)/20;
-	for(i=0; i<Math.abs(num)-1/2; i++){
+	for(var i=0; i<Math.abs(num)-1/2; i++){
 		ctx.arc(obje.center.x*sr- i*20*Math.sign(num)*sr+ scrWid0, this.pos.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fillStyle = color[04];
 	ctx.fill();
 	ctx.beginPath();
 	num = (obje.center.y- this.pos.y)/20;
-	for(i=1; i<Math.abs(num)-1/2; i++){
+	for(var i=1; i<Math.abs(num)-1/2; i++){
 		ctx.arc(obje.center.x*sr+ scrWid0, this.pos.y*sr+ i*20*Math.sign(num)*sr+ scrHei0, 6, 0, PI2, true);
 	}
 	ctx.fill();
@@ -245,7 +277,7 @@ Converter.prototype.draw = function(wall){
 	ctx.stroke();
 	ctx.beginPath();
 	var num1 = Math.floor(Math.abs((this.pos.x- obje.center.x)/20));
-	for(i=0; i<Math.min(Math.abs(num1)-1/2, this.rampCnt); i++){
+	for(var i=0; i<Math.min(Math.abs(num1)-1/2, this.rampCnt); i++){
 		ctx.arc(obje.center.x*sr- (num1-i)*20*Math.sign(num1)*sr+ scrWid0, this.pos.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fillStyle = color[this.color];
@@ -253,12 +285,29 @@ Converter.prototype.draw = function(wall){
 	if(this.rampCnt<num1) return;
 	ctx.beginPath();
 	var num2 = (Math.abs(this.pos.y- obje.center.y)/20);
-	for(i=0; i<Math.min(Math.abs(num2)-1/2, this.rampCnt- num1); i++){
+	for(var i=0; i<Math.min(Math.abs(num2)-1/2, this.rampCnt- num1); i++){
 		ctx.arc(obje.center.x*sr+ scrWid0, this.pos.y*sr- i*20*Math.sign(num2)*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fill();
 	if(this.rampCnt>num1+num2) obje.color = this.color;
 	
+}
+
+
+var updateConverter = function(){
+	for(var i=0; i<converter.length; i++){
+		if(converter[i].isAlive==true){
+			converter[i].counter++;
+			//その時の変換器の色によってランプの数を変化させる
+			if(converter[i].color==3) converter[i].rampCnt = 0;
+			converter[i].color = 3;
+			for(var j=0; j<ball.length; j++){
+				if(ball[j].isAlive==true){
+					converter[i].attract(ball[j], wall);
+				}
+			}
+		}
+	}
 }
 
 Converter.prototype.attract = function(b, wall){
@@ -304,7 +353,7 @@ Converter.prototype.draw2 = function(wall){
 	if(this.color!=3){
 		var rad = (this.counter%560)*PI2/560;
 		ctx.beginPath();
-		for(i=0; i<5; i++){
+		for(var i=0; i<5; i++){
 			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, (40+ this.counter%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
 			ctx.moveTo(this.pos.x*sr+ (40+ this.counter%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ this.counter%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
 		}
@@ -312,7 +361,7 @@ Converter.prototype.draw2 = function(wall){
 		ctx.strokeStyle = color[this.color+30]+ (1- (40+ this.counter%120/2)/100)+ ")";
 		ctx.stroke();
 		ctx.beginPath();
-		for(i=0; i<5; i++){
+		for(var i=0; i<5; i++){
 			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr+ scrHei0, (40+ (this.counter+40)%120/2)*sr, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
 			ctx.moveTo(this.pos.x*sr+ (40+ (this.counter+40)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ (this.counter+40)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
 			}
@@ -320,7 +369,7 @@ Converter.prototype.draw2 = function(wall){
 		ctx.strokeStyle = color[this.color+30]+ (1- (40+ (this.counter+40)%120/2)/100)+ ")";
 		ctx.stroke();
 		ctx.beginPath();
-		for(i=0; i<5; i++){
+		for(var i=0; i<5; i++){
 			ctx.arc(this.pos.x*sr+ scrWid0, this.pos.y*sr, (40+ (this.counter+80)%120/2)*sr+ scrHei0, PI2/10*2*i+ rad, PI2/10*(2*i+1)+ rad, false);
 			ctx.moveTo(this.pos.x*sr+ (40+ (this.counter+80)%120/2)*cos(PI2/10*(2*i+2)+ rad)*sr+ scrWid0, this.pos.y*sr+ (40+ (this.counter+80)%120/2)*sin(PI2/10*(2*i+2)+ rad)*sr+ scrHei0)
 		}
@@ -341,14 +390,14 @@ Converter.prototype.draw2 = function(wall){
 	ctx.stroke();
 	ctx.beginPath();
 	var num = (obje.center.x- this.pos.x)/20;
-	for(i=0; i<Math.abs(num)-1/2; i++){
+	for(var i=0; i<Math.abs(num)-1/2; i++){
 		ctx.arc(obje.center.x*sr- i*20*Math.sign(num)*sr+ scrWid0, this.pos.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fillStyle = color[04];
 	ctx.fill();
 	ctx.beginPath();
 	num = (obje.center.y- this.pos.y)/20;
-	for(i=1; i<Math.abs(num)-1/2; i++){
+	for(var i=1; i<Math.abs(num)-1/2; i++){
 		ctx.arc(obje.center.x*sr+ scrWid0, this.pos.y*sr+ i*20*Math.sign(num)*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fill();
@@ -363,7 +412,7 @@ Converter.prototype.draw2 = function(wall){
 	ctx.stroke();
 	ctx.beginPath();
 	var num1 = Math.floor(Math.abs((this.pos.x- obje.center.x)/20));
-	for(i=0; i<Math.min(Math.abs(num1)-1/2, this.rampCnt); i++){
+	for(var i=0; i<Math.min(Math.abs(num1)-1/2, this.rampCnt); i++){
 		ctx.arc(obje.center.x*sr- (num1-i)*20*Math.sign(num1)*sr+ scrWid0, this.pos.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fillStyle = color[this.color];
@@ -371,7 +420,7 @@ Converter.prototype.draw2 = function(wall){
 	if(this.rampCnt<num1) return;
 	ctx.beginPath();
 	var num2 = (Math.abs(this.pos.y- obje.center.y)/20);
-	for(i=0; i<Math.min(Math.abs(num2)-1/2, this.rampCnt- num1); i++){
+	for(var i=0; i<Math.min(Math.abs(num2)-1/2, this.rampCnt- num1); i++){
 		ctx.arc(obje.center.x*sr+ scrWid0, this.pos.y*sr- i*20*Math.sign(num2)*sr+ scrHei0, 6*sr, 0, PI2, true);
 	}
 	ctx.fill();

@@ -40,6 +40,16 @@ Confetti.prototype.draw = function(){
 	ctx.fill();
 }
 
+
+var updateConfetti = function(){
+	for(var i=0; i<confetti.length; i++){
+		if(confetti[i].isAlive){
+			confetti[i].move();
+			if(confetti[i].pos.y>scrHei1+10) confetti[i].isAlive = false;
+		}
+	}
+}
+
 Confetti.prototype.move = function(){
 	this.pos.x += this.vel.x;
 	this.pos.y += this.vel.y;
@@ -98,7 +108,7 @@ PaperTape.prototype.draw = function(){
 	ctx.beginPath();
 	sum1 = 0;
 	sum2 = section[0]
-	for(i=0; i<section.length-1; i++){
+	for(var i=0; i<section.length-1; i++){
 		sum1 += section[i];
 		sum2 += section[i+1];
 		if(i==0)ctx.moveTo(p1.x+ dir.x* sum1+ wid.y,        p1.y+ dir.y* sum1- wid.x);
@@ -107,7 +117,7 @@ PaperTape.prototype.draw = function(){
 						  p1.x+ dir.x* sum2- wid.y* (-1)**i,        p1.y+ dir.y* sum2+ wid.x* (-1)**i);
 	}
 	ctx.lineWidth = 1
-	for(i=section.length-2; i>-1; i--){
+	for(var i=section.length-2; i>-1; i--){
 		ctx.bezierCurveTo(p1.x+ dir.x* sum2- wid.y* (-1)**i- wid.x* section[i]*10+ hei.x, p1.y+ dir.y* sum2+ wid.x* (-1)**i- wid.y* section[i]*10+ hei.y,
 		                  p1.x+ dir.x* sum1+ wid.y* (-1)**i+ wid.x* section[i]*10+ hei.x, p1.y+ dir.y* sum1- wid.x* (-1)**i+ wid.y* section[i]*10+ hei.y,
 						  p1.x+ dir.x* sum1+ wid.y* (-1)**i+ hei.x,        p1.y+ dir.y* sum1- wid.x* (-1)**i+ hei.y);
@@ -164,6 +174,14 @@ PaperTape.prototype.draw = function(){
 	} 
 }
 
+var updatePaperTape = function(){
+	for(var i=0; i<paperTape.length; i++){
+		if(paperTape[i].isAlive){
+			paperTape[i].move();
+		}
+	}
+}
+
 PaperTape.prototype.move = function(){
 	this.pos1.x += this.vel1.x;
 	this.pos1.y += this.vel1.y;
@@ -184,14 +202,35 @@ PaperTape.prototype.move = function(){
 		this.pos1.y -= (len-600)* 0.03* this.pos1.sub(this.pos2).normalize().y;
 	}
 	var sum = 1;
-	for(i=0; i<this.section.length; i++){
+	for(var i=0; i<this.section.length; i++){
 		sum *= 1.2
 		this.section[i] += sum;
 	}
 }
 
 
+var stageClearEffect = function(){
+	//紙吹雪の発射
+	for(var i=0; i<confetti.length/2; i++){
+		confetti[i].fire(-100, scrHei1, 1, i%7, i%13);
+	}for(var i=Math.ceil(confetti.length/2); i<confetti.length; i++){
+		confetti[i].fire(scrWid1+100, scrHei1, -1, i%7, i%13);
+	}
+	//紙テープの発射
+	for(var i=0; i<paperTape.length/2; i++){
+		paperTape[i].fire(-100, scrHei1, 1);
+	}
+	for(var i=Math.ceil(paperTape.length/2); i<paperTape.length; i++){
+		paperTape[i].fire(scrWid1+100, scrHei1, -1);
+	}
+	for(var i=0; i<confetti.length/2; i++){
+		confetti[i].fire(-100, scrHei1, 1, i%7, i%13);
+	}for(var i=confetti.length/2; i<confetti.length; i++){
+		confetti[i].fire(scrWid1+100, scrHei1, -1, i%7, i%13);
 
+	}
+	clearFlag = true;
+}
 
 
 
