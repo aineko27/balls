@@ -276,6 +276,124 @@ var checkAbsorption = function(){
 	}
 }
 
+var checkCollision1 = function(){
+	//衝突判定一回目(まずは正円同士で判定を取る)===========================================================
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isAlive){
+			for(var j=i+1; j<ball.length; j++){
+				if(ball[j].isAlive && ball[i].color != ball[j].color && !(i == 0 && ball[i].size > ball[j].size)){
+					ball[i].detectCollision01(ball[j]);
+				}
+			}
+		}
+	}
+}
+
+var checkCollision2 = function(){
+	//衝突判定二回目(次に歪円を除いた場合の判定を取る)
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isAlive){
+			//衝突判定をまとめた関数に入れてみる
+			ball[i].collisionCheck(ball, wall, false);
+			//ほぼ同じ位置にある接点を排除する
+			ball[i].checkContact(ball, wall);
+			//得られた接点の数からボールの状態を場合分けする
+			//接点が無い場合
+			if(ball[i].contactCnt01 == 0){
+				ball[i].contactCnt01Temp = ball[i].contactCnt01;
+				continue;
+			}
+			//接点が一つの場合
+			else if(ball[i].contactCnt01 == 1){
+				ball[i].positionCorrection();
+				ball[i].collisionCheck(ball, wall, true);
+				ball[i].checkContact(ball, wall);
+				if(ball[i].contactCnt01 > 1){
+					ball[i].checkDistortion(ball, wall);
+					ball[i].detectDistortion01(ball, wall);
+				}
+			}
+			//接点が二つ以上の場合
+			else {
+				ball[i].checkDistortion(ball, wall);
+				if(ball[i].contactCnt01 == 1){
+					ball[i].positionCorrection();
+					ball[i].collisionCheck(ball, wall, true);
+					ball[i].checkContact(ball, wall);
+					if(ball[i].contactCnt01 > 1){
+						ball[i].checkDistortion(ball, wall);
+						ball[i].detectDistortion01(ball, wall);
+					}
+				}
+				else{
+					ball[i].detectDistortion01(ball, wall);
+				}
+			}
+			ball[i].contactCnt01Temp = ball[i].contactCnt01;
+		}
+	}
+}
+
+var checkCollision3 = function(){
+	//衝突判定三回目(歪円の場合の判定を取る)==============================================================
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isAlive){
+			if(ball[i].isDistort || ball[i].isDistorted){
+				//この場合はボールは歪円
+				for(var j=i+1; j<ball.length; j++){
+					if(ball[j].isAlive && ball[i].color != ball[j].color && !(i == 0 && ball[i].size > ball[j].size)){
+						if(!ball[j].isDistort || !ball[i].isDistorted) ball[i].detectCollision02(ball[j], true);
+						else　ball[i].detectCollision03(ball[j]);
+					}
+				}
+				//次に壁との当り判定
+				for(var j=0; j<wall.length; j++){
+					if(wall[j].isAlive && ball[i].color != wall[j].color) wall[j].detectCollision02(ball[i], ball, wall);
+				}
+				ball[i].checkContact(ball, wall);;
+				if(ball[i].contactCnt01 > 0 && ball[i].contactCnt02 > 0){
+					ball[i].detectDistortion02(ball);
+				}
+			}
+		}
+	}
+}
+
+var calcBallInfo = function(){
+	//とられた接点から衝突の計算を行う
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isAlive){
+			if(ball[i].contactCnt01Temp < 2 && ball[i].contactCnt01 >1){
+				ball[i].checkDistortion(ball, wall);
+			}
+		}
+	}
+	for(var i=0; i<ball.length; i++){
+		if(ball[i].isAlive){
+			if(ball[i].contactCnt01Temp < 2 && ball[i].contactCnt01 >1){
+				ball[i].detectDistortion01(ball, wall);
+			}
+			if(ball[i].contactCnt01Temp < 1 && ball[i].contactCnt01==1) ball[i].positionCorrection();
+			ball[i].bound(ball, wall);
+			ball[i].calcuDotInfo(ball[i].pos)
+		}
+	}
+	for(var i=0; i<wall.length; i++){
+		if(wall[i].isAlive){
+			wall[i].action(ball, wall);
+		}
+	}
+	//ボールのdotの情報を更新する
+	if(!ball[0].isDistort || !ball[0].isDistorted){
+		for(var i=0; i<dotLen; i++){
+			ball[0].dot[i].rel = angle(i* PI2/ dotLen).mul(ball[0].size);
+			ball[0].dot[i].abs = ball[0].pos.add(ball[0].dot[i].rel);
+			ball[0].dot[i].rad = atan2(ball[0].dot[i].rel);
+		}
+	}
+	ball[0].calcuDotInfo(ball[0].pos);
+}
+
 //球同士の吸収を処理する関数
 Character.prototype.absorb = function(b){
 	//もし自機と撃ったばかりの球が遠ざかるようになっていたら、吸収を無視する
