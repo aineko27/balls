@@ -30,6 +30,31 @@ Star.prototype.set = function(p, c){
 	this.homeFlame = 0;
 }
 
+var drawStar = function(){
+	for(var i=0; i<star.length; i++){
+		star[i].homeDraw();
+		if(star[i].isAlive==true){
+			star[i].twinkle();
+		}
+		if(star[i].condition!="invisible"){
+			star[i].draw()
+		}
+		if(star[i].isBlink==true){
+			ctx.beginPath();
+			ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius1*sr, 0, PI2, true);
+			ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius2*sr, 0, PI2, false);
+			a1 = (star[i].blinkRadius1- 40)/12;
+			ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius3*sr, 0, PI2, true);
+			ctx.fillStyle = color[star[i].color+10];
+			ctx.fill();
+		}
+	}
+}
+
+
 Star.prototype.draw = function(){
 	var x = this.pos.x;
 	var y = this.pos.y;

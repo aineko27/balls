@@ -1,4 +1,57 @@
-﻿var calcMouseInfo = function(){
+﻿var drawMouse = function(){
+	var m = ball[0].pos.add(angle(radian).mul(length+ ball[0].dot[radNum].rel.norm()));
+	if(!pauseFlag) m2 = new Point(mouse.x, mouse.y);
+	
+	if(leftDown1) ctx.fillStyle = color[01];
+	else if(rightDown1) ctx.fillStyle = color[02];
+	if(length>0){
+		if(leftDown1 != rightDown1 && !pauseFlag){
+			var rad = radian+ PI_2;
+			var t = 0.9+ length/1440;
+			ctx.beginPath();
+			var p1 = new Point(m.x, m.y-18*t).rot(m, rad);
+			var p2 = new Point(m.x+13*t, m.y+12*t).rot(m, rad);
+			var p3 = new Point(m.x, m.y+8*t).rot(m, rad);
+			var p4 = new Point(m.x-13*t, m.y+12*t).rot(m, rad);
+			ctx.moveTo(p1.x*sr+ scrWid0, p1.y*sr+ scrHei0);
+			ctx.lineTo(p2.x*sr+ scrWid0, p2.y*sr+ scrHei0);
+			ctx.lineTo(p3.x*sr+ scrWid0, p3.y*sr+ scrHei0);
+			ctx.lineTo(p4.x*sr+ scrWid0, p4.y*sr+ scrHei0);
+			ctx.closePath();
+			ctx.arc(m.x*sr+ scrWid0, m.y*sr+ scrHei0, 6*sr, 0, PI2, true);
+			ctx.closePath();
+			ctx.fill();
+		}
+		else{
+			ctx.beginPath();
+			ctx.moveTo(m2.x*sr+ scrWid0, m2.y*sr - 14*sr+ scrHei0);
+			ctx.lineTo(m2.x*sr+ scrWid0 + 14*sr, m2.y*sr+ scrHei0);
+			ctx.lineTo(m2.x*sr+ scrWid0, m2.y*sr + 14*sr+ scrHei0);
+			ctx.lineTo(m2.x*sr+ scrWid0 - 14*sr, m2.y*sr+ scrHei0);
+			ctx.closePath();
+			ctx.arc(m2.x*sr+ scrWid0, m2.y*sr+ scrHei0, 9*sr, 0, PI2, true);
+			ctx.closePath();
+			ctx.fillStyle = color[00];
+			ctx.fill();
+		}
+	}
+	ctx.beginPath();
+	ctx.arc(m2.x*sr+ scrWid0, m2.y*sr+ scrHei0, 4*sr, 0, PI2, true);
+	ctx.closePath();
+	ctx.fill();
+
+	// 点線の描画
+	if(ball[0].isAlive && !pauseFlag){
+		if(leftDown1 && rightDown1){
+			leftDown1 = false;
+			rightDown1 = false;
+		}
+		else if(leftDown1) ball[0].strokeDottedLine(1);
+		else if(rightDown1) ball[0].strokeDottedLine(2);
+	}
+}
+
+var calcMouseInfo = function(){
 	//自機とマウス位置の相対ベクトル(vector)、距離(length)、角度(radian)をそれぞれ計算する
 	vector = mouse.sub(ball[0].pos);
 	if(!keyCode1[16]){

@@ -287,14 +287,17 @@ window.onload = function(){
 
 			//物体の処理演算終わり===============================================================================
 			calcMouseInfo();
-		}
-		//画面の外遠くまで行ったかサイズがマイナスになったらボールを死んだことにする
-		for(var i=0; i<ball.length; i++){
-			if(ball[i].isVisible){
-				if(ball[i].pos.sub(canvasCenter).norm() > scrWid1
-				|| ball[i].weight < 0) ball[i].initialize();
+		
+			//画面の外遠くまで行ったかサイズがマイナスになったらボールを死んだことにする
+			for(var i=0; i<ball.length; i++){
+				if(ball[i].isVisible){
+					if(ball[i].pos.sub(canvasCenter).norm() > scrWid1
+					|| ball[i].weight < 0) ball[i].initialize();
+				}
 			}
 		}
+		
+		
 		//画面の描画を行う-------------------------------------------------------------------------------------------------
 		//画面サイズを現在のウィンドウサイズに合わせる
 		sizeRate = Math.min(window.innerWidth/ (scrWid1), window.innerHeight/ (scrHei1+ scrHei2))
@@ -305,193 +308,109 @@ window.onload = function(){
 		//スクリーンクリア
 		ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height)
 		
-		//背景の描画-------------------------------------------------
-
-		//背景の描画
-		for(var i=0; i<wall.length; i++){
-			if(wall[i].isAlive) wall[i].draw1(wall);
+		//nowWindowに応じて描写する内容を変える
+		
+		//nowWindow=="menu"のとき
+		if(nowWindow=="stageSelect"){
+			
 		}
 		
-		//球の描写1
-		for(var i=0; i<ball.length; i++){
-			if(ball[i].isVisible) ball[i].draw(1, ball[0]);
-		}
-		
-		//紙吹雪の描写
-		for(var i=0; i<confetti.length; i++){
-			if(confetti[i].isAlive) confetti[i].draw();
-		}
-		
-		//紙テープの描写
-		for(var i=0; i<paperTape.length; i++){
-			if(paperTape[i].isAlive) paperTape[i].draw();
-		}
-		
-		
-		//変換器の描写
-		for(var i=0; i<converter.length; i++){
-			if(converter[i].isAlive==true){
-				converter[i].draw2(wall);
+		//nowWindow=="stage"のとき
+		else if(nowWindow=="stage"){
+			//背景の描画-------------------------------------------------
+			
+			//背景の描画
+			for(var i=0; i<wall.length; i++){
+				if(wall[i].isAlive) wall[i].draw1(wall);
 			}
-		}
-		//壁の描画
-		for(var i=0; i<wall.length; i++){
-			if(wall[i].isAlive) wall[i].draw2(wall);
-		};
-
-		
-		//球の描写2
-		for(var i=0; i<ball.length; i++){
-			if(ball[i].isVisible){
-				//球そのものの描写
-				ball[i].draw(2, ball[0]);
-				//球の中心の描写
-				if(ball[i].shootedFrame > counter-2) continue;
-				ctx.beginPath()
-				ctx.arc(ball[i].pos.x*sr+ scrWid0, ball[i].pos.y*sr+ scrHei0, 2*sr, 0, PI2, true);
-				ctx.fillStyle = color[03];
-				ctx.fill();
-				//球の接点の中点の描写
-				continue;
-				if(ball[i].contactCnt01+ball[i].contactCnt02 < 2) continue;
-				for(var j=0; j<ball[i].contactCnt01+ ball[i].contactCnt02; j++){
-					ctx.beginPath();
-					ctx.arc(ball[i].bezier[j].midPos.x+ scrWid0, ball[i].bezier[j].midPos.y+ scrHei0, 2, 0, PI2, true);
-					ctx.fillStyle = color[3];
-					ctx.fill()
+			
+			//球の描写1
+			for(var i=0; i<ball.length; i++){
+				if(ball[i].isVisible) ball[i].draw1(1, ball[0]);
+			}
+			
+			//紙吹雪の描写
+			for(var i=0; i<confetti.length; i++){
+				if(confetti[i].isAlive) confetti[i].draw();
+			}
+			
+			//紙テープの描写
+			for(var i=0; i<paperTape.length; i++){
+				if(paperTape[i].isAlive) paperTape[i].draw();
+			}
+			
+			
+			//変換器の描写
+			for(var i=0; i<converter.length; i++){
+				if(converter[i].isAlive==true){
+					converter[i].draw2(wall);
 				}
 			}
-		}
-		
-		if(lCounter%4){
-			ctx.beginPath();
-			ctx.arc(ball[0].pos.x, ball[0].pos.y, ball[0].size, 0, PI2, true)
-			ctx.fillStyle = color[3];
-			ctx.fill()
-		}
-		if(lCounter%3){
-			ctx.fillStyle = "BLACK";
-			for(var i=0; i<dotLen; i++){
-				ctx.beginPath();
-				ctx.arc(ball[1].dot[i].abs.x, ball[1].dot[i].abs.y, 1, 0, PI2, true)
-				ctx.closePath();
-				ctx.fill();
-			}
-		}
-		// マウスの現在地の描画
-		var m = ball[0].pos.add(angle(radian).mul(length+ ball[0].dot[radNum].rel.norm()));
-		if(!pauseFlag) m2 = new Point(mouse.x, mouse.y);
+			//壁の描画
+			for(var i=0; i<wall.length; i++){
+				if(wall[i].isAlive) wall[i].draw2(wall);
+			};
 
-
-		if(leftDown1) ctx.fillStyle = color[01];
-		else if(rightDown1) ctx.fillStyle = color[02];
-		if(length>0){
-			if(leftDown1 != rightDown1 && !pauseFlag){
-				var rad = radian+ PI_2;
-				var t = 0.9+ length/1440;
+			
+			//球の描写2
+			for(var i=0; i<ball.length; i++){
+				ball[i].draw2();
+			}
+			
+			if(lCounter%4){
 				ctx.beginPath();
-				var p1 = new Point(m.x, m.y-18*t).rot(m, rad);
-				var p2 = new Point(m.x+13*t, m.y+12*t).rot(m, rad);
-				var p3 = new Point(m.x, m.y+8*t).rot(m, rad);
-				var p4 = new Point(m.x-13*t, m.y+12*t).rot(m, rad);
-				ctx.moveTo(p1.x*sr+ scrWid0, p1.y*sr+ scrHei0);
-				ctx.lineTo(p2.x*sr+ scrWid0, p2.y*sr+ scrHei0);
-				ctx.lineTo(p3.x*sr+ scrWid0, p3.y*sr+ scrHei0);
-				ctx.lineTo(p4.x*sr+ scrWid0, p4.y*sr+ scrHei0);
-				ctx.closePath();
-				ctx.arc(m.x*sr+ scrWid0, m.y*sr+ scrHei0, 6*sr, 0, PI2, true);
-				ctx.closePath();
-				ctx.fill();
+				ctx.arc(ball[0].pos.x, ball[0].pos.y, ball[0].size, 0, PI2, true)
+				ctx.fillStyle = color[3];
+				ctx.fill()
 			}
-			else{
-				ctx.beginPath();
-				ctx.moveTo(m2.x*sr+ scrWid0, m2.y*sr - 14*sr+ scrHei0);
-				ctx.lineTo(m2.x*sr+ scrWid0 + 14*sr, m2.y*sr+ scrHei0);
-				ctx.lineTo(m2.x*sr+ scrWid0, m2.y*sr + 14*sr+ scrHei0);
-				ctx.lineTo(m2.x*sr+ scrWid0 - 14*sr, m2.y*sr+ scrHei0);
-				ctx.closePath();
-				ctx.arc(m2.x*sr+ scrWid0, m2.y*sr+ scrHei0, 9*sr, 0, PI2, true);
-				ctx.closePath();
-				ctx.fillStyle = color[00];
-				ctx.fill();
+			if(lCounter%3){
+				ctx.fillStyle = "BLACK";
+				for(var i=0; i<dotLen; i++){
+					ctx.beginPath();
+					ctx.arc(ball[1].dot[i].abs.x, ball[1].dot[i].abs.y, 1, 0, PI2, true)
+					ctx.closePath();
+					ctx.fill();
+				}
 			}
-		}
-		
-		ctx.beginPath();
-		ctx.arc(m2.x*sr+ scrWid0, m2.y*sr+ scrHei0, 4*sr, 0, PI2, true);
-		ctx.closePath();
-		ctx.fill();
-
-		// 点線の描画
-		if(ball[0].isAlive && !pauseFlag){
-			if(leftDown1 && rightDown1){
-				leftDown1 = false;
-				rightDown1 = false;
+			
+			// マウスの現在地とクリック時の点線の描画
+			drawMouse();
+			
+			//status画面の描写
+			drawStatusWindow();
+			
+			//星の描写
+			drawStar();
+			
+			//status情報の書き込み
+			ctx.fillStyle = color[07]
+			ctx.font = "25px 'MSゴシック'"
+			ctx.fillText("*Debug:   "+test[0]+" || "+test[1]+" || "+test[2]+" || "+test[3], (50+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
+			
+			//自機が死んだら描写をストップしてリトライを促す
+			if(!ball[0].isAlive){
+				ctx.fillStyle = color[06];
+				// run = false;
+				ctx.font = "60px 'MSゴシック'"
+				ctx.fillText("GAME OVER", scrWid1/ 2- 165, scrHei1/ 3);
+				ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
 			}
-			else if(leftDown1) ball[0].strokeDottedLine(1);
-			else if(rightDown1) ball[0].strokeDottedLine(2);
-		}
-		
-		//ステータス画面の描写を行う=======================================================================================
-		//まずは画面のクリア
-		ctx.clearRect(0+ scrWid0, (scrHei1+5)*sr+ scrHei0, screenCanvas.width, screenCanvas.height)
-		ctx.clearRect((scrWid1+15)*sr+ scrWid0, 0+ scrWid0, screenCanvas.width, screenCanvas.height)
-		//ステータス画面を枠で囲む
-		ctx.beginPath();
-		ctx.strokeStyle = "rgba(255, 120, 255, 0.3)";
-		ctx.lineWidth = 18;
-		ctx.moveTo(ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
-		ctx.lineTo(scrWid1*sr- ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
-		ctx.lineTo(scrWid1*sr- ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
-		ctx.lineTo(ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
-		ctx.closePath();
-		ctx.stroke();
-		
-		
-		//星の描写
-		for(var i=0; i<star.length; i++){
-			star[i].homeDraw();
-			if(star[i].isAlive==true){
-				star[i].twinkle();
+			
+			if(pauseFlag && ball[0].isAlive){
+				drawMenuWindow();
 			}
-			if(star[i].condition!="invisible"){
-				star[i].draw()
-			}
-			if(star[i].isBlink==true){
-				ctx.beginPath();
-				ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius1*sr, 0, PI2, true);
-				ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius2*sr, 0, PI2, false);
-				a1 = (star[i].blinkRadius1- 40)/12;
-				ctx.fillStyle = color[30 + star[i].color] + ((1-a1)*0.6) + ")";
-				ctx.fill();
-				ctx.beginPath();
-				ctx.arc(star[i].pos.x*sr+ scrWid0, star[i].pos.y*sr+ scrHei0, star[i].blinkRadius3*sr, 0, PI2, true);
-				ctx.fillStyle = color[star[i].color+10];
-				ctx.fill();
+			
+			if(pauseFlag==true){
+				drawDot(mouse)
 			}
 		}
 		
-		if(pauseFlag && ball[0].isAlive){
-			setBox(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
-			setBox(300, 50, 1300, 750, "", 04, 0, 00);
-			setFramework(300, 50, 1300, 750, 18, "brown");
-			setString(scrWid1/2, scrHei1/3, "PAUSE", 180, "px 'MSゴシック'", 04);
-			setBox(375, 350, 625, 480, "BACK", "brown", 75, 04);
-			setBox(675, 350, 925, 480, "TITLE", "brown", 75, 04);
-			setBox(975, 350, 1225, 480, "RETRY", "brown", 75, 04);
-			ctx.font = (45*sr)+ "px 'MSゴシック'";
-			ctx.fillText("STAGE:X", 500*sr+ scrWid0, 600*sr+ scrHei0);
-			setBox(850, 550, 1200, 620, "HOW TO PLAY", "brown", 45, 04);
+		else if(nowWindow=="title"){
+			run = false;
+			ctx.font = "60px 'MSゴシック'"
+			ctx.fillText("TITLE WINDOW", scrWid1/ 2- 165, scrHei1/ 3);
 		}
-		if(pauseFlag==true){
-			drawDot(mouse)
-		}
-		//test
-		ctx.fillStyle = color[07]
-		ctx.font = "25px 'MSゴシック'"
-		ctx.fillText("*Debug:   "+test[0]+" || "+test[1]+" || "+test[2]+" || "+test[3], (50+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
-		// ctx.fillText("*Weight: "+(ball[0].weight)+"  Size: "+(ball[0].size), (600+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
-		// ctx.fillText("*Mouse:   "+(mouse.x*sr+ scrWid0)+" || "+(mouse.y*sr+ scrHei0), (850+ scrWid0)*sr, (scrHei0+ scrHei1+ scrHei2-40)*sr);
+		
 		
 
 	console.log(ball[0]);
@@ -526,14 +445,6 @@ window.onload = function(){
 			ctx.arc(mouse.x*sr+ scrWid0, mouse.y*sr+ scrHei0, 6*sr, 0, PI2, true);
 		}
 		
-		//自機が死んだら描写をストップしてリトライを促す
-		if(!ball[0].isAlive){
-			ctx.fillStyle = color[06];
-			// run = false;
-			ctx.font = "60px 'MSゴシック'"
-			ctx.fillText("GAME OVER", scrWid1/ 2- 165, scrHei1/ 3);
-			ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
-		}
 		
 
 

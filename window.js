@@ -33,6 +33,36 @@ box.prototype.draw = function(){
 	ctx.fill()
 }
 
+var drawStatusWindow = function(){
+	//ステータス画面の描写を行う=======================================================================================
+	//まずは画面のクリア
+	ctx.clearRect(0+ scrWid0, (scrHei1+5)*sr+ scrHei0, screenCanvas.width, screenCanvas.height)
+	ctx.clearRect((scrWid1+15)*sr+ scrWid0, 0+ scrWid0, screenCanvas.width, screenCanvas.height)
+	//ステータス画面を枠で囲む
+	ctx.beginPath();
+	ctx.strokeStyle = "rgba(255, 120, 255, 0.3)";
+	ctx.lineWidth = 18;
+	ctx.moveTo(ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(scrWid1*sr- ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
+	ctx.lineTo(ctx.lineWidth/2*sr+ scrWid0, scrHei1*sr+ scrHei2*sr- ctx.lineWidth*sr+ scrHei0);
+	ctx.closePath();
+	ctx.stroke();
+}
+
+drawMenuWindow = function(){
+	setBox(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
+	setBox(300, 50, 1300, 750, "", 04, 0, 00);
+	setFramework(300, 50, 1300, 750, 18, "brown");
+	setString(scrWid1/2, scrHei1/3, "PAUSE", 180, "px 'MSゴシック'", 04);
+	setBox(375, 350, 625, 480, "BACK", "brown", 75, 04);
+	setBox(675, 350, 925, 480, "TITLE", "brown", 75, 04);
+	setBox(975, 350, 1225, 480, "RETRY", "brown", 75, 04);
+	ctx.font = (45*sr)+ "px 'MSゴシック'";
+	ctx.fillText("STAGE:X", 500*sr+ scrWid0, 600*sr+ scrHei0);
+	setBox(850, 550, 1200, 620, "HOW TO PLAY", "brown", 45, 04);
+}
+
 var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
 	ctx.beginPath();
 	ctx.moveTo(tlx*sr+ scrWid0, tly*sr+ scrHei0);
@@ -54,7 +84,7 @@ var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
 					break;
 					
 				case "TITLE":
-					titleScreen();
+					titleWindow();
 					pauseFlag = false;
 					leftDown = false;
 					break;
@@ -66,15 +96,6 @@ var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
 					break
 			}
 		}
-	}
-	
-	
-	
-	
-	switch(str){
-		case "back":
-			pauseFlag = true;
-			break;
 	}
 }
 

@@ -1,5 +1,5 @@
 ﻿//
-var menuScreen = function(){
+var stageSelectWindow = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -13,11 +13,14 @@ var menuScreen = function(){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
+
+	ctx.font = "60px 'MSゴシック'"
+	ctx.fillText("STAGE SELECT", scrWid1/ 2- 165, scrHei1/ 3);
 	
 	clearFlag = true;
-	nowWindow = "menu"
+	nowWindow = "stageSelect"
 }
-var titleScreen = function(){
+var titleWindow = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -32,6 +35,7 @@ var titleScreen = function(){
 		converter[i].isAlive = false;
 	}
 	
+
 	clearFlag = true;
 	nowWindow = "title"
 }

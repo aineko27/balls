@@ -186,7 +186,7 @@ var updateBall = function(){
 }
 
 //球を描写する関数
-Character.prototype.draw = function(f, b){
+Character.prototype.draw1 = function(f, b){
 	//ボールの色に描写を合わせる
 	ctx.beginPath();
 	if(this.isDistort || this.isDistorted){
@@ -217,6 +217,29 @@ Character.prototype.draw = function(f, b){
 	else ctx.fillStyle = gradation1(this.pos.mul(sr).sub(this.size*0.8*sr).add(new Point(scrWid0, scrHei0)), this.pos.mul(sr).add(this.size*0.8*sr).add(new Point(scrWid0, scrHei0)), color[this.color], color[this.color+20])
 	ctx.fill();
 	ctx.restore();
+}
+
+Character.prototype.draw2 = function(){
+	var i = this.num;
+	if(ball[i].isVisible){
+		//球そのものの描写
+		ball[i].draw1(2, ball[0]);
+		//球の中心の描写
+		if(ball[i].shootedFrame > counter-2) return;
+		ctx.beginPath()
+		ctx.arc(ball[i].pos.x*sr+ scrWid0, ball[i].pos.y*sr+ scrHei0, 2*sr, 0, PI2, true);
+		ctx.fillStyle = color[03];
+		ctx.fill();
+		//球の接点の中点の描写
+		return;
+		if(ball[i].contactCnt01+ball[i].contactCnt02 < 2) return;
+		for(var j=0; j<ball[i].contactCnt01+ ball[i].contactCnt02; j++){
+			ctx.beginPath();
+			ctx.arc(ball[i].bezier[j].midPos.x+ scrWid0, ball[i].bezier[j].midPos.y+ scrHei0, 2, 0, PI2, true);
+			ctx.fillStyle = color[3];
+			ctx.fill()
+		}
+	}
 }
 
 //球を破裂させる関数
