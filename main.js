@@ -25,6 +25,7 @@ var creatFlag = false;
 var nowWindow = "title"
 var nowStage = 0;
 var debugFlag = "save";
+var stageSelectPageNum = 0;
 var saveCode ="\n";
 var sizeRate = 1;
 
@@ -48,6 +49,7 @@ var STAR_MAX_COUNT = 3;
 var CONVERTER_MAX_COUNT = 10;
 var CONFETTI_MAX_COUNT = 180;
 var PAPERTAPE_MAX_COUNT = 8;
+var STAGE_SELCET_PAGE_MAX_COUNT = 4;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -97,8 +99,8 @@ window.onload = function(){
 
 	//スクリーンの初期化
 	screenCanvas = document.getElementById("screen");
-	screenCanvas.width = window.innerWidth;
-	screenCanvas.height = window.innerHeight;
+	screenCanvas.width = window.innerWidth-30;
+	screenCanvas.height = window.innerHeight-30;
 	scrWid0 = 10;
 	scrWid1 = 1600;
 	scrHei0 = 0;
@@ -160,8 +162,8 @@ window.onload = function(){
 		
 		//カウンターの値をインクリメントする
 		counter++;
-		screenCanvas.width = window.innerWidth;
-		screenCanvas.height = window.innerHeight;
+		screenCanvas.width = window.innerWidth- 30;
+		screenCanvas.height = window.innerHeight- 25;
 		
 		//デバッグ用に押されているキーコードを保存する
 		if(keyCode1[32] && !keyCode2[32]) pauseFlag = !pauseFlag;
@@ -310,9 +312,10 @@ window.onload = function(){
 		
 		//nowWindowに応じて描写する内容を変える
 		
-		//nowWindow=="menu"のとき
+		//nowWindow=="stageSelect"のとき
 		if(nowWindow=="stageSelect"){
-			
+			drawDot(mouse)	
+			drawStageSelectWindow(stageSelectPageNum);
 		}
 		
 		//nowWindow=="stage"のとき
@@ -356,7 +359,6 @@ window.onload = function(){
 			for(var i=0; i<ball.length; i++){
 				ball[i].draw2();
 			}
-			
 			if(lCounter%4){
 				ctx.beginPath();
 				ctx.arc(ball[0].pos.x, ball[0].pos.y, ball[0].size, 0, PI2, true)
@@ -389,11 +391,13 @@ window.onload = function(){
 			
 			//自機が死んだら描写をストップしてリトライを促す
 			if(!ball[0].isAlive){
+				drawMenuWindow();
+				drawDot(mouse)
 				ctx.fillStyle = color[06];
-				// run = false;
 				ctx.font = "60px 'MSゴシック'"
-				ctx.fillText("GAME OVER", scrWid1/ 2- 165, scrHei1/ 3);
-				ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
+				ctx.textAlign = "left";
+				// ctx.fillText("GAME OVER", scrWid1/ 2- 165, scrHei1/ 3);
+				// ctx.fillText('PRESS "F5" TO RETRY', scrWid1/ 2- 295, scrHei1/ 3*2);
 			}
 			
 			if(pauseFlag && ball[0].isAlive){
@@ -413,6 +417,7 @@ window.onload = function(){
 		
 		
 
+	console.log(stageSelectPageNum)
 	console.log(ball[0]);
 	console.log(paperTape)
 	console.log(counter, "===================================================================================================")

@@ -50,17 +50,32 @@ var drawStatusWindow = function(){
 	ctx.stroke();
 }
 
-drawMenuWindow = function(){
+var drawMenuWindow = function(){
 	setBox(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
 	setBox(300, 50, 1300, 750, "", 04, 0, 00);
 	setFramework(300, 50, 1300, 750, 18, "brown");
 	setString(scrWid1/2, scrHei1/3, "PAUSE", 180, "px 'MSゴシック'", 04);
-	setBox(375, 350, 625, 480, "BACK", "brown", 75, 04);
-	setBox(675, 350, 925, 480, "TITLE", "brown", 75, 04);
-	setBox(975, 350, 1225, 480, "RETRY", "brown", 75, 04);
+	setBox(375, 350, 625, 480, "RETRY", "brown", 60, 04);
+	setBox(675, 350, 925, 480, "RESUME", "brown", 60, 04);
+	setBox(975, 350, 1225, 480, "BACK", "brown", 60, 04);
 	ctx.font = (45*sr)+ "px 'MSゴシック'";
 	ctx.fillText("STAGE:X", 500*sr+ scrWid0, 600*sr+ scrHei0);
 	setBox(850, 550, 1200, 620, "HOW TO PLAY", "brown", 45, 04);
+}
+
+
+drawStageSelectWindow = function(i){
+	setString(scrWid1/2, 170, "PAGE["+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1)+ "]", 60, 07);
+	setBox(0, 0, scrWid1, 100, "STAGE SELECT", 04, 75, 33);
+	setBox(0, 110, 140, scrHei1+ scrHei2-30, "<-", 04, 75, 33);
+	setBox(scrWid1- 140, 110, scrWid1, scrHei1+ scrHei2-30, "->", 04, 75, 33);
+	setBox(170, 200, 570, 470, "STAGE"+("00"+(6*i+1)).slice(-2), 04, 50, 03);
+	setBox(600, 200,1000, 470, "STAGE"+("00"+(6*i+2)).slice(-2), 04, 50, 03);
+	setBox(1030,200,1430, 470, "STAGE"+("00"+(6*i+3)).slice(-2), 04, 50, 03);
+	setBox(170, 500, 570, 770, "STAGE"+("00"+(6*i+4)).slice(-2), 04, 50, 03);
+	setBox(600, 500,1000, 770, "STAGE"+("00"+(6*i+5)).slice(-2), 04, 50, 03);
+	setBox(1030,500,1430, 770, "STAGE"+("00"+(6*i+6)).slice(-2), 04, 50, 03);
+	setBox(500, 790, 1100, 870, "MENU", 04, 50, 03);
 }
 
 var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
@@ -74,26 +89,40 @@ var setBox = function(tlx, tly, brx, bry, str, fc, fs, bc){
 	ctx.fill();
 	ctx.fillStyle = color["brown"];
 	ctx.font = (fs*sr)+ "px 'MSゴシック'";
+	ctx.textAlign = "center";
 	ctx.fillText(str, (tlx+brx)/2*sr+ scrWid0, (tly+bry+fs*2/3)/2*sr+ scrHei0);
-	if(leftDown1==true){
+	if(leftDown1==true && leftDown2==false){
 		if(mouseIsInside(tlx, tly, brx, bry)==true){
-			switch(str){
-				case "BACK":
-					pauseFlag = false;
-					leftDown1 = false;
-					break;
-					
-				case "TITLE":
-					titleWindow();
-					pauseFlag = false;
-					leftDown = false;
-					break;
-				
-				case "RETRY":
-					stage[nowStage]();
-					pauseFlag = false;
-					leftDown1 = false;
-					break
+			if(str=="RESUME"){
+				pauseFlag = false;
+				leftDown1 = false;
+				return;
+			}
+			else if(str=="BACK"){
+				stageSelectWindow();
+				pauseFlag = false;
+				leftDown = false;
+				return;
+			}
+			else if(str=="RETRY"){
+				stage[nowStage]();
+				pauseFlag = false;
+				leftDown1 = false;
+				return;
+			}
+			else if(str=="<-"){
+				stageSelectPageNum = Math.max(0, stageSelectPageNum-1);
+				return;
+			}
+			else if(str=="->"){
+				stageSelectPageNum = Math.min(STAGE_SELCET_PAGE_MAX_COUNT, stageSelectPageNum+1);
+				return;
+			}
+			else if(str.slice(0,-2)=="STAGE"){
+				if(stage[str.slice(-2)*1]==undefined) return;
+				stage[str.slice(-2)*1]();
+				leftDown1 = false;
+				return;
 			}
 		}
 	}
@@ -112,11 +141,11 @@ var setFramework = function(tlx, tly, brx, bry, lw, lc){
 	ctx.stroke();
 }
 
-var setString = function(x, y, str, fs, ft, fc){
+var setString = function(x, y, str, fs, fc){
 	ctx.fillStyle = color[fc];
-	ctx.font = (fs*sr)+ ft;
+	ctx.font = (fs*sr)+ "px 'MSゴシック'";
 	ctx.textAlign = "center";
-	ctx.fillText("PAUSE", x*sr+ scrWid0, y*sr+ scrHei0);
+	ctx.fillText(str, x*sr+ scrWid0, y*sr+ scrHei0);
 }
 
 var mouseIsInside = function(tlx, tly, brx, bry){

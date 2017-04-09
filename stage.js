@@ -13,9 +13,6 @@ var stageSelectWindow = function(){
 	for(var i=0; i<converter.length; i++){
 		converter[i].isAlive = false;
 	}
-
-	ctx.font = "60px 'MSゴシック'"
-	ctx.fillText("STAGE SELECT", scrWid1/ 2- 165, scrHei1/ 3);
 	
 	clearFlag = true;
 	nowWindow = "stageSelect"
@@ -79,6 +76,7 @@ stage[01] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
+	ball[0].set(ball[0].pos, 15, P0, 0)
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
 	}
@@ -114,6 +112,7 @@ stage[02] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
+	ball[0].set(ball[0].pos, 15, P0, 0)
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
 	}
@@ -166,6 +165,7 @@ stage[03] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
+	ball[0].set(ball[0].pos, 15, P0, 0)
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
 	}
@@ -210,6 +210,7 @@ stage[04] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
+	ball[0].set(ball[0].pos, 15, P0, 0)
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
 	}
@@ -242,6 +243,7 @@ stage[05] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
+	ball[0].set(ball[0].pos, 15, P0, 0)
 	for(var i=1; i<ball.length; i++){
 		ball[i].initialize();
 	}
