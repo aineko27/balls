@@ -1,5 +1,5 @@
 ﻿//
-var stageSelectWindow = function(){
+/* var stageSelectWindow = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -16,7 +16,7 @@ var stageSelectWindow = function(){
 	
 	clearFlag = true;
 	nowWindow = "stageSelect"
-}
+} */
 var titleWindow = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
@@ -41,7 +41,7 @@ var titleWindow = function(){
 
 var stage = new Array();
 
-stage[00] = function(){
+stage[01] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -69,10 +69,10 @@ stage[00] = function(){
 	converter[00].set(new Point(500, 200), 3);
 	nowWindow = "stage";
 	clearFlag = false;
-	nowStage = 0;
+	nowStage = 1;
 };
 
-stage[01] = function(){
+stage[02] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -105,10 +105,10 @@ stage[01] = function(){
 	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2);
 	nowWindow = "stage";
 	clearFlag = false;
-	nowStage = 1;
+	nowStage = 2;
 };
 
-stage[02] = function(){
+stage[03] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -158,10 +158,10 @@ stage[02] = function(){
 	f1 = false;
 	nowWindow = "stage";
 	clearFlag = false;
-	nowStage = 2;
+	nowStage = 3;
 };
 
-stage[03] = function(){
+stage[04] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -203,10 +203,10 @@ stage[03] = function(){
 	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2);
 	nowWindow = "stage";
 	clearFlag = false;
-	nowStage = 3;
+	nowStage = 4;
 };
 
-stage[04] = function(){
+stage[05] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -236,10 +236,10 @@ stage[04] = function(){
 	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2);
 	nowWindow = "stage";
 	clearFlag = false;
-	nowStage = 4;
+	nowStage = 5;
 };
 
-stage[05] = function(){
+stage[06] = function(){
 	for(var i=0; i<wall.length; i++){
 		wall[i].initialize();
 	}
@@ -270,7 +270,7 @@ stage[05] = function(){
 	star[02].set(new Point(Math.random()*600+100, Math.random()*20+100), 2);
 	nowWindow = "stage";
 	clearFlag = false;
-	nowStage = 5;
+	nowStage = 6;
 };
 
 

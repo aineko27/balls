@@ -17,7 +17,7 @@ var rightDown1 = false;
 var leftUp1 = false;
 var rightUp1 = false;
 var pauseFlag = false;
-var clearFlag = false;
+var clearFlag = true;
 var jumpFlag1;
 var jumpFlag2;
 var jumpFrame = 0;
@@ -26,6 +26,7 @@ var nowWindow = "title"
 var nowStage = 0;
 var debugFlag = "save";
 var stageSelectPageNum = 0;
+var extraStageSelectPageNum = 0;
 var saveCode ="\n";
 var sizeRate = 1;
 
@@ -50,6 +51,7 @@ var CONVERTER_MAX_COUNT = 10;
 var CONFETTI_MAX_COUNT = 180;
 var PAPERTAPE_MAX_COUNT = 8;
 var STAGE_SELCET_PAGE_MAX_COUNT = 4;
+var EXTRA_STAGE_SELCET_PAGE_MAX_COUNT = 2;
 var maxVel = 30;
 var coefficientRestitution01 = 0.6;
 var coefficientRestitution02 = 0.9;
@@ -149,12 +151,14 @@ window.onload = function(){
 	//紙テープ初期化
 	paperTape = initialize(PaperTape, PAPERTAPE_MAX_COUNT);
 	
+	box = new Array();
+	
 
 	//自機初期化
 	ball[0].set(new Point(scrWid1/2, scrHei1/2- 15), 15, P0, 0);
 	
 	//初期ステージ読み込み
-	stage[00]();
+	// stage[00]();
 	
 	//レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 	//loadCode();
@@ -176,6 +180,13 @@ window.onload = function(){
 		
 		jumpFlag1 = false;
 		
+		//ステージ読み込み================================================================================================
+		if(keyCode1[48]) stage[00]();
+		if(keyCode1[49]) stage[01]();
+		if(keyCode1[50]) stage[02]();
+		if(keyCode1[51]) stage[03]();
+		if(keyCode1[52]) stage[04]();
+		if(keyCode1[53]) stage[05]();
 		if(!pauseFlag){
 
 			//入力による変更-------------------------------------------------------------------------------------------
@@ -217,14 +228,6 @@ window.onload = function(){
 
 			if(!keyCode1[65] && !keyCode1[68]) ball[0].vel.x *= 0.85;
 			
-			//ステージ読み込み================================================================================================
-			if(keyCode1[48]) stage[00]();
-			if(keyCode1[49]) stage[01]();
-			if(keyCode1[50]) stage[02]();
-			if(keyCode1[51]) stage[03]();
-			if(keyCode1[52]) stage[04]();
-			if(keyCode1[53]) stage[05]();
-			
 			//ステージごとのフラグ管理
 			//ステージ1について
 			if(nowStage == 1){
@@ -233,6 +236,7 @@ window.onload = function(){
 					if(ball[i].pos.x > 755 && ball[i].pos.y>220 && ball[i].pos.y < 260) wall[4].isAlive = false;
 				}
 			}
+			
 
 
 			//フラグ管理-----------------------------------------------------------------------------------------------
@@ -314,8 +318,18 @@ window.onload = function(){
 		
 		//nowWindow=="stageSelect"のとき
 		if(nowWindow=="stageSelect"){
-			drawDot(mouse)	
 			drawStageSelectWindow(stageSelectPageNum);
+			drawDot(mouse);	
+		}
+		
+		else if(nowWindow=="extraStageSelect"){
+			drawExtraStageSelectWindow(extraStageSelectPageNum);
+			drawDot(mouse);
+		}
+		
+		else if(nowWindow=="option"){
+			drawOptionWindow();
+			drawDot(mouse);
 		}
 		
 		//nowWindow=="stage"のとき
@@ -410,9 +424,8 @@ window.onload = function(){
 		}
 		
 		else if(nowWindow=="title"){
-			run = false;
-			ctx.font = "60px 'MSゴシック'"
-			ctx.fillText("TITLE WINDOW", scrWid1/ 2- 165, scrHei1/ 3);
+			drawTitleWindow();
+			drawDot(mouse);
 		}
 		
 		
