@@ -109,7 +109,7 @@ Point.prototype.rot = function(center, rad){
 }
 
 //配列の処理を行う==================================================================================================
-Array.prototype.sum = function(){
+/* Array.prototype.sum = function(){
 	var sum = 0;
 	for(var i=0; i<this.length; i++){
 		sum += this[i];
@@ -121,6 +121,21 @@ Array.prototype.mul = function(a){
 	var arr = new Array(this.length);
 	for(var i=0; i<this.length; i++){
 		arr[i] = this[i]* a;
+	}
+	return arr;
+} */
+
+var calcSum = function(arr){
+	var sum = 0;
+	for(var i=0; i<arr.length; i++){
+		sum += arr[i];
+	}
+	return sum;
+}
+
+var arrMulX = function(arr, x){
+	for(var i=0; i<arr.length; i++){
+		arr[i] = arr[i]* x;
 	}
 	return arr;
 }

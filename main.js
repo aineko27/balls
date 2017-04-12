@@ -22,7 +22,8 @@ var jumpFlag1;
 var jumpFlag2;
 var jumpFrame = 0;
 var creatFlag = false;
-var nowWindow = "title"
+var nowWindow = "title";
+var lastWindow = "title";
 var nowStage = 0;
 var debugFlag = "save";
 var stageSelectPageNum = 0;
@@ -87,6 +88,13 @@ color[31] = "rgba(  0,   0, 255, "      //青
 color[32] = "rgba(255,   0,   0, "      //赤
 color[33] = "rgba( 90,  90,  90, 0.4)";
 color["brown"] = "brown";
+color["transparent"] = "rgba(255, 255, 255, 0)"
+
+option01 = "1A";
+option02 = "2A";
+option03 = "3A";
+option04 = "4A";
+option05 = "5A";
 
 
 
@@ -157,8 +165,9 @@ window.onload = function(){
 	//自機初期化
 	ball[0].set(new Point(scrWid1/2, scrHei1/2- 15), 15, P0, 0);
 	
-	//初期ステージ読み込み
+	//初期画面読み込み
 	// stage[00]();
+	setTitleWindowBox();
 	
 	//レンダリング処理を呼び出す-----------------------------------------------------------------------------------------------
 	//loadCode();
@@ -168,9 +177,14 @@ window.onload = function(){
 		counter++;
 		screenCanvas.width = window.innerWidth- 30;
 		screenCanvas.height = window.innerHeight- 25;
-		
+		//スペースを押したらポーズするようにする
+		if(keyCode1[32] && !keyCode2[32]　&& nowWindow=="stage"){
+			for(var i in box){
+				box[i].isAlive = false;
+			}
+			pauseFlag = !pauseFlag;
+		}
 		//デバッグ用に押されているキーコードを保存する
-		if(keyCode1[32] && !keyCode2[32]) pauseFlag = !pauseFlag;
 		saveCode += '"' + counter + '"'
 		for(var i=0; i<keyCode1.length; i++){
 			if(keyCode1[i] == true) saveCode += '+",' + i + '"';
@@ -187,6 +201,9 @@ window.onload = function(){
 		if(keyCode1[51]) stage[03]();
 		if(keyCode1[52]) stage[04]();
 		if(keyCode1[53]) stage[05]();
+		
+		
+		//ポーズがかかっているかどうか
 		if(!pauseFlag){
 
 			//入力による変更-------------------------------------------------------------------------------------------
@@ -216,6 +233,11 @@ window.onload = function(){
 			if(keyCode1[80]) fps = 1000 / 60;
 			if(keyCode1[192]) fps /= 1.1;
 			if(keyCode1[76]) lCounter++
+			if(keyCode1[82]){
+				star[0].isAlive = false;
+				star[1].isAlive = false;
+				star[2].isAlive = false;
+			}
 			
 			if(keyCode1[81]) {
 				ball[0].pos = mouse.add(P0);
@@ -303,6 +325,53 @@ window.onload = function(){
 			}
 		}
 		
+		//boxの動作
+		for(var i in box){
+			if(box[i].isAlive==true){
+				box[i].detect();
+			}
+		}
+		
+		//現在の画面に応じて動作を変える
+		if(nowWindow=="title"){
+			if(keyCode1[65]==true){
+				box["EXTRA"].str = "EXTRA";
+			}
+			else{
+				box["EXTRA"].str = "///////"
+			}
+		}
+		else if(nowWindow=="stageSelect"){
+			
+		}
+		else if(nowWindow=="option"){
+			
+		}
+		else if(nowWindow=="extraStageSelect"){
+			
+		}
+		
+		//画面が切り替わったときに現在の画面のboxの準備をする
+		if(nowWindow!=lastWindow){
+			for(var i in box){
+				box[i].isAlive = false;
+			}
+			if(nowWindow=="title"){
+				setTitleWindowBox();
+			}
+			
+			else if(nowWindow=="stageSelect"){
+				setStageSelectWindowBox(stageSelectPageNum);
+			}
+			else if(nowWindow=="option"){
+				setOptionWindowBox();
+			}
+			
+			else if(nowWindow=="extraStageSelect"){
+				setExtraStageSelectWindowBox(extraStageSelectPageNum);
+			}
+		}
+		
 		
 		//画面の描画を行う-------------------------------------------------------------------------------------------------
 		//画面サイズを現在のウィンドウサイズに合わせる
@@ -315,23 +384,18 @@ window.onload = function(){
 		ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height)
 		
 		//nowWindowに応じて描写する内容を変える
-		
-		//nowWindow=="stageSelect"のとき
-		if(nowWindow=="stageSelect"){
-			drawStageSelectWindow(stageSelectPageNum);
-			drawDot(mouse);	
+		if(nowWindow=="title"){
+			
 		}
-		
-		else if(nowWindow=="extraStageSelect"){
-			drawExtraStageSelectWindow(extraStageSelectPageNum);
-			drawDot(mouse);
+		else if(nowWindow=="stageSelect"){
+			
 		}
-		
 		else if(nowWindow=="option"){
 			drawOptionWindow();
-			drawDot(mouse);
 		}
-		
+		else if(nowWindow=="extraStageSelect"){
+			
+		}
 		//nowWindow=="stage"のとき
 		else if(nowWindow=="stage"){
 			//背景の描画-------------------------------------------------
@@ -405,7 +469,7 @@ window.onload = function(){
 			
 			//自機が死んだら描写をストップしてリトライを促す
 			if(!ball[0].isAlive){
-				drawMenuWindow();
+				setMenuWindowBox();
 				drawDot(mouse)
 				ctx.fillStyle = color[06];
 				ctx.font = "60px 'MSゴシック'"
@@ -415,7 +479,7 @@ window.onload = function(){
 			}
 			
 			if(pauseFlag && ball[0].isAlive){
-				drawMenuWindow();
+				setMenuWindowBox();
 			}
 			
 			if(pauseFlag==true){
@@ -423,12 +487,13 @@ window.onload = function(){
 			}
 		}
 		
-		else if(nowWindow=="title"){
-			drawTitleWindow();
-			drawDot(mouse);
+		
+		for(var i in box){
+			if(box[i].isAlive==true){
+				box[i].draw();
+			}
 		}
-		
-		
+		drawMouse();
 
 	console.log(stageSelectPageNum)
 	console.log(ball[0]);
@@ -438,6 +503,8 @@ window.onload = function(){
 
 
 		//その他の設定----------------------------------------------------------------------------------------------------
+		
+		lastWindow = nowWindow;
 		
 		//前フレームにキーを押していたかの情報
 		for(var i=0; i<keyCode1.length; i++){

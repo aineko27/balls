@@ -2,10 +2,10 @@
 	var m = ball[0].pos.add(angle(radian).mul(length+ ball[0].dot[radNum].rel.norm()));
 	if(!pauseFlag) m2 = new Point(mouse.x, mouse.y);
 	
-	if(leftDown1) ctx.fillStyle = color[01];
-	else if(rightDown1) ctx.fillStyle = color[02];
+	if(leftDown1 && nowWindow=="stage") ctx.fillStyle = color[01];
+	else if(rightDown1 && nowWindow=="stage") ctx.fillStyle = color[02];
 	if(length>0){
-		if(leftDown1 != rightDown1 && !pauseFlag){
+		if(leftDown1 != rightDown1 && !pauseFlag && nowWindow=="stage"){
 			var rad = radian+ PI_2;
 			var t = 0.9+ length/1440;
 			ctx.beginPath();
@@ -41,7 +41,7 @@
 	ctx.fill();
 
 	// 点線の描画
-	if(ball[0].isAlive && !pauseFlag){
+	if(ball[0].isAlive && !pauseFlag && nowWindow=="stage"){
 		if(leftDown1 && rightDown1){
 			leftDown1 = false;
 			rightDown1 = false;

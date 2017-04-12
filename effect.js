@@ -92,9 +92,13 @@ PaperTape.prototype.fire = function(x, y, s){
 }
 
 PaperTape.prototype.draw = function(){
-	section = this.section.mul(1);
+	// section = this.section.mul(1);
 	// var section = new Array(0, 0.6, 1, 1.1, 1.2, 1.3, 1.5, 1.8, 2.1, 2.3, 2.6, 3.0, 3.5, 4.0);
-	section = section.mul(1/section.sum())
+	// sectionSum = calcSum(section);
+	// for(var i=0; i<section.length; i++){
+		// section[i] /= sectionSum;
+	// }
+	section = arrMulX(this.section, 1/calcSum(this.section));
 	
 	var p1 = this.pos1;
 	var p2 = this.pos2;
@@ -103,6 +107,8 @@ PaperTape.prototype.draw = function(){
 	var sum = 0;
 	if(len==0) return;
 	dirNorm = dir.normalize();
+	// var wid = arrMulX(dirNorm, 20);
+	// var hei = arrMulX(dirNorm, 10);
 	var wid = dirNorm.mul(20);
 	var hei = dirNorm.mul(10);
 	ctx.beginPath();
