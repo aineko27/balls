@@ -28,6 +28,8 @@ var nowStage = 0;
 var debugFlag = "save";
 var stageSelectPageNum = 0;
 var extraStageSelectPageNum = 0;
+var volume01Cnt = 5;
+var volume02Cnt = 5;
 var saveCode ="\n";
 var sizeRate = 1;
 
@@ -90,11 +92,14 @@ color[33] = "rgba( 90,  90,  90, 0.4)";
 color["brown"] = "brown";
 color["transparent"] = "rgba(255, 255, 255, 0)"
 
-option01 = "1A";
-option02 = "2A";
-option03 = "3A";
-option04 = "4A";
-option05 = "5A";
+option01 = "01A";
+option02 = "02A";
+option03 = "03A";
+option04 = "04A";
+option05 = "05A";
+option11 = "11A";
+option12 = "12A";
+option13 = "13A";
 
 
 
@@ -526,8 +531,11 @@ window.onload = function(){
 
 		//スペースバーが押されたらポーズ/ポーズ解除　する
 		if(pauseFlag && ball[0].isAlive){
+			drawMenuWindow();
 			ctx.beginPath();
 			ctx.arc(mouse.x*sr+ scrWid0, mouse.y*sr+ scrHei0, 6*sr, 0, PI2, true);
+			ctx.fillStyle = "black";
+			ctx.fill();
 		}
 		
 		
