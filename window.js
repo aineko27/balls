@@ -13,6 +13,7 @@
 	// this.type = type;
 	this.isAlive = true;
 	this.isActive = false;
+	this.canDetect = true;
 }
 
 Box.prototype.initialize = function(){
@@ -41,6 +42,9 @@ Box.prototype.draw = function(){
 	if(this.isActive==true){
 		ctx.fill();
 		ctx.fill();
+	}
+	if(this.isSelected==true){
+		drawFramework(this.tl.x, this.tl.y, this.br.x, this.br.y, 5*sr, "red");
 	}
 	ctx.fillStyle = color[this.fc];
 	if(this.str=="<01"){
@@ -87,7 +91,7 @@ Box.prototype.draw = function(){
 }
 
 Box.prototype.detect = function(){
-	if(leftDown1==true && leftDown2==false){
+	if(leftDown1==true && leftDown2==false && this.canDetect==true){
 		if(mouseIsInside(this.tl.x, this.tl.y, this.br.x, this.br.y)==true){
 			if(this.str=="RESUME"){
 				for(var i in box){
@@ -124,6 +128,68 @@ Box.prototype.detect = function(){
 				leftDown1 = false;
 				return;
 			}
+			else if(this.str=="YES"){
+				box[appliedOption[01]].isActive = false;
+				box[appliedOption[02]].isActive = false;
+				box[appliedOption[03]].isActive = false;
+				box[appliedOption[04]].isActive = false;
+				box[appliedOption[05]].isActive = false;
+				box[appliedOption[11]].isActive = false;
+				box[appliedOption[12]].isActive = false;
+				box[appliedOption[13]].isActive = false;
+				box[selectedOption[01]].isActive = true;
+				box[selectedOption[02]].isActive = true;
+				box[selectedOption[03]].isActive = true;
+				box[selectedOption[04]].isActive = true;
+				box[selectedOption[05]].isActive = true;
+				box[selectedOption[11]].isActive = true;
+				box[selectedOption[12]].isActive = true;
+				box[selectedOption[13]].isActive = true;
+				appliedOption[01] = selectedOption[01];
+				appliedOption[02] = selectedOption[02];
+				appliedOption[03] = selectedOption[03];
+				appliedOption[04] = selectedOption[04];
+				appliedOption[05] = selectedOption[05];
+				appliedOption[11] = selectedOption[11];
+				appliedOption[12] = selectedOption[12];
+				appliedOption[13] = selectedOption[13];
+				initilalizeAllObject();
+				setOptionWindowBox();
+				return;
+			}
+			else if(this.str=="NO"){
+				initilalizeAllObject();
+				setOptionWindowBox();
+				return;
+			}
+			else if(this.str=="APPLY"){
+				addApplyAlertBox();
+				// box[appliedOption[01]].isActive = false;
+				// box[appliedOption[02]].isActive = false;
+				// box[appliedOption[03]].isActive = false;
+				// box[appliedOption[04]].isActive = false;
+				// box[appliedOption[05]].isActive = false;
+				// box[appliedOption[11]].isActive = false;
+				// box[appliedOption[12]].isActive = false;
+				// box[appliedOption[13]].isActive = false;
+				// box[selectedOption[01]].isActive = true;
+				// box[selectedOption[02]].isActive = true;
+				// box[selectedOption[03]].isActive = true;
+				// box[selectedOption[04]].isActive = true;
+				// box[selectedOption[05]].isActive = true;
+				// box[selectedOption[11]].isActive = true;
+				// box[selectedOption[12]].isActive = true;
+				// box[selectedOption[13]].isActive = true;
+				// appliedOption[01] = selectedOption[01];
+				// appliedOption[02] = selectedOption[02];
+				// appliedOption[03] = selectedOption[03];
+				// appliedOption[04] = selectedOption[04];
+				// appliedOption[05] = selectedOption[05];
+				// appliedOption[11] = selectedOption[11];
+				// appliedOption[12] = selectedOption[12];
+				// appliedOption[13] = selectedOption[13];
+				return;
+			}
 			else if(this.str=="OPTION"){
 				initilalizeAllObject();
 				nowWindow = "option";
@@ -132,110 +198,118 @@ Box.prototype.detect = function(){
 				return;
 			}
 			else if(this.str=="01A" || this.str=="01B" || this.str=="01C"){
-				box["01A"].isActive = false;
-				box["01B"].isActive = false;
-				box["01C"].isActive = false;
-				this.isActive = true;
-				option01 = this.str;
+				box["01A"].isSelected = false;
+				box["01B"].isSelected = false;
+				box["01C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[01] = this.str;
 				return;
 			}
 			else if(this.str=="02A" || this.str=="02B" || this.str=="02C"){
-				box["02A"].isActive = false;
-				box["02B"].isActive = false;
-				box["02C"].isActive = false;
-				this.isActive = true;
-				option02 = this.str;
+				box["02A"].isSelected = false;
+				box["02B"].isSelected = false;
+				box["02C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[02] = this.str;
 				return;
 			}
 			else if(this.str=="03A" || this.str=="03B" || this.str=="03C"){
-				box["03A"].isActive = false;
-				box["03B"].isActive = false;
-				box["03C"].isActive = false;
-				this.isActive = true;
-				option03 = this.str;
+				box["03A"].isSelected = false;
+				box["03B"].isSelected = false;
+				box["03C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[03] = this.str;
 				return;
 			}
 			else if(this.str=="04A" || this.str=="04B" || this.str=="04C"){
-				box["04A"].isActive = false;
-				box["04B"].isActive = false;
-				box["04C"].isActive = false;
-				this.isActive = true;
-				option04 = this.str;
+				box["04A"].isSelected = false;
+				box["04B"].isSelected = false;
+				box["04C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[04] = this.str;
 				return;
 			}
 			else if(this.str=="05A" || this.str=="05B" || this.str=="05C"){
-				box["05A"].isActive = false;
-				box["05B"].isActive = false;
-				box["05C"].isActive = false;
-				this.isActive = true;
-				option05 = this.str;
+				box["05A"].isSelected = false;
+				box["05B"].isSelected = false;
+				box["05C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[05] = this.str;
 				return;
 			}
 			else if(this.str=="11A" || this.str=="11B" || this.str=="11C"){
-				box["11A"].isActive = false;
-				box["11B"].isActive = false;
-				box["11C"].isActive = false;
-				this.isActive = true;
-				option11 = this.str;
+				box["11A"].isSelected = false;
+				box["11B"].isSelected = false;
+				box["11C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[11] = this.str;
 				return;
 			}
 			else if(this.str=="12A" || this.str=="12B" || this.str=="12C"){
-				box["12A"].isActive = false;
-				box["12B"].isActive = false;
-				box["12C"].isActive = false;
-				this.isActive = true;
-				option12 = this.str;
+				box["12A"].isSelected = false;
+				box["12B"].isSelected = false;
+				box["12C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[12] = this.str;
 				return;
 			}
 			else if(this.str=="13A" || this.str=="13B" || this.str=="13C"){
-				box["13A"].isActive = false;
-				box["13B"].isActive = false;
-				box["13C"].isActive = false;
-				this.isActive = true;
-				option13 = this.str;
+				box["13A"].isSelected = false;
+				box["13B"].isSelected = false;
+				box["13C"].isSelected = false;
+				this.isSelected = true;
+				selectedOption[13] = this.str;
 				return;
 			}
 			else if(this.str=="DEFAULT"){
-				box["01A"].isActive = false;
-				box["01B"].isActive = false;
-				box["01C"].isActive = false;
-				box["02A"].isActive = false;
-				box["02B"].isActive = false;
-				box["02C"].isActive = false;
-				box["03A"].isActive = false;
-				box["03B"].isActive = false;
-				box["03C"].isActive = false;
-				box["04A"].isActive = false;
-				box["04B"].isActive = false;
-				box["04C"].isActive = false;
-				box["05A"].isActive = false;
-				box["05B"].isActive = false;
-				box["05C"].isActive = false;
-				box["01A"].isActive = true;
-				box["02A"].isActive = true;
-				box["03A"].isActive = true;
-				box["04A"].isActive = true;
-				box["05A"].isActive = true;
-				option01 = "01A";
-				option02 = "02A";
-				option03 = "03A";
-				option04 = "04A";
-				option05 = "05A";
-				box["11A"].isActive = false;
-				box["11B"].isActive = false;
-				box["11C"].isActive = false;
-				box["12A"].isActive = false;
-				box["12B"].isActive = false;
-				box["12C"].isActive = false;
-				box["13A"].isActive = false;
-				box["13B"].isActive = false;
-				box["13C"].isActive = false;
-				box["11A"].isActive = true;
-				box["12A"].isActive = true;
-				box["13A"].isActive = true;
-				option11 = "11A";
-				option12 = "12A";
-				option13 = "13A";
+				box["01A"].isSelected = false;
+				box["01B"].isSelected = false;
+				box["01C"].isSelected = false;
+				box["02A"].isSelected = false;
+				box["02B"].isSelected = false;
+				box["02C"].isSelected = false;
+				box["03A"].isSelected = false;
+				box["03B"].isSelected = false;
+				box["03C"].isSelected = false;
+				box["04A"].isSelected = false;
+				box["04B"].isSelected = false;
+				box["04C"].isSelected = false;
+				box["05A"].isSelected = false;
+				box["05B"].isSelected = false;
+				box["05C"].isSelected = false;
+				box["11A"].isSelected = false;
+				box["11B"].isSelected = false;
+				box["11C"].isSelected = false;
+				box["12A"].isSelected = false;
+				box["12B"].isSelected = false;
+				box["12C"].isSelected = false;
+				box["13A"].isSelected = false;
+				box["13B"].isSelected = false;
+				box["13C"].isSelected = false;
+				box["01A"].isSelected = true;
+				box["02A"].isSelected = true;
+				box["03A"].isSelected = true;
+				box["04A"].isSelected = true;
+				box["05A"].isSelected = true;
+				box["11A"].isSelected = true;
+				box["12A"].isSelected = true;
+				box["13A"].isSelected = true;
+				appliedOption[01] = "01A";
+				appliedOption[02] = "02A";
+				appliedOption[03] = "03A";
+				appliedOption[04] = "04A";
+				appliedOption[05] = "05A";
+				appliedOption[11] = "11A";
+				appliedOption[12] = "12A";
+				appliedOption[13] = "13A";
+				selectedOption[01] = "01A";
+				selectedOption[02] = "02A";
+				selectedOption[03] = "03A";
+				selectedOption[04] = "04A";
+				selectedOption[05] = "05A";
+				selectedOption[11] = "11A";
+				selectedOption[12] = "12A";
+				selectedOption[13] = "13A";
 				return;
 			}
 			else if(this.str=="<01"){
@@ -367,11 +441,16 @@ var setOptionWindowBox = function(){
 	box["05A"] = new Box(360, 670, 120, 60, "05A", 07, 40, 33);
 	box["05B"] = new Box(500, 670, 120, 60, "05B", 07, 40, 33);
 	box["05C"] = new Box(640, 670, 120, 60, "05C", 07, 40, 33);
-	box[option01].isActive = true;
-	box[option02].isActive = true;
-	box[option03].isActive = true;
-	box[option04].isActive = true;
-	box[option05].isActive = true;
+	box[appliedOption[01]].isActive = true;
+	box[appliedOption[02]].isActive = true;
+	box[appliedOption[03]].isActive = true;
+	box[appliedOption[04]].isActive = true;
+	box[appliedOption[05]].isActive = true;
+	box[appliedOption[01]].isSelected = true;
+	box[appliedOption[02]].isSelected = true;
+	box[appliedOption[03]].isSelected = true;
+	box[appliedOption[04]].isSelected = true;
+	box[appliedOption[05]].isSelected = true;
 	
 	box["SOUND"] = new Box(scrWid1*3/4, 195, 0, 0, "SOUND", 07, 50, "transparent");
 	box["VOLUME01"] = new Box(950, 300, 0, 0, "VOLUME01", 07, 40, "transparent");
@@ -380,26 +459,39 @@ var setOptionWindowBox = function(){
 	box["VOLUME02"] = new Box(950, 400, 0, 0, "VOLUME02", 07, 40, "transparent");
 	box["<02"] = new Box(1100, 370, 45, 60, "<02", 07, 40, 33);
 	box[">02"] = new Box(1490, 370, 45, 60, ">02", 07, 40, 33);
-	box["test11"] = new Box(950, 500, 0, 0, "test01", 07, 40, "transparent");
+	box["test11"] = new Box(950, 500, 0, 0, "test11", 07, 40, "transparent");
 	box["11A"] = new Box(1110, 470, 120, 60, "11A", 07, 40, 33);
 	box["11B"] = new Box(1250, 470, 120, 60, "11B", 07, 40, 33);
 	box["11C"] = new Box(1390, 470, 120, 60, "11C", 07, 40, 33);
-	box["test12"] = new Box(950, 600, 0, 0, "test02", 07, 40, "transparent");
+	box["test12"] = new Box(950, 600, 0, 0, "test12", 07, 40, "transparent");
 	box["12A"] = new Box(1110, 570, 120, 60, "12A", 07, 40, 33);
 	box["12B"] = new Box(1250, 570, 120, 60, "12B", 07, 40, 33);
 	box["12C"] = new Box(1390, 570, 120, 60, "12C", 07, 40, 33);
-	box["test13"] = new Box(950, 700, 0, 0, "test03", 07, 40, "transparent");
+	box["test13"] = new Box(950, 700, 0, 0, "test13", 07, 40, "transparent");
 	box["13A"] = new Box(1110, 670, 120, 60, "13A", 07, 40, 33);
 	box["13B"] = new Box(1250, 670, 120, 60, "13B", 07, 40, 33);
 	box["13C"] = new Box(1390, 670, 120, 60, "13C", 07, 40, 33);
-	box[option11].isActive = true;
-	box[option12].isActive = true;
-	box[option13].isActive = true;
+	box[appliedOption[11]].isActive = true;
+	box[appliedOption[12]].isActive = true;
+	box[appliedOption[13]].isActive = true;
+	box[appliedOption[11]].isSelected = true;
+	box[appliedOption[12]].isSelected = true;
+	box[appliedOption[13]].isSelected = true;
 	
 	
 	box["DEFAULT"] = new Box(  20, 790, 500, 80, "DEFAULT", 01, 50, 03);
 	box["APPLY"] = new Box( 550, 790, 500, 80, "APPLY", 01, 50, 03);
 	box["TITLE"] = new Box(1080, 790, 500, 80, "TITLE", 01, 50, 03);
+}
+
+var addApplyAlertBox = function(){
+	for(var i in box){
+		box[i].canDetect = false;
+	}
+	box["blank1"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
+	box["backColor1"] = new Box(318, 68, 964, 664, "", 04, 0, 00);
+	box["YES"] = new Box(450, 560, 250, 120, "YES", 07, 80, 33);
+	box["NO"] = new Box(900, 560, 250, 120, "NO", 07, 80, 33);
 }
 
 var setMenuWindowBox = function(){

@@ -92,15 +92,25 @@ color[33] = "rgba( 90,  90,  90, 0.4)";
 color["brown"] = "brown";
 color["transparent"] = "rgba(255, 255, 255, 0)"
 
-option01 = "01A";
-option02 = "02A";
-option03 = "03A";
-option04 = "04A";
-option05 = "05A";
-option11 = "11A";
-option12 = "12A";
-option13 = "13A";
+appliedOption = new Array();
+appliedOption[01] = "01A";
+appliedOption[02] = "02A";
+appliedOption[03] = "03A";
+appliedOption[04] = "04A";
+appliedOption[05] = "05A";
+appliedOption[11] = "11A";
+appliedOption[12] = "12A";
+appliedOption[13] = "13A";
 
+selectedOption = new Array();
+selectedOption[01] = "01A";
+selectedOption[02] = "02A";
+selectedOption[03] = "03A";
+selectedOption[04] = "04A";
+selectedOption[05] = "05A";
+selectedOption[11] = "11A";
+selectedOption[12] = "12A";
+selectedOption[13] = "13A";
 
 
 //==main========================================================================
