@@ -379,7 +379,7 @@ window.onload = function(){
 				setStageSelectWindowBox(stageSelectPageNum);
 			}
 			else if(nowWindow=="option"){
-				setOptionWindowBox();
+				setOptionWindowBox(appliedOption);
 			}
 			
 			else if(nowWindow=="extraStageSelect"){
