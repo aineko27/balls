@@ -41,6 +41,24 @@ Box.prototype.loseFramework = function(){
 	this.hasFramework = false;
 }
 
+Box.prototype.gainImage = function(imageData, imageX, imageY, imageWid, imageHei){
+	this.hasImage = true;
+	this.imageData = imageData;
+	if(imageX==undefined){
+		this.imageX = this.tl.x;
+		this.imageY = this.bl.y- 175;
+		this.imageWid = this.wid;
+		// this.imageHei = this.hei;
+		this.imageHei = 175;
+	}
+	else{
+		this.imageX = imageX;
+		this.imageY = imageY;
+		this.imageWid = imageWid;
+		this.imageHei = imageHei;
+	}
+}
+
 Box.prototype.draw = function(){
 	ctx.beginPath();
 	ctx.moveTo(this.tl.x*sr+ scrWid0, this.tl.y*sr+ scrHei0);
@@ -53,9 +71,6 @@ Box.prototype.draw = function(){
 	if(this.isActive==true){
 		ctx.fill();
 		ctx.fill();
-	}
-	if(this.isSelected==true){
-		// drawFramework(this.tl.x, this.tl.y, this.br.x, this.br.y, 5*sr, "red");
 	}
 	if(this.hasFramework==true){
 		ctx.beginPath();
@@ -85,6 +100,17 @@ Box.prototype.draw = function(){
 		ctx.strokeStyle = color[this.frameworkColor];
 		ctx.stroke();
 	}
+	
+	if(this.hasImage==true){
+		// var img = new Image();
+		// img.src = this.imageData;
+		// img.onload = function(){
+		// ctx.drawImage(img, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
+		// }
+		ctx.drawImage(this.imageData, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
+		// drawDot(new Point(375, 350));
+	}
+	
 	if(this.str=="<01"){
 		ctx.beginPath();
 		ctx.moveTo((this.tl.x+ this.wid*0.16)*sr+ scrWid0, (this.tl.y+ this.hei*0.50)*sr+ scrHei0);
@@ -121,12 +147,28 @@ Box.prototype.draw = function(){
 		ctx.fillStyle = "darkred";
 		ctx.fill();
 	}
-	else{
-		ctx.fillStyle = color[this.fc];
-		ctx.font = (this.fs*sr)+ "px 'MSゴシック'";
-		ctx.textAlign = "center";
-		ctx.fillText(this.str, (this.tl.x+this.br.x)/2*sr+ scrWid0, (this.tl.y+this.br.y+this.fs*2/3)/2*sr+ scrHei0);
+	else if(this.str=="<-"){
+		ctx.beginPath();
+		ctx.moveTo((this.tl.x+ this.wid*0.12)*sr+ scrWid0, (this.tl.y+ this.hei*0.50)*sr + scrHei0);
+		ctx.lineTo((this.tl.x+ this.wid*0.82)*sr+ scrWid0, (this.tl.y+ this.hei*0.36)*sr + scrHei0);
+		ctx.lineTo((this.tl.x+ this.wid*0.82)*sr+ scrWid0, (this.tl.y+ this.hei*0.64)*sr + scrHei0);
+		ctx.closePath();
+		ctx.fillStyle = "rgba( 167, 36, 66, 1.0)";
+		ctx.fill();
 	}
+	else if(this.str=="->"){
+		ctx.beginPath();
+		ctx.moveTo((this.tl.x+ this.wid*0.88)*sr+ scrWid0, (this.tl.y+ this.hei*0.50)*sr + scrHei0);
+		ctx.lineTo((this.tl.x+ this.wid*0.18)*sr+ scrWid0, (this.tl.y+ this.hei*0.36)*sr + scrHei0);
+		ctx.lineTo((this.tl.x+ this.wid*0.18)*sr+ scrWid0, (this.tl.y+ this.hei*0.64)*sr + scrHei0);
+		ctx.closePath();
+		ctx.fillStyle = "rgba( 167, 36, 66, 1.0)";
+		ctx.fill();
+	}
+	ctx.fillStyle = color[this.fc];
+	ctx.font = (this.fs*sr)+ "px 'MSゴシック'";
+	ctx.textAlign = "center";
+	ctx.fillText(this.str, (this.tl.x+this.br.x)/2*sr+ scrWid0, (this.tl.y+this.br.y+this.fs*2/3)/2*sr+ scrHei0);
 }
 
 Box.prototype.detect = function(){
@@ -169,6 +211,9 @@ Box.prototype.detect = function(){
 			}
 			else if(this.str=="TITLE"){
 				initilalizeAllObject();
+				for(var i in appliedOption){
+					selectedOption[i] = appliedOption[i];
+				}
 				nowWindow = "title";
 				pauseFlag = false;
 				leftDown1 = false;
@@ -181,12 +226,18 @@ Box.prototype.detect = function(){
 					appliedOption[i] = selectedOption[i]
 				}
 				initilalizeAllObject();
-				setOptionWindowBox(appliedOption);
+				setOptionWindowBox();
 				return;
 			}
 			else if(this.str=="NO"){
 				initilalizeAllObject();
-				setOptionWindowBox(selectedOption);
+				setOptionWindowBox();
+				for(var i in selectedOption){
+					box[appliedOption[i]].isSelected = false;
+					box[appliedOption[i]].hasFramework = false;
+					box[selectedOption[i]].isSelected = true;
+					box[selectedOption[i]].hasFramework = true;
+				}
 				return;
 			}
 			else if(this.str=="APPLY"){
@@ -349,34 +400,38 @@ var initilalizeAllObject = function(){
 
 var setTitleWindowBox = function(){
 	box["TITLE_WINDOW"] = new Box(scrWid1/2, 250, 0, 0, "TITLE WINDOW", 07, 80, "transparent");
-	box["PLAY"] = new Box(500, 450, 600, 70, "PLAY", "brown", 60, 33);
-	box["PLAY"].gainFramework(3, 02, "outer", "bevel");
-	box["OPTION"] = new Box(500, 550, 600, 70, "OPTION", "brown", 60, 33);
-	box["OPTION"].gainFramework(3, 02, "outer", "bevel");
-	box["QUIT"] = new Box(500, 650, 600, 70, "QUIT", "brown", 60, 33);
-	box["QUIT"].gainFramework(3, 02, "outer", "bevel");
-	box["EXTRA"] = new Box(500, 750, 600, 70, "///////", "brown", 60, 33);
-	box["EXTRA"].gainFramework(3, 02, "outer", "bevel");
+	box["PLAY"] = new Box(500, 450, 600, 70, "PLAY", "darkblue", 60, "lightblue");
+	box["PLAY"].gainFramework(3, 01, "outer", "bevel");
+	box["OPTION"] = new Box(500, 550, 600, 70, "OPTION", "darkblue", 60, "lightblue");
+	box["OPTION"].gainFramework(3, 01, "outer", "bevel");
+	box["QUIT"] = new Box(500, 650, 600, 70, "QUIT", "darkblue", 60, "lightblue");
+	box["QUIT"].gainFramework(3, 01, "outer", "bevel");
+	box["EXTRA"] = new Box(500, 750, 600, 70, "///////", "darkblue", 60, "lightblue");
+	box["EXTRA"].gainFramework(3, 01, "outer", "bevel");
 }
 
 var setStageSelectWindowBox = function(i){
 	box["STAGE SELECT"] = new Box(0, 0, scrWid1, 100, "STAGE SELECT", "brown", 75, 33);
 	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE["+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1)+ "]", 07, 60, "transparent");
-	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", 04, 95, 33);
-	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", 04, 95, 33);
-	box["STAGE_A"] = new Box(170, 200, 400, 270, "STAGE"+("00"+(6*i+1)).slice(-2), 04, 60, 03);
+	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 95, "lightblue");
+	box["<-"].gainFramework(8, "gray", "middle", "round");
+	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 95, "lightblue");
+	box["->"].gainFramework(8, "gray", "middle", "round");
+	box["STAGE_A"] = new Box(170, 200, 400, 270, "STAGE"+("00"+(6*i+1)).slice(-2), "transparent", 60, "transparent");
 	box["STAGE_B"] = new Box(600, 200, 400, 270, "STAGE"+("00"+(6*i+2)).slice(-2), 04, 60, 03);
 	box["STAGE_C"] = new Box(1030,200, 400, 270, "STAGE"+("00"+(6*i+3)).slice(-2), 04, 60, 03);
 	box["STAGE_D"] = new Box(170, 500, 400, 270, "STAGE"+("00"+(6*i+4)).slice(-2), 04, 60, 03);
 	box["STAGE_E"] = new Box(600, 500, 400, 270, "STAGE"+("00"+(6*i+5)).slice(-2), 04, 60, 03);
 	box["STAGE_F"] = new Box(1030,500, 400, 270, "STAGE"+("00"+(6*i+6)).slice(-2), 04, 60, 03);
-	box["STAGE_A"].gainFramework(8, 02, "outer", "bevel");
-	box["STAGE_B"].gainFramework(8, 02, "outer", "bevel");
-	box["STAGE_C"].gainFramework(8, 02, "outer", "bevel");
-	box["STAGE_D"].gainFramework(8, 02, "outer", "bevel");
-	box["STAGE_E"].gainFramework(8, 02, "outer", "bevel");
-	box["STAGE_F"].gainFramework(8, 02, "outer", "bevel");
-	box["TITLE"] = new Box(500, 790, 600, 80, "TITLE", "brown", 50, 03);
+	box["STAGE_A"].gainFramework(8, "puregreen", "outer", "round");
+	box["STAGE_B"].gainFramework(8, "puregreen", "outer", "round");
+	box["STAGE_C"].gainFramework(8, "puregreen", "outer", "round");
+	box["STAGE_D"].gainFramework(8, "puregreen", "outer", "round");
+	box["STAGE_E"].gainFramework(8, "puregreen", "outer", "round");
+	box["STAGE_F"].gainFramework(8, "puregreen", "outer", "round");
+	box["STAGE_A"].gainImage(stage01Image);
+	box["TITLE"] = new Box(500, 800, 600, 70, "TITLE", "darkblue", 60, "lightblue");
+	box["TITLE"].gainFramework(3, 01, "outer", "bevel");
 }
 
 var setExtraStageSelectWindowBox = function(i){
@@ -393,7 +448,7 @@ var setExtraStageSelectWindowBox = function(i){
 	box["TITLE"] = new Box(500, 790, 600, 80, "TITLE", "brown", 50, 03);
 }
 
-var setOptionWindowBox = function(selectedOptionTemp){
+var setOptionWindowBox = function(){
 	box[" OPTION "] = new Box(000, 30, 1600, 120, " OPTION ", 01, 80, 33);
 	
 	box["VISUAL"] = new Box(scrWid1/4, 195, 0, 0, "VISUAL", 07, 50, "transparent");
@@ -420,11 +475,11 @@ var setOptionWindowBox = function(selectedOptionTemp){
 	
 	box["SOUND"] = new Box(scrWid1*3/4, 195, 0, 0, "SOUND", 07, 50, "transparent");
 	box["VOLUME01"] = new Box(950, 300, 0, 0, "VOLUME01", 07, 40, "transparent");
-	box["<01"] = new Box(1100, 270, 45, 60, "<01", 07, 40, 33);
-	box[">01"] = new Box(1490, 270, 45, 60, ">01", 07, 40, 33);
+	box["<01"] = new Box(1100, 270, 45, 60, "<01", "transparent", 40, 33);
+	box[">01"] = new Box(1490, 270, 45, 60, ">01", "transparent", 40, 33);
 	box["VOLUME02"] = new Box(950, 400, 0, 0, "VOLUME02", 07, 40, "transparent");
-	box["<02"] = new Box(1100, 370, 45, 60, "<02", 07, 40, 33);
-	box[">02"] = new Box(1490, 370, 45, 60, ">02", 07, 40, 33);
+	box["<02"] = new Box(1100, 370, 45, 60, "<02", "transparent", 40, 33);
+	box[">02"] = new Box(1490, 370, 45, 60, ">02", "transparent", 40, 33);
 	box["test11"] = new Box(950, 500, 0, 0, "test11", 07, 40, "transparent");
 	box["11A"] = new Box(1110, 470, 120, 60, "11A", 07, 40, 33);
 	box["11B"] = new Box(1250, 470, 120, 60, "11B", 07, 40, 33);

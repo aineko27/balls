@@ -89,8 +89,22 @@ color[30] = "rgba(  0, 255,   0, "      //緑
 color[31] = "rgba(  0,   0, 255, "      //青
 color[32] = "rgba(255,   0,   0, "      //赤
 color[33] = "rgba( 90,  90,  90, 0.4)";
+color["darkblue"] = "darkblue";
+color["blue"] = "blue";
+color["red"] = "red";
+color["darkred"] = "darkred";
+color["lightred"] = "rgba(228, 212, 161, 0.7)";
+color["green"] = "green";
+color["puregreen"] = "rgba(  0, 210,  0, 1.0)";
+color["white"] = "white";
+color["black"] = "black";
+color["yellow"] = "yellow";
 color["brown"] = "brown";
-color["transparent"] = "rgba(255, 255, 255, 0)"
+color["gray"] = "gray";
+color["carmine"] = "rgba(204,   0,   0, 0.7)"
+color["lightblue"] = "rgba(188, 200, 219, 0.7)";
+color["lightorange"] = "rgba(229,  69,  0, 0.7)"
+color["transparent"] = "rgba(255, 255, 255, 0)";
 
 appliedOption = new Array();
 appliedOption[01] = "01A";
@@ -112,6 +126,8 @@ selectedOption[11] = "11A";
 selectedOption[12] = "12A";
 selectedOption[13] = "13A";
 
+stage01Image = new Image();
+stage01Image.src = "stage01.png";
 
 //==main========================================================================
 
@@ -379,7 +395,7 @@ window.onload = function(){
 				setStageSelectWindowBox(stageSelectPageNum);
 			}
 			else if(nowWindow=="option"){
-				setOptionWindowBox(appliedOption);
+				setOptionWindowBox();
 			}
 			
 			else if(nowWindow=="extraStageSelect"){
