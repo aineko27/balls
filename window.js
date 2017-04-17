@@ -60,18 +60,7 @@ Box.prototype.gainImage = function(imageData, imageX, imageY, imageWid, imageHei
 }
 
 Box.prototype.draw = function(){
-	ctx.beginPath();
-	ctx.moveTo(this.tl.x*sr+ scrWid0, this.tl.y*sr+ scrHei0);
-	ctx.lineTo(this.br.x*sr+ scrWid0, this.tl.y*sr+ scrHei0);
-	ctx.lineTo(this.br.x*sr+ scrWid0, this.br.y*sr+ scrHei0);
-	ctx.lineTo(this.tl.x*sr+ scrWid0, this.br.y*sr+ scrHei0);
-	ctx.closePath();
-	ctx.fillStyle = color[this.bc];
-	ctx.fill();
-	if(this.isActive==true){
-		ctx.fill();
-		ctx.fill();
-	}
+	
 	if(this.hasFramework==true){
 		ctx.beginPath();
 		ctx.lineJoin = this.frameworkLineJoin;
@@ -101,14 +90,58 @@ Box.prototype.draw = function(){
 		ctx.stroke();
 	}
 	
+	if(this.isLocked==true){
+		var lineWid = 15;
+		var blankWid = 24;
+		var theta = atan2(this.hei, lineWid+ blankWid);
+		for(var i=1; i<Math.floor((this.wid+ this.hei)/(lineWid+ blankWid)); i++){
+		ctx.beginPath();
+			var p1 = new Point();
+			var p2 = new Point();
+			var p3 = new Point();
+			var p4 = new Point();
+			p1.x = this.tl.x+ i* (lineWid+ blankWid)- lineWid;
+			p1.y = this.tl.y;
+			p2.x = this.tl.x+ i* (lineWid+ blankWid);
+			p2.y = this.tl.y;
+			p3.x = this.tl.x+ (i-1)* (lineWid+ blankWid);
+			p3.y = this.bl.y;
+			p4.x = Math.max(this.tl.x+ (i-1)* (lineWid+ blankWid)- lineWid, this.tl.x);
+			p4.y = Math.min(this.bl.y, this.tl.y+ (p1.x- this.tl.x)*tan(theta));
+			if(i==Math.floor((this.wid+ this.hei)/(lineWid+ blankWid))-1){
+				p1.x = this.tr.x; 
+				p1.y = this.br.y- (this.tr.x- p4.x)* tan(theta);
+				p2.x = this.tr.x;
+				p2.y = this.br.y- (this.tr.x- p3.x)* tan(theta)
+			}
+			ctx.moveTo(p1.x*sr+ scrWid0, p1.y*sr+ scrHei0);
+			ctx.lineTo(p2.x*sr+ scrWid0, p2.y*sr+ scrHei0);
+			ctx.lineTo(p3.x*sr+ scrWid0, p3.y*sr+ scrHei0);
+			ctx.lineTo(p4.x*sr+ scrWid0, p4.y*sr+ scrHei0);
+			ctx.closePath();
+			ctx.fillStyle = "rgba(111, 132,  158, 1.0)";
+			ctx.fill();
+		}
+	}
+	
 	if(this.hasImage==true){
-		// var img = new Image();
-		// img.src = this.imageData;
-		// img.onload = function(){
-		// ctx.drawImage(img, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
-		// }
-		ctx.drawImage(this.imageData, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
-		// drawDot(new Point(375, 350));
+		if(typeof(this.imageData!=undefined)){
+			ctx.drawImage(this.imageData, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
+		}
+		return;
+	}
+	
+	ctx.beginPath();
+	ctx.moveTo(this.tl.x*sr+ scrWid0, this.tl.y*sr+ scrHei0);
+	ctx.lineTo(this.br.x*sr+ scrWid0, this.tl.y*sr+ scrHei0);
+	ctx.lineTo(this.br.x*sr+ scrWid0, this.br.y*sr+ scrHei0);
+	ctx.lineTo(this.tl.x*sr+ scrWid0, this.br.y*sr+ scrHei0);
+	ctx.closePath();
+	ctx.fillStyle = color[this.bc];
+	ctx.fill();
+	if(this.isActive==true){
+		ctx.fill();
+		ctx.fill();
 	}
 	
 	if(this.str=="<01"){
@@ -406,18 +439,20 @@ var setTitleWindowBox = function(){
 	box["OPTION"].gainFramework(3, 01, "outer", "bevel");
 	box["QUIT"] = new Box(500, 650, 600, 70, "QUIT", "darkblue", 60, "lightblue");
 	box["QUIT"].gainFramework(3, 01, "outer", "bevel");
-	box["EXTRA"] = new Box(500, 750, 600, 70, "///////", "darkblue", 60, "lightblue");
+	box["EXTRA"] = new Box(500, 750, 600, 70, "", "darkblue", 60, "lightblue");
 	box["EXTRA"].gainFramework(3, 01, "outer", "bevel");
+	box["EXTRA"].isLocked = true;
 }
 
 var setStageSelectWindowBox = function(i){
-	box["STAGE SELECT"] = new Box(0, 0, scrWid1, 100, "STAGE SELECT", "brown", 75, 33);
+	box["STAGE_SELECT"] = new Box(0, 5, scrWid1, 95, "STAGE SELECT", "brown", 75, 33);
+	box["STAGE_SELECT"].gainFramework(5, "gray", "middle", "round");
 	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE["+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1)+ "]", 07, 60, "transparent");
 	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 95, "lightblue");
-	box["<-"].gainFramework(8, "gray", "middle", "round");
 	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 95, "lightblue");
+	box["<-"].gainFramework(8, "gray", "middle", "round");
 	box["->"].gainFramework(8, "gray", "middle", "round");
-	box["STAGE_A"] = new Box(170, 200, 400, 270, "STAGE"+("00"+(6*i+1)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_A"] = new Box(170, 200, 400, 270, "STAGE"+("00"+(6*i+1)).slice(-2), 04, 60, 03);
 	box["STAGE_B"] = new Box(600, 200, 400, 270, "STAGE"+("00"+(6*i+2)).slice(-2), 04, 60, 03);
 	box["STAGE_C"] = new Box(1030,200, 400, 270, "STAGE"+("00"+(6*i+3)).slice(-2), 04, 60, 03);
 	box["STAGE_D"] = new Box(170, 500, 400, 270, "STAGE"+("00"+(6*i+4)).slice(-2), 04, 60, 03);
@@ -429,46 +464,59 @@ var setStageSelectWindowBox = function(i){
 	box["STAGE_D"].gainFramework(8, "puregreen", "outer", "round");
 	box["STAGE_E"].gainFramework(8, "puregreen", "outer", "round");
 	box["STAGE_F"].gainFramework(8, "puregreen", "outer", "round");
-	box["STAGE_A"].gainImage(stage01Image);
+	if(stageImage[6*i+1]!=undefined){
+		box["STAGE_A"].gainImage(stageImage[6*i+1]);
+	}
 	box["TITLE"] = new Box(500, 800, 600, 70, "TITLE", "darkblue", 60, "lightblue");
 	box["TITLE"].gainFramework(3, 01, "outer", "bevel");
 }
 
 var setExtraStageSelectWindowBox = function(i){
-	box["EXTRASTAGE"] = new Box(0, 0, scrWid1, 100, "EXTRA STAGE", 04, 75, 33);
+	box["EXTRA_STAGE"] = new Box(0, 5, scrWid1, 95, "EXTRA STAGE", "red", 75, 33);
+	box["EXTRA_STAGE"].gainFramework(5, "gray", "middle", "round");
 	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE["+ (i+1)+ "/"+ (EXTRA_STAGE_SELCET_PAGE_MAX_COUNT+1)+ "]", 07, 60, "transparent")
-	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", 04, 75, 33);
-	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", 04, 75, 33);
+	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 75, "lightblue");
+	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 75, "lightblue");
+	box["<-"].gainFramework(8, "gray", "middle", "round");
+	box["->"].gainFramework(8, "gray", "middle", "round");
 	box["EXTRASTAGE_A"] = new Box(170, 200, 400, 270, "EXTRA"+("00"+(6*i+1)).slice(-2), 04, 60, 03);
 	box["EXTRASTAGE_B"] = new Box(600, 200, 400, 270, "EXTRA"+("00"+(6*i+2)).slice(-2), 04, 60, 03);
 	box["EXTRASTAGE_C"] = new Box(1030,200, 400, 270, "EXTRA"+("00"+(6*i+3)).slice(-2), 04, 60, 03);
 	box["EXTRASTAGE_D"] = new Box(170, 500, 400, 270, "EXTRA"+("00"+(6*i+4)).slice(-2), 04, 60, 03);
 	box["EXTRASTAGE_E"] = new Box(600, 500, 400, 270, "EXTRA"+("00"+(6*i+5)).slice(-2), 04, 60, 03);
 	box["EXTRASTAGE_F"] = new Box(1030,500, 400, 270, "EXTRA"+("00"+(6*i+6)).slice(-2), 04, 60, 03);
-	box["TITLE"] = new Box(500, 790, 600, 80, "TITLE", "brown", 50, 03);
+	box["EXTRASTAGE_A"].gainFramework(8, "puregreen", "outer", "round");
+	box["EXTRASTAGE_B"].gainFramework(8, "puregreen", "outer", "round");
+	box["EXTRASTAGE_C"].gainFramework(8, "puregreen", "outer", "round");
+	box["EXTRASTAGE_D"].gainFramework(8, "puregreen", "outer", "round");
+	box["EXTRASTAGE_E"].gainFramework(8, "puregreen", "outer", "round");
+	box["EXTRASTAGE_F"].gainFramework(8, "puregreen", "outer", "round");
+	box["TITLE"] = new Box(500, 800, 600, 70, "TITLE", "darkblue", 60, "lightblue");
+	box["TITLE"].gainFramework(3, 01, "outer", "bevel");
 }
 
 var setOptionWindowBox = function(){
 	box[" OPTION "] = new Box(000, 30, 1600, 120, " OPTION ", 01, 80, 33);
+	box[" OPTION "].gainFramework(8, "gray", "outer", "round");
 	
 	box["VISUAL"] = new Box(scrWid1/4, 195, 0, 0, "VISUAL", 07, 50, "transparent");
-	box["test01"] = new Box(200, 300, 0, 0, "test01", 07, 40, "transparent");
+	box["OPTION01"] = new Box(200, 300, 0, 0, "test01", 07, 40, "transparent");
 	box["01A"] = new Box(360, 270, 120, 60, "01A", 07, 40, 33);
 	box["01B"] = new Box(500, 270, 120, 60, "01B", 07, 40, 33);
 	box["01C"] = new Box(640, 270, 120, 60, "01C", 07, 40, 33);
-	box["test02"] = new Box(200, 400, 0, 0, "test02", 07, 40, "transparent");
+	box["OPTION02"] = new Box(200, 400, 0, 0, "test02", 07, 40, "transparent");
 	box["02A"] = new Box(360, 370, 120, 60, "02A", 07, 40, 33);
 	box["02B"] = new Box(500, 370, 120, 60, "02B", 07, 40, 33);
 	box["02C"] = new Box(640, 370, 120, 60, "02C", 07, 40, 33);
-	box["test03"] = new Box(200, 500, 0, 0, "test03", 07, 40, "transparent");
+	box["OPTION03"] = new Box(200, 500, 0, 0, "test03", 07, 40, "transparent");
 	box["03A"] = new Box(360, 470, 120, 60, "03A", 07, 40, 33);
 	box["03B"] = new Box(500, 470, 120, 60, "03B", 07, 40, 33);
 	box["03C"] = new Box(640, 470, 120, 60, "03C", 07, 40, 33);
-	box["test04"] = new Box(200, 600, 0, 0, "test04", 07, 40, "transparent");
+	box["OPTION04"] = new Box(200, 600, 0, 0, "test04", 07, 40, "transparent");
 	box["04A"] = new Box(360, 570, 120, 60, "04A", 07, 40, 33);
 	box["04B"] = new Box(500, 570, 120, 60, "04B", 07, 40, 33);
 	box["04C"] = new Box(640, 570, 120, 60, "04C", 07, 40, 33);
-	box["test05"] = new Box(200, 700, 0, 0, "test05", 07, 40, "transparent");
+	box["OPTION05"] = new Box(200, 700, 0, 0, "test05", 07, 40, "transparent");
 	box["05A"] = new Box(360, 670, 120, 60, "05A", 07, 40, 33);
 	box["05B"] = new Box(500, 670, 120, 60, "05B", 07, 40, 33);
 	box["05C"] = new Box(640, 670, 120, 60, "05C", 07, 40, 33);
@@ -480,15 +528,15 @@ var setOptionWindowBox = function(){
 	box["VOLUME02"] = new Box(950, 400, 0, 0, "VOLUME02", 07, 40, "transparent");
 	box["<02"] = new Box(1100, 370, 45, 60, "<02", "transparent", 40, 33);
 	box[">02"] = new Box(1490, 370, 45, 60, ">02", "transparent", 40, 33);
-	box["test11"] = new Box(950, 500, 0, 0, "test11", 07, 40, "transparent");
+	box["OPTION11"] = new Box(950, 500, 0, 0, "test11", 07, 40, "transparent");
 	box["11A"] = new Box(1110, 470, 120, 60, "11A", 07, 40, 33);
 	box["11B"] = new Box(1250, 470, 120, 60, "11B", 07, 40, 33);
 	box["11C"] = new Box(1390, 470, 120, 60, "11C", 07, 40, 33);
-	box["test12"] = new Box(950, 600, 0, 0, "test12", 07, 40, "transparent");
+	box["OPTION12"] = new Box(950, 600, 0, 0, "test12", 07, 40, "transparent");
 	box["12A"] = new Box(1110, 570, 120, 60, "12A", 07, 40, 33);
 	box["12B"] = new Box(1250, 570, 120, 60, "12B", 07, 40, 33);
 	box["12C"] = new Box(1390, 570, 120, 60, "12C", 07, 40, 33);
-	box["test13"] = new Box(950, 700, 0, 0, "test13", 07, 40, "transparent");
+	box["OPTION13"] = new Box(950, 700, 0, 0, "test13", 07, 40, "transparent");
 	box["13A"] = new Box(1110, 670, 120, 60, "13A", 07, 40, 33);
 	box["13B"] = new Box(1250, 670, 120, 60, "13B", 07, 40, 33);
 	box["13C"] = new Box(1390, 670, 120, 60, "13C", 07, 40, 33);
@@ -508,17 +556,21 @@ var addApplyAlertBox = function(){
 	for(var i in box){
 		box[i].canDetect = false;
 	}
-	box["BLANK1"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
-	box["BACKCOLOR1"] = new Box(318, 68, 964, 664, "", 04, 0, 00);
+	box["BLANK1"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 13);
+	box["BACK_BOARD"] = new Box(300, 200, 1000, 520, "", 04, 0, 00);
+	box["BACK_BOARD"] = new Box(300, 200, 1000, 520, "", 04, 0, 00);
+	box["BACK_BOARD"].gainFramework(32, 02, "outer", "bevel");
 	box["APPLYALERT"] = new Box(400, 300, 800, 100, "ARE YOU SURE TO APPLY?", 07, 70, "transparent");
-	box["YES"] = new Box(450, 560, 250, 120, "YES", 07, 80, 33);
-	box["NO"] = new Box(900, 560, 250, 120, "NO", 07, 80, 33);
+	box["YES"] = new Box(450, 560, 250, 120, "YES", 07, 80, "lightblue");
+	box["NO"] = new Box(900, 560, 250, 120, "NO", 07, 80, "lightblue");
+	box["YES"].gainFramework(6, "black", "outer", "round");
+	box["NO"].gainFramework(6, "black", "outer", "round");
 }
 
 var setMenuWindowBox = function(){
-	box["BLANK1"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
-	box["BLANK2"] = new Box(318, 68, 964, 664, "", 04, 0, 00);
-	box["BLANK2"].gainFramework(16, 02, "outer", "bevel");
+	box["BLANK"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 33);
+	box["BACK_BOARD"] = new Box(318, 68, 964, 664, "", 04, 0, 00);
+	box["BACK_BOARD"].gainFramework(24, 02, "outer", "bevel");
 	box["PAUSE"] = new Box(scrWid1/2, scrHei1/4, 0, 0, "PAUSE", "brown", 180, "transparent");
 	box["RETRY"] = new Box(375, 350, 250, 130, "RETRY", "brown", 60, 04);
 	box["RETRY"].gainFramework(3, 02, "outer", "bevel");

@@ -101,12 +101,15 @@ color["black"] = "black";
 color["yellow"] = "yellow";
 color["brown"] = "brown";
 color["gray"] = "gray";
-color["carmine"] = "rgba(204,   0,   0, 0.7)"
+color["carmine"] = "rgba(204,   0,   0, 0.7)";
 color["lightblue"] = "rgba(188, 200, 219, 0.7)";
-color["lightorange"] = "rgba(229,  69,  0, 0.7)"
+color["lightorange"] = "rgba(229,  69,  0, 0.7)";
 color["transparent"] = "rgba(255, 255, 255, 0)";
+color["aquamarine"] = "rgba(105, 153, 174, 0.7)";
+color["test"] = "rgba( 85,  85,  85, 0.6)";
+color["tttt"] = "rgba(  0, 230,   0, 1.0)";
 
-appliedOption = new Array();
+var appliedOption = new Array();
 appliedOption[01] = "01A";
 appliedOption[02] = "02A";
 appliedOption[03] = "03A";
@@ -116,7 +119,7 @@ appliedOption[11] = "11A";
 appliedOption[12] = "12A";
 appliedOption[13] = "13A";
 
-selectedOption = new Array();
+var selectedOption = new Array();
 selectedOption[01] = "01A";
 selectedOption[02] = "02A";
 selectedOption[03] = "03A";
@@ -126,8 +129,9 @@ selectedOption[11] = "11A";
 selectedOption[12] = "12A";
 selectedOption[13] = "13A";
 
-stage01Image = new Image();
-stage01Image.src = "stage01.png";
+var stageImage = new Array();
+stageImage[01] = new Image();
+stageImage[01].src = "stage01.png";
 
 //==main========================================================================
 
@@ -367,9 +371,11 @@ window.onload = function(){
 		if(nowWindow=="title"){
 			if(keyCode1[65]==true){
 				box["EXTRA"].str = "EXTRA";
+				box["EXTRA"].isLocked = false;
 			}
 			else{
-				box["EXTRA"].str = "///////"
+				box["EXTRA"].str = "";
+				box["EXTRA"].isLocked = true;
 			}
 		}
 		else if(nowWindow=="stageSelect"){
