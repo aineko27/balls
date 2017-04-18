@@ -28,10 +28,13 @@ var nowStage = 0;
 var debugFlag = "save";
 var stageSelectPageNum = 0;
 var extraStageSelectPageNum = 0;
+var lockedStageNum = 3;
+var lockedExtraStageNum = 0;
 var volume01Cnt = 5;
 var volume02Cnt = 5;
 var saveCode ="\n";
 var sizeRate = 1;
+
 
 var lCounter = 0;
 var test = new Array();
@@ -129,9 +132,33 @@ selectedOption[11] = "11A";
 selectedOption[12] = "12A";
 selectedOption[13] = "13A";
 
-var stageImage = new Array();
+var stageImage = new Array(new Image);
 stageImage[01] = new Image();
 stageImage[01].src = "stage01.png";
+stageImage[02] = new Image();
+stageImage[02].src = "stage01.png";
+stageImage[03] = new Image();
+stageImage[03].src = "stage01.png";
+stageImage[04] = new Image();
+stageImage[04].src = "stage01.png";
+stageImage[05] = new Image();
+stageImage[05].src = "stage01.png";
+stageImage[06] = new Image();
+stageImage[06].src = "stage01.png";
+
+var extraStageImage = new Array(new Image);
+extraStageImage[01] = new Image();
+extraStageImage[01].src = "stage01.png";
+extraStageImage[02] = new Image();
+extraStageImage[02].src = "stage01.png";
+extraStageImage[03] = new Image();
+extraStageImage[03].src = "stage01.png";
+extraStageImage[04] = new Image();
+extraStageImage[04].src = "stage01.png";
+extraStageImage[05] = new Image();
+extraStageImage[05].src = "stage01.png";
+extraStageImage[06] = new Image();
+extraStageImage[06].src = "stage01.png";
 
 //==main========================================================================
 
@@ -367,14 +394,32 @@ window.onload = function(){
 			}
 		}
 		
+		//特定の条件を満たしていたら選択肢のlockを外すようにする
+		if(keyCode1[83]==true && keyCode2[83]==false){
+			lockedStageNum = Math.min(lockedStageNum+1, 30);
+			lockedExtraStageNum = Math.min(lockedExtraStageNum+1, 30);
+			if(nowWindow=="stageSelect"){
+				setStageSelectWindowBox(stageSelectPageNum);
+			}
+			else if(nowWindow=="extraStageSelect"){
+				setExtraStageSelectWindowBox(extraStageSelectPageNum);
+			}
+		}
+		
 		//現在の画面に応じて動作を変える
 		if(nowWindow=="title"){
 			if(keyCode1[65]==true){
 				box["EXTRA"].str = "EXTRA";
+				box["EXTRA"].frameworkColor = 02;
+				box["EXTRA"].fc = "red";
+				box["EXTRA"].bc = "lightred";
 				box["EXTRA"].isLocked = false;
+				box["EXTRA"].canDetect = true;
 			}
 			else{
 				box["EXTRA"].str = "";
+				box["EXTRA"].frameworkColor = 01;
+				box["EXTRA"].bc = "lightblue";
 				box["EXTRA"].isLocked = true;
 			}
 		}
@@ -532,9 +577,9 @@ window.onload = function(){
 		}
 		drawMouse();
 
-	console.log(stageSelectPageNum)
-	console.log(ball[0]);
-	console.log(paperTape)
+	console.log(lockedStageNum)
+	// console.log(ball[0]);
+	// console.log(paperTape)
 	console.log(counter, "===================================================================================================")
 
 

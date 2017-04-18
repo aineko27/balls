@@ -90,45 +90,47 @@ Box.prototype.draw = function(){
 		ctx.stroke();
 	}
 	
+	if(this.hasImage==true){
+		if(typeof(this.imageData!=undefined)){
+			ctx.drawImage(this.imageData, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
+		}
+	}
+	
 	if(this.isLocked==true){
 		var lineWid = 15;
-		var blankWid = 24;
-		var theta = atan2(this.hei, lineWid+ blankWid);
+		var blankWid = 23.6;
+		var theta = PI/6;
 		for(var i=1; i<Math.floor((this.wid+ this.hei)/(lineWid+ blankWid)); i++){
 		ctx.beginPath();
 			var p1 = new Point();
 			var p2 = new Point();
 			var p3 = new Point();
 			var p4 = new Point();
-			p1.x = this.tl.x+ i* (lineWid+ blankWid)- lineWid;
-			p1.y = this.tl.y;
-			p2.x = this.tl.x+ i* (lineWid+ blankWid);
-			p2.y = this.tl.y;
-			p3.x = this.tl.x+ (i-1)* (lineWid+ blankWid);
-			p3.y = this.bl.y;
-			p4.x = Math.max(this.tl.x+ (i-1)* (lineWid+ blankWid)- lineWid, this.tl.x);
-			p4.y = Math.min(this.bl.y, this.tl.y+ (p1.x- this.tl.x)*tan(theta));
-			if(i==Math.floor((this.wid+ this.hei)/(lineWid+ blankWid))-1){
-				p1.x = this.tr.x; 
-				p1.y = this.br.y- (this.tr.x- p4.x)* tan(theta);
-				p2.x = this.tr.x;
-				p2.y = this.br.y- (this.tr.x- p3.x)* tan(theta)
-			}
-			ctx.moveTo(p1.x*sr+ scrWid0, p1.y*sr+ scrHei0);
-			ctx.lineTo(p2.x*sr+ scrWid0, p2.y*sr+ scrHei0);
-			ctx.lineTo(p3.x*sr+ scrWid0, p3.y*sr+ scrHei0);
-			ctx.lineTo(p4.x*sr+ scrWid0, p4.y*sr+ scrHei0);
+			p1.x = Math.min(this.tl.x+ i*(lineWid+ blankWid)- lineWid, this.tr.x);
+			p1.y = Math.max(this.tl.y, this.tl.y+ (i*(lineWid+ blankWid)- lineWid- this.wid)* 1/tan(theta));
+			
+			p2.x = Math.min(this.tl.x+ i* (lineWid+ blankWid), this.tr.x);
+			p2.y = Math.max(this.tl.y, this.tl.y+ (i*(lineWid+ blankWid)- this.wid)* 1/tan(theta));
+			
+			p3.x = Math.max(this.tl.x+ i* (lineWid+ blankWid)- this.hei* tan(theta), this.tl.x);
+			p3.y = Math.min(this.bl.y, this.bl.y+ (i* (lineWid+ blankWid)- this.hei* tan(theta))* 1/tan(theta));
+			
+			p4.x = Math.max(this.tl.x+ i* (lineWid+ blankWid)- lineWid- this.hei* tan(theta), this.tl.x);
+			p4.y = Math.min(this.bl.y, this.bl.y+ (i* (lineWid+ blankWid)- lineWid- this.hei* tan(theta))* 1/tan(theta));
+			
+			ctx.moveTo((p1.x+0.5)*sr+ scrWid0, (p1.y+0.5)*sr+ scrHei0);
+			ctx.lineTo((p2.x-0.5)*sr+ scrWid0, (p2.y+0.5)*sr+ scrHei0);
+			ctx.lineTo((p3.x-0.5)*sr+ scrWid0, (p3.y-0.5)*sr+ scrHei0);
+			ctx.lineTo((p4.x+0.5)*sr+ scrWid0, (p4.y-0.5)*sr+ scrHei0);
 			ctx.closePath();
-			ctx.fillStyle = "rgba(111, 132,  158, 1.0)";
+			if(this.str.slice(0,5)=="STAGE" || this.str.slice(0,5)=="EXTRA"){
+				ctx.fillStyle = "rgba(111, 132, 158, 0.6)";
+			}
+			else{
+				ctx.fillStyle = "rgba(111, 132,  158, 1.0)";
+			}
 			ctx.fill();
 		}
-	}
-	
-	if(this.hasImage==true){
-		if(typeof(this.imageData!=undefined)){
-			ctx.drawImage(this.imageData, this.imageX* sr+ scrWid0, this.imageY* sr+ scrHei0, this.imageWid*sr, this.imageHei*sr);
-		}
-		return;
 	}
 	
 	ctx.beginPath();
@@ -222,14 +224,14 @@ Box.prototype.detect = function(){
 				leftDown1 = false;
 				return;
 			}
-			else if(this.str=="BACK" || this.str=="PLAY"){
+			else if((this.str=="BACK" && nowWindow=="stage") || this.str=="PLAY"){
 				initilalizeAllObject();
 				nowWindow = "stageSelect";
 				pauseFlag = false;
 				leftDown1 = false;
 				return;
 			}
-			else if(this.str=="EXTRA"){
+			else if((this.str=="BACK" && nowWindow=="extraStage") || this.str=="EXTRA"){
 				initilalizeAllObject();
 				nowWindow = "extraStageSelect";
 				pauseFlag = false;
@@ -442,57 +444,120 @@ var setTitleWindowBox = function(){
 	box["EXTRA"] = new Box(500, 750, 600, 70, "", "darkblue", 60, "lightblue");
 	box["EXTRA"].gainFramework(3, 01, "outer", "bevel");
 	box["EXTRA"].isLocked = true;
+	box["EXTRA"].canDetect = false;
+	box["HIDDEN"] = new Box(500, 820, 600, 50, "press 'A' to hidden comand", "black", 20, "transparent");
 }
 
 var setStageSelectWindowBox = function(i){
 	box["STAGE_SELECT"] = new Box(0, 5, scrWid1, 95, "STAGE SELECT", "brown", 75, 33);
 	box["STAGE_SELECT"].gainFramework(5, "gray", "middle", "round");
-	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE["+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1)+ "]", 07, 60, "transparent");
+	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE: "+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1), 07, 60, "transparent");
 	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 95, "lightblue");
 	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 95, "lightblue");
 	box["<-"].gainFramework(8, "gray", "middle", "round");
 	box["->"].gainFramework(8, "gray", "middle", "round");
-	box["STAGE_A"] = new Box(170, 200, 400, 270, "STAGE"+("00"+(6*i+1)).slice(-2), 04, 60, 03);
-	box["STAGE_B"] = new Box(600, 200, 400, 270, "STAGE"+("00"+(6*i+2)).slice(-2), 04, 60, 03);
-	box["STAGE_C"] = new Box(1030,200, 400, 270, "STAGE"+("00"+(6*i+3)).slice(-2), 04, 60, 03);
-	box["STAGE_D"] = new Box(170, 500, 400, 270, "STAGE"+("00"+(6*i+4)).slice(-2), 04, 60, 03);
-	box["STAGE_E"] = new Box(600, 500, 400, 270, "STAGE"+("00"+(6*i+5)).slice(-2), 04, 60, 03);
-	box["STAGE_F"] = new Box(1030,500, 400, 270, "STAGE"+("00"+(6*i+6)).slice(-2), 04, 60, 03);
-	box["STAGE_A"].gainFramework(8, "puregreen", "outer", "round");
-	box["STAGE_B"].gainFramework(8, "puregreen", "outer", "round");
-	box["STAGE_C"].gainFramework(8, "puregreen", "outer", "round");
-	box["STAGE_D"].gainFramework(8, "puregreen", "outer", "round");
-	box["STAGE_E"].gainFramework(8, "puregreen", "outer", "round");
-	box["STAGE_F"].gainFramework(8, "puregreen", "outer", "round");
-	if(stageImage[6*i+1]!=undefined){
-		box["STAGE_A"].gainImage(stageImage[6*i+1]);
+	box["STAGE_1U"] = new Box(170, 215, 400,  74, "STAGE: "+("00"+(6*i+1)).slice(-2), "darkblue", 60, "lightblue");
+	box["STAGE_2U"] = new Box(600, 215, 400,  74, "STAGE: "+("00"+(6*i+2)).slice(-2), "darkblue", 60, "lightblue");
+	box["STAGE_3U"] = new Box(1030,215, 400,  74, "STAGE: "+("00"+(6*i+3)).slice(-2), "darkblue", 60, "lightblue");
+	box["STAGE_4U"] = new Box(170, 515, 400,  74, "STAGE: "+("00"+(6*i+4)).slice(-2), "darkblue", 60, "lightblue");
+	box["STAGE_5U"] = new Box(600, 515, 400,  74, "STAGE: "+("00"+(6*i+5)).slice(-2), "darkblue", 60, "lightblue");
+	box["STAGE_6U"] = new Box(1030,515, 400,  74, "STAGE: "+("00"+(6*i+6)).slice(-2), "darkblue", 60, "lightblue");
+	
+	box["STAGE_1D"] = new Box(170, 295, 400, 175, "STAGE"+("00"+(6*i+1)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_2D"] = new Box(600, 295, 400, 175, "STAGE"+("00"+(6*i+2)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_3D"] = new Box(1030,295, 400, 175, "STAGE"+("00"+(6*i+3)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_4D"] = new Box(170, 595, 400, 175, "STAGE"+("00"+(6*i+4)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_5D"] = new Box(600, 595, 400, 175, "STAGE"+("00"+(6*i+5)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_6D"] = new Box(1030,595, 400, 175, "STAGE"+("00"+(6*i+6)).slice(-2), "transparent", 60, "transparent");
+	
+	box["STAGE_1U"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_2U"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_3U"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_4U"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_5U"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_6U"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_1D"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_2D"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_3D"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_4D"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_5D"].gainFramework(6, "blue", "outer", "round");
+	box["STAGE_6D"].gainFramework(6, "blue", "outer", "round");
+	for(var j=1; j<7; j++){
+		if(stageImage[6*i+j]!=undefined){
+			box["STAGE_"+j+"D"].gainImage(stageImage[6*i+1]);
+		}
+	}
+	for(var j=1; j<7; j++){
+		if(6*i+j> lockedStageNum){
+			box["STAGE_"+j+"D"].isLocked = true;
+			box["STAGE_"+j+"D"].canDetect = false;
+			box["STAGE_"+j+"D"].bc = 13;
+		}
 	}
 	box["TITLE"] = new Box(500, 800, 600, 70, "TITLE", "darkblue", 60, "lightblue");
 	box["TITLE"].gainFramework(3, 01, "outer", "bevel");
 }
 
 var setExtraStageSelectWindowBox = function(i){
-	box["EXTRA_STAGE"] = new Box(0, 5, scrWid1, 95, "EXTRA STAGE", "red", 75, 33);
+	box["EXTRA_STAGE"] = new Box(0, 5, scrWid1, 95, "EXTRA STAGE", "red", 75, "lightred");
 	box["EXTRA_STAGE"].gainFramework(5, "gray", "middle", "round");
-	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE["+ (i+1)+ "/"+ (EXTRA_STAGE_SELCET_PAGE_MAX_COUNT+1)+ "]", 07, 60, "transparent")
-	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 75, "lightblue");
-	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 75, "lightblue");
+	box["PAGE"] = new Box(scrWid1/2, 150, 0, 0, "PAGE: "+ (i+1)+ "/"+ (EXTRA_STAGE_SELCET_PAGE_MAX_COUNT+1), 07, 60, "transparent")
+	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 75, "lightred");
+	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 75, "lightred");
 	box["<-"].gainFramework(8, "gray", "middle", "round");
 	box["->"].gainFramework(8, "gray", "middle", "round");
-	box["EXTRASTAGE_A"] = new Box(170, 200, 400, 270, "EXTRA"+("00"+(6*i+1)).slice(-2), 04, 60, 03);
-	box["EXTRASTAGE_B"] = new Box(600, 200, 400, 270, "EXTRA"+("00"+(6*i+2)).slice(-2), 04, 60, 03);
-	box["EXTRASTAGE_C"] = new Box(1030,200, 400, 270, "EXTRA"+("00"+(6*i+3)).slice(-2), 04, 60, 03);
-	box["EXTRASTAGE_D"] = new Box(170, 500, 400, 270, "EXTRA"+("00"+(6*i+4)).slice(-2), 04, 60, 03);
-	box["EXTRASTAGE_E"] = new Box(600, 500, 400, 270, "EXTRA"+("00"+(6*i+5)).slice(-2), 04, 60, 03);
-	box["EXTRASTAGE_F"] = new Box(1030,500, 400, 270, "EXTRA"+("00"+(6*i+6)).slice(-2), 04, 60, 03);
-	box["EXTRASTAGE_A"].gainFramework(8, "puregreen", "outer", "round");
-	box["EXTRASTAGE_B"].gainFramework(8, "puregreen", "outer", "round");
-	box["EXTRASTAGE_C"].gainFramework(8, "puregreen", "outer", "round");
-	box["EXTRASTAGE_D"].gainFramework(8, "puregreen", "outer", "round");
-	box["EXTRASTAGE_E"].gainFramework(8, "puregreen", "outer", "round");
-	box["EXTRASTAGE_F"].gainFramework(8, "puregreen", "outer", "round");
-	box["TITLE"] = new Box(500, 800, 600, 70, "TITLE", "darkblue", 60, "lightblue");
-	box["TITLE"].gainFramework(3, 01, "outer", "bevel");
+	var str
+	if(i==0){
+		str = "EXTRA: A-";
+	}
+	else if(i==1){
+		str = "EXTRA: B-";
+	}
+	else{
+		str = "EXTRA: C-";
+	}
+	box["EXTRASTAGE_1U"] = new Box(170, 215, 400,  74, str+1, "darkred", 60, "lightred");
+	box["EXTRASTAGE_2U"] = new Box(600, 215, 400,  74, str+2, "darkred", 60, "lightred");
+	box["EXTRASTAGE_3U"] = new Box(1030,215, 400,  74, str+3, "darkred", 60, "lightred");
+	box["EXTRASTAGE_4U"] = new Box(170, 515, 400,  74, str+4, "darkred", 60, "lightred");
+	box["EXTRASTAGE_5U"] = new Box(600, 515, 400,  74, str+5, "darkred", 60, "lightred");
+	box["EXTRASTAGE_6U"] = new Box(1030,515, 400,  74, str+6, "darkred", 60, "lightred");
+	
+	box["EXTRASTAGE_1D"] = new Box(170, 295, 400, 175, "EXTRASTAGE"+("00"+(6*i+1)).slice(-2), "transparent", 60, "transparent");
+	box["EXTRASTAGE_2D"] = new Box(600, 295, 400, 175, "EXTRASTAGE"+("00"+(6*i+2)).slice(-2), "transparent", 60, "transparent");
+	box["EXTRASTAGE_3D"] = new Box(1030,295, 400, 175, "EXTRASTAGE"+("00"+(6*i+3)).slice(-2), "transparent", 60, "transparent");
+	box["EXTRASTAGE_4D"] = new Box(170, 595, 400, 175, "EXTRASTAGE"+("00"+(6*i+4)).slice(-2), "transparent", 60, "transparent");
+	box["EXTRASTAGE_5D"] = new Box(600, 595, 400, 175, "EXTRASTAGE"+("00"+(6*i+5)).slice(-2), "transparent", 60, "transparent");
+	box["EXTRASTAGE_6D"] = new Box(1030,595, 400, 175, "EXTRASTAGE"+("00"+(6*i+6)).slice(-2), "transparent", 60, "transparent");
+	
+	box["EXTRASTAGE_1U"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_2U"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_3U"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_4U"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_5U"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_6U"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_1D"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_2D"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_3D"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_4D"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_5D"].gainFramework(6, "red", "outer", "round");
+	box["EXTRASTAGE_6D"].gainFramework(6, "red", "outer", "round");
+	
+	for(var j=1; j<7; j++){
+		if(stageImage[6*i+j]!=undefined){
+			box["EXTRASTAGE_"+j+"D"].gainImage(extraStageImage[6*i+1]);
+		}
+	}
+	for(var j=1; j<7; j++){
+		if(6*i+j> lockedExtraStageNum){
+			box["EXTRASTAGE_"+j+"D"].isLocked = true;
+			box["EXTRASTAGE_"+j+"D"].canDetect = false;
+			box["EXTRASTAGE_"+j+"D"].bc = 13;
+		}
+	}
+	
+	box["TITLE"] = new Box(500, 800, 600, 70, "TITLE", "darkred", 60, "lightred");
+	box["TITLE"].gainFramework(3, 02, "outer", "bevel");
 }
 
 var setOptionWindowBox = function(){
