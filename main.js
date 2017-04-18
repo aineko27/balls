@@ -426,8 +426,18 @@ window.onload = function(){
 		else if(nowWindow=="stageSelect"){
 			
 		}
-		else if(nowWindow=="option"){
-			
+		else if(nowWindow=="option" && box["APPLY"]!=undefined){
+			box["APPLY"].fc = 01;
+			box["APPLY"].bc = "lightblue";
+			box["APPLY"].frameworkColor = 01;
+			for(var i in appliedOption){
+				if(appliedOption[i]!=selectedOption[i]){
+					box["APPLY"].fc = 02;
+					box["APPLY"].bc = "lightred";
+					box["APPLY"].frameworkColor = 02;
+					break;
+				}
+			}
 		}
 		else if(nowWindow=="extraStageSelect"){
 			

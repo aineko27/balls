@@ -245,6 +245,14 @@ Box.prototype.detect = function(){
 				return;
 			}
 			else if(this.str=="TITLE"){
+				if(nowWindow=="option"){
+					for(var i in appliedOption){
+						if(appliedOption[i]!=selectedOption[i]){
+							setTitleAlertBox();
+							return;
+						}
+					}
+				}
 				initilalizeAllObject();
 				for(var i in appliedOption){
 					selectedOption[i] = appliedOption[i];
@@ -275,10 +283,20 @@ Box.prototype.detect = function(){
 				}
 				return;
 			}
+			else if(this.str==" YES "){
+				initilalizeAllObject();
+				for(var i in appliedOption){
+					selectedOption[i] = appliedOption[i];
+				}
+				nowWindow = "title";
+				pauseFlag = false;
+				leftDown1 = false;
+				return;
+			}
 			else if(this.str=="APPLY"){
 				for(var i in appliedOption){
 					if(appliedOption[i]!=selectedOption[i]){
-						addApplyAlertBox();
+						setApplyAlertBox();
 					}
 				}
 				return;
@@ -612,21 +630,34 @@ var setOptionWindowBox = function(){
 		box[appliedOption[i]].gainFramework(4, 02, "outer", "bevel");
 	}
 	
-	box["DEFAULT"] = new Box(  20, 790, 500, 80, "DEFAULT", 01, 50, 03);
-	box["APPLY"] = new Box( 550, 790, 500, 80, "APPLY", 01, 50, 03);
-	box["TITLE"] = new Box(1080, 790, 500, 80, "TITLE", 01, 50, 03);
+	box["DEFAULT"] = new Box(  20, 790, 500, 80, "DEFAULT", 01, 50, "lightblue");
+	box["APPLY"] = new Box( 550, 790, 500, 80, "APPLY", 01, 50, "lightblue");
+	box["TITLE"] = new Box(1080, 790, 500, 80, "TITLE", 01, 50, "lightblue");
+	box["DEFAULT"].gainFramework(6, 01, "outer", "round");
+	box["APPLY"].gainFramework(6, 01, "outer", "round");
+	box["TITLE"].gainFramework(6, 01, "outer", "round");
 }
 
-var addApplyAlertBox = function(){
+var setApplyAlertBox = function(){
 	for(var i in box){
 		box[i].canDetect = false;
 	}
 	box["BLANK1"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 13);
 	box["BACK_BOARD"] = new Box(300, 200, 1000, 520, "", 04, 0, 00);
-	box["BACK_BOARD"] = new Box(300, 200, 1000, 520, "", 04, 0, 00);
 	box["BACK_BOARD"].gainFramework(32, 02, "outer", "bevel");
 	box["APPLYALERT"] = new Box(400, 300, 800, 100, "ARE YOU SURE TO APPLY?", 07, 70, "transparent");
 	box["YES"] = new Box(450, 560, 250, 120, "YES", 07, 80, "lightblue");
+	box["NO"] = new Box(900, 560, 250, 120, "NO", 07, 80, "lightblue");
+	box["YES"].gainFramework(6, "black", "outer", "round");
+	box["NO"].gainFramework(6, "black", "outer", "round");
+}
+
+var setTitleAlertBox = function(){
+	box["BLANK1"] = new Box(0, 0, scrWid1, scrHei1+scrHei2, "", 04, 0, 13);
+	box["BACK_BOARD"] = new Box(300, 200, 1000, 520, "", 04, 0, 00);
+	box["BACK_BOARD"].gainFramework(32, 02, "outer", "bevel");
+	box["APPLYALERT"] = new Box(400, 300, 800, 100, "ARE YOU SURE TO BACK?", 07, 70, "transparent");
+	box["YES"] = new Box(450, 560, 250, 120, " YES ", 07, 80, "lightblue");
 	box["NO"] = new Box(900, 560, 250, 120, "NO", 07, 80, "lightblue");
 	box["YES"].gainFramework(6, "black", "outer", "round");
 	box["NO"].gainFramework(6, "black", "outer", "round");
