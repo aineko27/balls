@@ -387,13 +387,6 @@ window.onload = function(){
 			}
 		}
 		
-		//boxの動作
-		for(var i in box){
-			if(box[i].isAlive==true){
-				box[i].detect();
-			}
-		}
-		
 		//特定の条件を満たしていたら選択肢のlockを外すようにする
 		if(keyCode1[83]==true && keyCode2[83]==false){
 			lockedStageNum = Math.min(lockedStageNum+1, 30);
@@ -427,12 +420,12 @@ window.onload = function(){
 			
 		}
 		else if(nowWindow=="option" && box["APPLY"]!=undefined){
-			box["APPLY"].fc = 01;
+			box["APPLY"].fc = "darkblue";
 			box["APPLY"].bc = "lightblue";
 			box["APPLY"].frameworkColor = 01;
 			for(var i in appliedOption){
 				if(appliedOption[i]!=selectedOption[i]){
-					box["APPLY"].fc = 02;
+					box["APPLY"].fc = "darkred";
 					box["APPLY"].bc = "lightred";
 					box["APPLY"].frameworkColor = 02;
 					break;
@@ -441,6 +434,13 @@ window.onload = function(){
 		}
 		else if(nowWindow=="extraStageSelect"){
 			
+		}
+		
+		//boxの動作
+		for(var i in box){
+			if(box[i].isAlive==true){
+				box[i].detect();
+			}
 		}
 		
 		//画面が切り替わったときに現在の画面のboxの準備をする
@@ -476,11 +476,16 @@ window.onload = function(){
 		ctx.clearRect(0, 0, screenCanvas.width, screenCanvas.height)
 		
 		//nowWindowに応じて描写する内容を変える
+		for(var i in box){
+			if(box[i].isAlive==true){
+				box[i].draw();
+			}
+		}
 		if(nowWindow=="title"){
 			
 		}
 		else if(nowWindow=="stageSelect"){
-			
+			drawStageSelectWindow();
 		}
 		else if(nowWindow=="option"){
 			drawOptionWindow();
@@ -579,12 +584,6 @@ window.onload = function(){
 			}
 		}
 		
-		
-		for(var i in box){
-			if(box[i].isAlive==true){
-				box[i].draw();
-			}
-		}
 		drawMouse();
 
 	console.log(lockedStageNum)
