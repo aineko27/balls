@@ -213,7 +213,12 @@ Box.prototype.draw = function(){
 	}
 	ctx.font = (this.fs*sr)+ "px 'MSゴシック'";
 	ctx.textAlign = "center";
-	ctx.fillText(this.str, (this.tl.x+this.br.x)/2*sr+ scrWid0, (this.tl.y+this.br.y+this.fs*2/3)/2*sr+ scrHei0);
+	if(this.str.slice(0,6)=="STAGE:" || this.str.slice(0,6)=="EXTRA:"){
+		ctx.fillText("   "+this.str,  (this.tl.x+this.br.x)/2*sr+ scrWid0, (this.tl.y+this.br.y+this.fs*2/3+10)/2*sr+ scrHei0)
+	}
+	else{
+		ctx.fillText(this.str, (this.tl.x+this.br.x)/2*sr+ scrWid0, (this.tl.y+this.br.y+this.fs*2/3)/2*sr+ scrHei0);
+	}
 }
 
 Box.prototype.detect = function(){
@@ -291,7 +296,12 @@ Box.prototype.detect = function(){
 					box[appliedOption[i]].hasFramework = false;
 					box[selectedOption[i]].isSelected = true;
 					box[selectedOption[i]].hasFramework = true;
+					box[selectedOption[i]].frameworkWidth = 5*sr;
+					box[selectedOption[i]].frameworkColor = 2;
 				}
+				box["APPLY"].fc = "darkred";
+				box["APPLY"].bc = "lightred";
+				box["APPLY"].frameworkColor = 02;
 				return;
 			}
 			else if(this.str==" YES "){
@@ -395,18 +405,22 @@ Box.prototype.detect = function(){
 			}
 			else if(this.str=="<01"){
 				volume01Cnt = Math.max(0, volume01Cnt-1);
+				box["VOLUME_PIECE_A"+("00"+volume01Cnt).slice(-2)].isAlive = false;
 				return;
 			}
 			else if(this.str==">01"){
 				volume01Cnt = Math.min(10, volume01Cnt+1);
+				box["VOLUME_PIECE_A"+("00"+(volume01Cnt-1)).slice(-2)].isAlive = true;
 				return;
 			}
 			else if(this.str=="<02"){
 				volume02Cnt = Math.max(0, volume02Cnt-1);
+				box["VOLUME_PIECE_B"+("00"+volume02Cnt).slice(-2)].isAlive = false;
 				return;
 			}
 			else if(this.str==">02"){
 				volume02Cnt = Math.min(10, volume02Cnt+1);
+				box["VOLUME_PIECE_B"+("00"+(volume02Cnt-1)).slice(-2)].isAlive = true;
 				return;
 			}
 			else if(this.str=="<-"){
@@ -480,25 +494,25 @@ var setTitleWindowBox = function(){
 var setStageSelectWindowBox = function(i){
 	box["STAGE_SELECT"] = new Box(0, 5, scrWid1, 95, "STAGE SELECT", "blue", 75, 33);
 	box["STAGE_SELECT"].gainFramework(5, "gray", "middle", "round");
-	box["PAGE"] = new Box(170, 113, 1260, 70, "PAGE: "+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1), "blue", 60, 33);
+	box["PAGE"] = new Box(170, 120, 1260, 70, "PAGE: "+ (i+1)+ "/"+ (STAGE_SELCET_PAGE_MAX_COUNT+1), "blue", 60, 33);
 	box["PAGE"].gainFramework(6, "gray", "outer", "round");
-	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 95, "lightblue");
-	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 95, "lightblue");
+	box["<-"] = new Box(0, 118, 140, scrHei1+ scrHei2-153, "<-", "transparent", 95, "lightblue");
+	box["->"] = new Box(scrWid1- 140, 118, 140, scrHei1+ scrHei2-153, "->", "transparent", 95, "lightblue");
 	box["<-"].gainFramework(8, 01, "middle", "round");
 	box["->"].gainFramework(8, 01, "middle", "round");
-	box["STAGE_1U"] = new Box(170, 215, 400,  74, "STAGE: "+("00"+(6*i+1)).slice(-2), "darkblue", 60, "lightblue");
-	box["STAGE_2U"] = new Box(600, 215, 400,  74, "STAGE: "+("00"+(6*i+2)).slice(-2), "darkblue", 60, "lightblue");
-	box["STAGE_3U"] = new Box(1030,215, 400,  74, "STAGE: "+("00"+(6*i+3)).slice(-2), "darkblue", 60, "lightblue");
-	box["STAGE_4U"] = new Box(170, 515, 400,  74, "STAGE: "+("00"+(6*i+4)).slice(-2), "darkblue", 60, "lightblue");
-	box["STAGE_5U"] = new Box(600, 515, 400,  74, "STAGE: "+("00"+(6*i+5)).slice(-2), "darkblue", 60, "lightblue");
-	box["STAGE_6U"] = new Box(1030,515, 400,  74, "STAGE: "+("00"+(6*i+6)).slice(-2), "darkblue", 60, "lightblue");
+	box["STAGE_1U"] = new Box(170, 215, 400,  74, "STAGE: "+("00"+(6*i+1)).slice(-2), "darkblue", 55, "lightblue");
+	box["STAGE_2U"] = new Box(600, 215, 400,  74, "STAGE: "+("00"+(6*i+2)).slice(-2), "darkblue", 55, "lightblue");
+	box["STAGE_3U"] = new Box(1030,215, 400,  74, "STAGE: "+("00"+(6*i+3)).slice(-2), "darkblue", 55, "lightblue");
+	box["STAGE_4U"] = new Box(170, 515, 400,  74, "STAGE: "+("00"+(6*i+4)).slice(-2), "darkblue", 55, "lightblue");
+	box["STAGE_5U"] = new Box(600, 515, 400,  74, "STAGE: "+("00"+(6*i+5)).slice(-2), "darkblue", 55, "lightblue");
+	box["STAGE_6U"] = new Box(1030,515, 400,  74, "STAGE: "+("00"+(6*i+6)).slice(-2), "darkblue", 55, "lightblue");
 	
-	box["STAGE_1D"] = new Box(170, 295, 400, 175, "STAGE"+("00"+(6*i+1)).slice(-2), "transparent", 60, "transparent");
-	box["STAGE_2D"] = new Box(600, 295, 400, 175, "STAGE"+("00"+(6*i+2)).slice(-2), "transparent", 60, "transparent");
-	box["STAGE_3D"] = new Box(1030,295, 400, 175, "STAGE"+("00"+(6*i+3)).slice(-2), "transparent", 60, "transparent");
-	box["STAGE_4D"] = new Box(170, 595, 400, 175, "STAGE"+("00"+(6*i+4)).slice(-2), "transparent", 60, "transparent");
-	box["STAGE_5D"] = new Box(600, 595, 400, 175, "STAGE"+("00"+(6*i+5)).slice(-2), "transparent", 60, "transparent");
-	box["STAGE_6D"] = new Box(1030,595, 400, 175, "STAGE"+("00"+(6*i+6)).slice(-2), "transparent", 60, "transparent");
+	box["STAGE_1D"] = new Box(170, 295, 400, 175, "STAGE"+("00"+(6*i+1)).slice(-2), "transparent", 0, "transparent");
+	box["STAGE_2D"] = new Box(600, 295, 400, 175, "STAGE"+("00"+(6*i+2)).slice(-2), "transparent", 0, "transparent");
+	box["STAGE_3D"] = new Box(1030,295, 400, 175, "STAGE"+("00"+(6*i+3)).slice(-2), "transparent", 0, "transparent");
+	box["STAGE_4D"] = new Box(170, 595, 400, 175, "STAGE"+("00"+(6*i+4)).slice(-2), "transparent", 0, "transparent");
+	box["STAGE_5D"] = new Box(600, 595, 400, 175, "STAGE"+("00"+(6*i+5)).slice(-2), "transparent", 0, "transparent");
+	box["STAGE_6D"] = new Box(1030,595, 400, 175, "STAGE"+("00"+(6*i+6)).slice(-2), "transparent", 0, "transparent");
 	
 	box["STAGE_1U"].gainFramework(6, "blue", "outer", "round");
 	box["STAGE_2U"].gainFramework(6, "blue", "outer", "round");
@@ -512,18 +526,31 @@ var setStageSelectWindowBox = function(i){
 	box["STAGE_4D"].gainFramework(6, "blue", "outer", "round");
 	box["STAGE_5D"].gainFramework(6, "blue", "outer", "round");
 	box["STAGE_6D"].gainFramework(6, "blue", "outer", "round");
+	
 	for(var j=1; j<7; j++){
 		if(stageImage[6*i+j]!=undefined){
 			box["STAGE_"+j+"D"].gainImage(stageImage[6*i+1]);
 		}
 	}
+	for(var j in padlock){
+		padlock[j].isAlive = false;
+	}
 	for(var j=1; j<7; j++){
-		if(6*i+j> lockedStageNum){
+		if(6*i+j>lockedStageNum){
 			box["STAGE_"+j+"D"].isLocked = true;
 			box["STAGE_"+j+"D"].canDetect = false;
 			box["STAGE_"+j+"D"].bc = 13;
+			box["STAGE_"+j+"U"].bc = 13;
+			padlock["STAGE_"+j+"U"] = new Padlock(box["STAGE_"+j+"D"].tl.x+ 33, box["STAGE_"+j+"D"].tl.y- 34, true);
 		}
+		 else if(6*i+j==lockedStageNum){
+			padlock["STAGE_"+j+"U"] = new Padlock(box["STAGE_"+j+"D"].tl.x+ 33, box["STAGE_"+j+"D"].tl.y- 30, false);
+		 }
 	}
+	
+	// padlock["STAGE_1"] = new Padlock(210, 265);
+	// padlock["STAGE_2"] = new Padlock(640, 265);
+	
 	box["TITLE"] = new Box(500, 793, 600, 70, "TITLE", "darkblue", 60, "lightblue");
 	box["TITLE"].gainFramework(5, 01, "outer", "round");
 }
@@ -531,10 +558,10 @@ var setStageSelectWindowBox = function(i){
 var setExtraStageSelectWindowBox = function(i){
 	box["EXTRA_STAGE"] = new Box(0, 5, scrWid1, 95, "EXTRA STAGE", "red", 75, 33);
 	box["EXTRA_STAGE"].gainFramework(5, "gray", "middle", "round");
-	box["PAGE"] = new Box(170, 113, 1260, 70, "PAGE: "+ (i+1)+ "/"+ (EXTRA_STAGE_SELCET_PAGE_MAX_COUNT+1), "red", 60, 33);
+	box["PAGE"] = new Box(170, 120, 1260, 70, "PAGE: "+ (i+1)+ "/"+ (EXTRA_STAGE_SELCET_PAGE_MAX_COUNT+1), "red", 60, 33);
 	box["PAGE"].gainFramework(6, "gray", "outer", "round");
-	box["<-"] = new Box(0, 110, 140, scrHei1+ scrHei2-140, "<-", "transparent", 75, "lightred");
-	box["->"] = new Box(scrWid1- 140, 110, 140, scrHei1+ scrHei2-140, "->", "transparent", 75, "lightred");
+	box["<-"] = new Box(0, 118, 140, scrHei1+ scrHei2-153, "<-", "transparent", 75, "lightred");
+	box["->"] = new Box(scrWid1- 140, 118, 140, scrHei1+ scrHei2-153, "->", "transparent", 75, "lightred");
 	box["<-"].gainFramework(8, 02, "middle", "round");
 	box["->"].gainFramework(8, 02, "middle", "round");
 	var str
@@ -547,12 +574,12 @@ var setExtraStageSelectWindowBox = function(i){
 	else{
 		str = "EXTRA: C-";
 	}
-	box["EXTRASTAGE_1U"] = new Box(170, 215, 400,  74, str+1, "darkred", 60, "lightred");
-	box["EXTRASTAGE_2U"] = new Box(600, 215, 400,  74, str+2, "darkred", 60, "lightred");
-	box["EXTRASTAGE_3U"] = new Box(1030,215, 400,  74, str+3, "darkred", 60, "lightred");
-	box["EXTRASTAGE_4U"] = new Box(170, 515, 400,  74, str+4, "darkred", 60, "lightred");
-	box["EXTRASTAGE_5U"] = new Box(600, 515, 400,  74, str+5, "darkred", 60, "lightred");
-	box["EXTRASTAGE_6U"] = new Box(1030,515, 400,  74, str+6, "darkred", 60, "lightred");
+	box["EXTRASTAGE_1U"] = new Box(170, 215, 400,  74, str+1, "darkred", 55, "lightred");
+	box["EXTRASTAGE_2U"] = new Box(600, 215, 400,  74, str+2, "darkred", 55, "lightred");
+	box["EXTRASTAGE_3U"] = new Box(1030,215, 400,  74, str+3, "darkred", 55, "lightred");
+	box["EXTRASTAGE_4U"] = new Box(170, 515, 400,  74, str+4, "darkred", 55, "lightred");
+	box["EXTRASTAGE_5U"] = new Box(600, 515, 400,  74, str+5, "darkred", 55, "lightred");
+	box["EXTRASTAGE_6U"] = new Box(1030,515, 400,  74, str+6, "darkred", 55, "lightred");
 	
 	box["EXTRASTAGE_1D"] = new Box(170, 295, 400, 175, "EXTRASTAGE"+("00"+(6*i+1)).slice(-2), "transparent", 60, "transparent");
 	box["EXTRASTAGE_2D"] = new Box(600, 295, 400, 175, "EXTRASTAGE"+("00"+(6*i+2)).slice(-2), "transparent", 60, "transparent");
@@ -579,12 +606,19 @@ var setExtraStageSelectWindowBox = function(i){
 			box["EXTRASTAGE_"+j+"D"].gainImage(extraStageImage[6*i+1]);
 		}
 	}
+	for(var j in padlock){
+		padlock[j].isAlive = false;
+	}
 	for(var j=1; j<7; j++){
 		if(6*i+j> lockedExtraStageNum){
 			box["EXTRASTAGE_"+j+"D"].isLocked = true;
 			box["EXTRASTAGE_"+j+"D"].canDetect = false;
 			box["EXTRASTAGE_"+j+"D"].bc = 13;
+			padlock["EXTRASTAGE_"+j+"U"] = new Padlock(box["EXTRASTAGE_"+j+"D"].tl.x+ 33, box["EXTRASTAGE_"+j+"D"].tl.y- 34, true);
 		}
+		 else if(6*i+j==lockedExtraStageNum){
+			padlock["STAGE_"+j+"U"] = new Padlock(box["EXTRASTAGE_"+j+"D"].tl.x+ 33, box["EXTRASTAGE_"+j+"D"].tl.y- 30, false);
+		 }
 	}
 	
 	box["TITLE"] = new Box(500, 793, 600, 70, "TITLE", "darkred", 60, "lightred");
@@ -596,7 +630,7 @@ var setOptionWindowBox = function(){
 	box[" OPTION "].gainFramework(8, "gray", "outer", "round");
 	
 	box["VISUAL"] = new Box(scrWid1/4, 225, 0, 0, "VISUAL", 07, 50, "transparent");
-	box["VISUAL_FRAME"] = new Box( 15, 175, 765, 595, "", "transparent", 0, "transparent");
+	box["VISUAL_FRAME"] = new Box( 15, 175, 765, 595, "", "transparent", 0, "lightgray");
 	box["VISUAL_FRAME"].gainFramework(8, 33, "inner", "round");
 	box["OPTION01"] = new Box(200, 300, 0, 0, "test01", 07, 40, "transparent");
 	box["01A"] = new Box(360, 270, 120, 60, "01A", "darkblue", 40, "lightblue");
@@ -620,7 +654,7 @@ var setOptionWindowBox = function(){
 	box["05C"] = new Box(640, 670, 120, 60, "05C", "darkblue", 40, "lightblue");
 	
 	box["SOUND"] = new Box(scrWid1*3/4, 225, 0, 0, "SOUND", 07, 50, "transparent");
-	box["SOUND_FRAME"] = new Box(820, 175, 765, 595, "", "transparent", 0, "transparent");
+	box["SOUND_FRAME"] = new Box(820, 175, 765, 595, "", "transparent", 0, "lightgray");
 	box["SOUND_FRAME"].gainFramework(8, 33, "inner", "round");
 	box["OPTION11"] = new Box(950, 500, 0, 0, "test11", 07, 40, "transparent");
 	box["11A"] = new Box(1110, 470, 120, 60, "11A", "darkblue", 40, "lightblue");
@@ -765,27 +799,27 @@ var drawStageSelectWindow = function(){
 }
 
 var drawOptionWindow = function(){
-	ctx.beginPath();
-	ctx.moveTo(scrWid1/2*sr+ scrWid0, 180*sr+ scrHei0);
-	ctx.lineTo(scrWid1/2*sr+ scrWid0, 765*sr+ scrHei0);
-	ctx.lineWidth = 8;
-	ctx.lineCap = "round";
-	ctx.strokeStyle = "black";
-	ctx.stroke();
-	for(var i=0; i<10; i++){
-		if(i<volume01Cnt){
-			box["VOLUME_PIECE_A"+("00"+i).slice(-2)].isAlive = true;
-		}
-		else{
-			box["VOLUME_PIECE_A"+("00"+i).slice(-2)].isAlive = false;
-		}
-		if(i<volume02Cnt){
-			box["VOLUME_PIECE_B"+("00"+i).slice(-2)].isAlive = true;
-		}
-		else{
-			box["VOLUME_PIECE_B"+("00"+i).slice(-2)].isAlive = false;
-		}
-	}
+	// ctx.beginPath();
+	// ctx.moveTo(scrWid1/2*sr+ scrWid0, 180*sr+ scrHei0);
+	// ctx.lineTo(scrWid1/2*sr+ scrWid0, 765*sr+ scrHei0);
+	// ctx.lineWidth = 8;
+	// ctx.lineCap = "round";
+	// ctx.strokeStyle = "black";
+	// ctx.stroke();
+	// for(var i=0; i<10; i++){
+		// if(i<volume01Cnt){
+			// box["VOLUME_PIECE_A"+("00"+i).slice(-2)].isAlive = true;
+		// }
+		// else{
+			// box["VOLUME_PIECE_A"+("00"+i).slice(-2)].isAlive = false;
+		// }
+		// if(i<volume02Cnt){
+			// box["VOLUME_PIECE_B"+("00"+i).slice(-2)].isAlive = true;
+		// }
+		// else{
+			// box["VOLUME_PIECE_B"+("00"+i).slice(-2)].isAlive = false;
+		// }
+	// }
 }
 
 var drawMenuWindow = function(){

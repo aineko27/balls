@@ -28,7 +28,7 @@ var nowStage = 0;
 var debugFlag = "save";
 var stageSelectPageNum = 0;
 var extraStageSelectPageNum = 0;
-var lockedStageNum = 3;
+var lockedStageNum = 2;
 var lockedExtraStageNum = 0;
 var volume01Cnt = 5;
 var volume02Cnt = 5;
@@ -109,8 +109,9 @@ color["lightblue"] = "rgba(188, 200, 219, 0.7)";
 color["lightorange"] = "rgba(229,  69,  0, 0.7)";
 color["transparent"] = "rgba(255, 255, 255, 0)";
 color["aquamarine"] = "rgba(105, 153, 174, 0.7)";
+color["lightgray"] = "rgba(200, 200, 200, 0.1)";
 color["test"] = "rgba( 85,  85,  85, 0.6)";
-color["tttt"] = "rgba(  0, 230,   0, 1.0)";
+// color["tttt"] = "rgba(  0, 230,   0, 1.0)";s
 
 var appliedOption = new Array();
 appliedOption[01] = "01A";
@@ -222,6 +223,8 @@ window.onload = function(){
 	paperTape = initialize(PaperTape, PAPERTAPE_MAX_COUNT);
 	
 	box = new Array();
+	
+	padlock = new Array();
 	
 
 	//自機初期化
@@ -448,6 +451,9 @@ window.onload = function(){
 			for(var i in box){
 				box[i].isAlive = false;
 			}
+			for(var i in padlock){
+				padlock[i].isAlive = false;
+			}
 			if(nowWindow=="title"){
 				setTitleWindowBox();
 			}
@@ -481,6 +487,14 @@ window.onload = function(){
 				box[i].draw();
 			}
 		}
+		
+		for(var i in padlock){
+			if(padlock[i].isAlive==true){
+				console.log(padlock[i], i)
+				padlock[i].draw();
+			}
+		}
+		
 		if(nowWindow=="title"){
 			
 		}
